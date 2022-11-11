@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+option csharp_namespace = "ForDem.Grpc";
+
+service Chat {
+  // Sends a greeting
+  rpc Send (SendRequest) returns (SendResponse);
+}
+
+message SendRequest {
+  string text = 1;
+}
+
+message SendResponse {
+  string data = 1;
+}
