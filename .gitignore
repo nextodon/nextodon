@@ -1,0 +1,8 @@
+*.suo
+*.usr
+*.user
+/**/.vscode
+/**/.vs
+/**/bin
+/**/obj
+/**/GroundStation.Hardware/wwwroot/map
