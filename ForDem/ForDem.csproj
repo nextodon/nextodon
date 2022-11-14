@@ -15,6 +15,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<ProjectReference Include="..\ForDem.Cryptography\ForDem.Cryptography.csproj" />
 		<ProjectReference Include="..\ForDem.Data\ForDem.Data.csproj" />
 		<ProjectReference Include="..\ForDem.Grpc\ForDem.Grpc.csproj" />
 	</ItemGroup>

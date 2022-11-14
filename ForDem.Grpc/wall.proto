@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+option csharp_namespace = "ForDem.Grpc";
+
+service Wall {
+  rpc CreatePost (CreatePostRequest) returns (CreatePostResponse);
+}
+
+message CreatePostRequest {
+  string text = 1;
+}
+
+message CreatePostResponse {
+  string id = 1;
+}

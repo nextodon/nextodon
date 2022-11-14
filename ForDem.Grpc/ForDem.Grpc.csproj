@@ -11,6 +11,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<Protobuf Include="chat.proto" GrpcServices="Server" />
+		<Protobuf Include="wall.proto" GrpcServices="Server" />
 	</ItemGroup>
 </Project>
