@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace ForDem.Cryptography;
 
-internal static class HashHelpers
+public static class HashHelpers
 {
     public static byte[] Hash160(byte[] input)
     {

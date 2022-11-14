@@ -6,7 +6,7 @@ using System.Formats.Asn1;
 
 namespace ForDem.Cryptography;
 
-internal static class Secp256K1
+public static class Secp256K1
 {
     public readonly static X9ECParameters Curve = ECNamedCurveTable.GetByName("secp256k1");
     public readonly static ECDomainParameters DomainParams = new ECDomainParameters(Curve.Curve, Curve.G, Curve.N, Curve.H, Curve.GetSeed());

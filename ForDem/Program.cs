@@ -10,8 +10,8 @@ var builder = WebApplication.CreateBuilder(args);
 
 var config = builder.Configuration;
 
-var settings = config.GetSection("MongoDb").Get<MongoDbSettings>()!;
-builder.Services.AddSingleton(new ForDem.Data.DataContext(settings.ConnectionString, settings.DatabaseName));
+//var settings = config.GetSection("MongoDb").Get<MongoDbSettings>()!;
+//builder.Services.AddSingleton(new ForDem.Data.DataContext(settings.ConnectionString, settings.DatabaseName));
 
 // Add services to the container.
 builder.Services.AddGrpc();
@@ -56,7 +56,7 @@ app.UseAuthorization();
 
 app.UseGrpcWeb();
 
-app.MapGrpcService<ChatService>().EnableGrpcWeb().RequireAuthorization();
+app.MapGrpcService<WallService>().EnableGrpcWeb().RequireAuthorization();
 app.MapGet("/", () => "Communication with gRPC endpoints must be made through a gRPC client.");
 
 app.MapGrpcReflectionService().EnableGrpcWeb();
