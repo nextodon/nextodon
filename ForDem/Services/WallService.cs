@@ -6,7 +6,6 @@ using System.Text.Json;
 
 namespace ForDem.Services;
 
-[AllowAnonymous]
 [Authorize]
 public sealed class WallService : Wall.WallBase
 {
@@ -20,29 +19,8 @@ public sealed class WallService : Wall.WallBase
 
     public override Task<CreatePostResponse> CreatePost(CreatePostRequest request, ServerCallContext context)
     {
-        var message = request.ToByteArray();
+        var user = context.GetHttpContext().User;
 
-        var publicKeyHex = context.RequestHeaders.Get("x-public-key")?.Value;
-        var signatureHex = context.RequestHeaders.Get("x-digital-signature")?.Value;
-
-        if (publicKeyHex == null || signatureHex == null)
-        {
-            throw new RpcException(new Status(StatusCode.Unauthenticated, string.Empty));
-        }
-
-
-        var publicKeyBytes = Cryptography.HashHelpers.StringToByteArray(publicKeyHex);
-        var signatureBytes = Cryptography.HashHelpers.StringToByteArray(signatureHex);
-
-        var publicKey = new Cryptography.PublicKey(publicKeyBytes);
-
-        var valid = Cryptography.Secp256K1.VerifySignature(publicKey, message, signatureBytes);
-
-        if (!valid)
-        {
-            throw new RpcException(new Status(StatusCode.Unauthenticated, string.Empty));
-        }
-
-        return Task.FromResult(new CreatePostResponse { Id = Guid.NewGuid().ToString() });
+        return Task.FromResult(new CreatePostResponse { Id = user.Identity?.Name ?? string.Empty });
     }
 }
