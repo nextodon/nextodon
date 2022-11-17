@@ -47,7 +47,7 @@ builder.Services.AddCors(o =>
     o.AddDefaultPolicy(
     builder =>
     {
-        builder.WithOrigins("https://grpcui.dev", "https://app.grpcui.dev", "https://*.mangoriver-4d99c329.canadacentral.azurecontainerapps.io")
+        builder.WithOrigins("https://grpcui.dev", "https://app.grpcui.dev", "https://app.fordem.org")
                             .AllowAnyHeader()
                             .AllowAnyMethod();
     });
