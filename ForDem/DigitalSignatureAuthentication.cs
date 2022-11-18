@@ -26,7 +26,7 @@ public sealed class DigitalSignatureHandler : AuthenticationHandler<DigitalSigna
 
         if (method.StartsWith("OPTIONS", StringComparison.OrdinalIgnoreCase))
         {
-            return AuthenticateResult.Success(new AuthenticationTicket(new ClaimsPrincipal(), DigitalSignatureDefaults.AuthenticationScheme));
+            return AuthenticateResult.Success(new AuthenticationTicket(new ClaimsPrincipal(new ClaimsIdentity(DigitalSignatureDefaults.AuthenticationScheme)), DigitalSignatureDefaults.AuthenticationScheme));
         }
 
         if (!contentType.StartsWith("application/grpc", StringComparison.OrdinalIgnoreCase))
