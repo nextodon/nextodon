@@ -22,6 +22,13 @@ public sealed class DigitalSignatureHandler : AuthenticationHandler<DigitalSigna
     protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
     {
         var contentType = Context.Request.ContentType ?? string.Empty;
+        var method = Context.Request.Method ?? string.Empty;
+
+        if (method.StartsWith("OPTIONS", StringComparison.OrdinalIgnoreCase))
+        {
+            return AuthenticateResult.Success(new AuthenticationTicket(new ClaimsPrincipal(), DigitalSignatureDefaults.AuthenticationScheme);
+        }
+
         if (!contentType.StartsWith("application/grpc", StringComparison.OrdinalIgnoreCase))
         {
             return AuthenticateResult.NoResult();
