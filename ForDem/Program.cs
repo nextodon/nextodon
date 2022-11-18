@@ -76,7 +76,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.UseGrpcWeb();
-app.UseCors();
+app.UseCors("AllowAll");
 
 app.MapGrpcService<AuthenticationService>().EnableGrpcWeb().RequireAuthorization();
 app.MapGrpcService<WallService>().EnableGrpcWeb().RequireAuthorization();
