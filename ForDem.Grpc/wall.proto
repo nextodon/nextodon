@@ -2,8 +2,12 @@ syntax = "proto3";
 
 option csharp_namespace = "ForDem.Grpc";
 
+import "google/protobuf/empty.proto";
+import "common/types.proto";
+
 service Wall {
   rpc CreatePost (CreatePostRequest) returns (CreatePostResponse);
+  rpc GetPosts (google.protobuf.Empty) returns (Posts);
 }
 
 message CreatePostRequest {
