@@ -5,9 +5,14 @@ import "google/protobuf/empty.proto";
 option csharp_namespace = "ForDem.Grpc";
 
 service Authentication {
-  rpc GetJwt (google.protobuf.Empty) returns (JsonWebToken);
+  rpc SignIn (SignInRequest) returns (JsonWebToken);
 }
 
 message JsonWebToken {
   string value = 1;
+}
+
+message SignInRequest {
+	bytes publicKey = 1;
+	bytes digitalSignature = 2;
 }

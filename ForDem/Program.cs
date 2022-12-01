@@ -1,7 +1,6 @@
 using ForDem;
 using ForDem.Data;
 using ForDem.Services;
-using Microsoft.AspNetCore.Authentication.DigitalSignature;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
@@ -24,8 +23,8 @@ builder.Services.Configure<ForwardedHeadersOptions>(options => { options.Forward
 var key = Encoding.UTF8.GetBytes("0102030405060708");
 builder.Services.AddAuthentication(x =>
 {
-    x.DefaultAuthenticateScheme = DigitalSignatureDefaults.AuthenticationScheme;
-    x.DefaultChallengeScheme = DigitalSignatureDefaults.AuthenticationScheme;
+    x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
 })
 .AddJwtBearer(x =>
 {
@@ -38,7 +37,7 @@ builder.Services.AddAuthentication(x =>
         ValidateIssuer = false,
         ValidateAudience = false
     };
-}).AddDigitalSignature(x => { });
+});
 
 builder.Services.AddAuthorization();
 
@@ -47,7 +46,7 @@ builder.Services.AddCors(o =>
     o.AddDefaultPolicy(
     builder =>
     {
-        builder.WithOrigins("https://grpcui.dev", "https://app.grpcui.dev", "https://app.fordem.org")
+        builder.WithOrigins("https://app.grpcui.dev", "https://app.fordem.org")
                             .AllowAnyHeader()
                             .AllowAnyMethod();
     });
