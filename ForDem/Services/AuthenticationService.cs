@@ -1,7 +1,7 @@
 using ForDem.Grpc;
 using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
-using Microsoft.AspNetCore.Authentication.DigitalSignature;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
@@ -10,7 +10,7 @@ using System.Text;
 
 namespace ForDem.Services;
 
-[Authorize(AuthenticationSchemes = DigitalSignatureDefaults.AuthenticationScheme)]
+[Authorize]
 public sealed class AuthenticationService : Authentication.AuthenticationBase
 {
     private readonly ILogger<AuthenticationService> _logger;
@@ -20,9 +20,22 @@ public sealed class AuthenticationService : Authentication.AuthenticationBase
         _logger = logger;
     }
 
-    public override Task<JsonWebToken> GetJwt(Empty request, ServerCallContext context)
+    [AllowAnonymous]
+    public override Task<JsonWebToken> SignIn(SignInRequest request, ServerCallContext context)
     {
-        var user = context.GetHttpContext().User.Identity;
+        var publicKeyBytes = request.PublicKey.ToArray();
+        var signatureBytes = request.DigitalSignature.ToArray();
+        var messageBytes = Cryptography.HashHelpers.SHA256(publicKeyBytes);
+
+        var publicKeyHex = Cryptography.HashHelpers.ByteArrayToHexString(publicKeyBytes);
+        var publicKey = new ForDem.Cryptography.PublicKey(publicKeyBytes);
+
+        var valid = ForDem.Cryptography.Secp256K1.VerifySignature(publicKey, messageBytes, signatureBytes);
+
+        if (!valid)
+        {
+            throw new RpcException(new Status(StatusCode.InvalidArgument, string.Empty));
+        }
 
         var tokenHandler = new JwtSecurityTokenHandler();
 
@@ -32,8 +45,8 @@ public sealed class AuthenticationService : Authentication.AuthenticationBase
 
         var tokenDescriptor = new SecurityTokenDescriptor
         {
-            Subject = new ClaimsIdentity(new Claim[] { new Claim(JwtRegisteredClaimNames.UniqueName, user!.Name) }),
-            Claims = new Dictionary<string, object> { [JwtRegisteredClaimNames.UniqueName] = user.Name },
+            Subject = new ClaimsIdentity(new Claim[] { new Claim(JwtRegisteredClaimNames.UniqueName, publicKeyHex) }),
+            Claims = new Dictionary<string, object> { [JwtRegisteredClaimNames.UniqueName] = publicKeyHex },
             Expires = expires,
             SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(jwtkey), SecurityAlgorithms.HmacSha256Signature)
         };
