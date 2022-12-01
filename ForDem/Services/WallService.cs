@@ -1,4 +1,5 @@
 using ForDem.Grpc;
+using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
 using Microsoft.AspNetCore.Authorization;
 
@@ -20,5 +21,17 @@ public sealed class WallService : Wall.WallBase
         var user = context.GetHttpContext().User;
 
         return Task.FromResult(new CreatePostResponse { Id = user.Identity?.Name ?? string.Empty });
+    }
+
+    public override async Task<Posts> GetPosts(Empty request, ServerCallContext context)
+    {
+        await Task.Yield();
+
+        var ret = new Posts();
+
+        ret.Data.Add(new Post { Id = "1", Text = "Test 1" });
+        ret.Data.Add(new Post { Id = "2", Text = "Test 2" });
+
+        return ret;
     }
 }

@@ -12,6 +12,7 @@
 
 	<ItemGroup>
 		<Protobuf Include="auth.proto" GrpcServices="Server" />
+		<Protobuf Include="common\types.proto" GrpcServices="Server" />
 		<Protobuf Include="wall.proto" GrpcServices="Server" />
 	</ItemGroup>
 </Project>
