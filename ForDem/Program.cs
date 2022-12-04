@@ -46,17 +46,9 @@ builder.Services.AddCors(o =>
     o.AddDefaultPolicy(
     builder =>
     {
-        builder.WithOrigins("https://app.grpcui.dev", "https://app.fordem.org")
+        builder.WithOrigins("https://app.fordem.org")
                             .AllowAnyHeader()
                             .AllowAnyMethod();
-    });
-
-    o.AddPolicy("AllowAll", builder =>
-    {
-        builder.AllowAnyOrigin()
-            .AllowAnyMethod()
-            .AllowAnyHeader()
-            .WithExposedHeaders("Grpc-Status", "Grpc-Message", "Grpc-Encoding", "Grpc-Accept-Encoding", "X-Grpc-Web", "User-Agent");
     });
 });
 
@@ -75,7 +67,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.UseGrpcWeb();
-app.UseCors("AllowAll");
+app.UseCors();
 
 app.MapGrpcService<AuthenticationService>().EnableGrpcWeb().RequireAuthorization();
 app.MapGrpcService<WallService>().EnableGrpcWeb().RequireAuthorization();
