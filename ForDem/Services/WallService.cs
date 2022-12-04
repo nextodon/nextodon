@@ -29,8 +29,8 @@ public sealed class WallService : Wall.WallBase
 
         var ret = new Posts();
 
-        ret.Data.Add(new Post { Id = "1", Text = "Test 1" });
-        ret.Data.Add(new Post { Id = "2", Text = "Test 2" });
+        ret.Data.Add(new Post { Id = "1", Content = new PostContent { Text = new Text { Value = "Test 1" } } });
+        ret.Data.Add(new Post { Id = "2", Content = new PostContent { Text = new Text { Value = "Test 2" } } });
 
         return ret;
     }
