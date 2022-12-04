@@ -79,6 +79,7 @@ app.UseCors("AllowAll");
 
 app.MapGrpcService<AuthenticationService>().EnableGrpcWeb().RequireAuthorization();
 app.MapGrpcService<WallService>().EnableGrpcWeb().RequireAuthorization();
+app.MapGrpcTunnelService().EnableGrpcWeb();
 
 app.MapGet("/", () => "Communication with gRPC endpoints must be made through a gRPC client.");
 
