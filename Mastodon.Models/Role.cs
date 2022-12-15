@@ -1,5 +1,8 @@
 ﻿namespace Mastodon.Models;
 
+/// <summary>
+/// Represents a custom user role that grants permissions.
+/// </summary>
 public sealed partial class Role
 {
     /// <summary>
