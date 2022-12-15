@@ -14,9 +14,12 @@ service Mastodon {
   {
 	option (google.api.http) = {
       get: "/api/v2/instance"
+        additional_bindings {
+            get: "/api/v1/instance"
+        }
     };
   }
-  
+
   rpc GetRules (google.protobuf.Empty) returns (Rules)
   {
 	option (google.api.http) = {
