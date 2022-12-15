@@ -24,5 +24,6 @@
 		<Protobuf Include="rule.proto" />
 		<Protobuf Include="status.proto" />
 		<Protobuf Include="tag.proto" />
+		<Protobuf Include="trends.proto" />
 	</ItemGroup>
 </Project>

@@ -23,7 +23,7 @@ service Mastodon {
       get: "/api/v1/instance"
     };
   }
-
+  
   rpc GetRules (google.protobuf.Empty) returns (Rules)
   {
 	option (google.api.http) = {
