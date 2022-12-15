@@ -12,6 +12,7 @@
 	</ItemGroup>
 	<ItemGroup>
 		<Protobuf Include="account.proto" />
+		<Protobuf Include="activity.proto" />
 		<Protobuf Include="card.proto" />
 		<Protobuf Include="emoji.proto" />
 		<Protobuf Include="filter.proto" />

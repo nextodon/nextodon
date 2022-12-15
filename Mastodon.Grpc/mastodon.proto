@@ -3,6 +3,7 @@ syntax = "proto3";
 import "google/api/annotations.proto";
 import "google/protobuf/empty.proto";
 import "google/protobuf/wrappers.proto";
+import "activity.proto";
 import "instance.proto";
 import "instancev1.proto";
 import "rule.proto";
@@ -21,6 +22,14 @@ service Mastodon {
   {
 	option (google.api.http) = {
       get: "/api/v1/instance"
+    };
+  }
+  
+  rpc GetActivities (google.protobuf.Empty) returns (Activities)
+  {
+	option (google.api.http) = {
+      get: "/api/v1/instance/activity"
+      response_body: "data"
     };
   }
   
