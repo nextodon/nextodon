@@ -2,6 +2,9 @@ syntax = "proto3";
 
 option csharp_namespace = "Mastodon.Grpc";
 
+import "account.proto";
+import "rule.proto";
+
 // The response message containing the Instance information.
 message Instance
 {
@@ -34,6 +37,12 @@ message Instance
 
     // Information about registering for this website.
     Registrations registrations = 10;
+
+    // Hints related to contacting a representative of the website.
+    Contact contact = 11;
+
+    // An itemized list of rules for this website.
+    repeated Rule rules = 12;
     
     // Usage data for this instance.
     message Usage
@@ -177,5 +186,15 @@ message Instance
 
         // A custom message to be shown when registrations are closed.
         optional string message = 3;
+    }
+
+    // Hints related to contacting a representative of the website.
+    message Contact
+    {
+        // An email address that can be messaged regarding inquiries or issues.
+        string email = 1;
+
+        // An account that can be contacted natively over the network regarding inquiries or issues.
+        Account account = 2;
     }
 }
