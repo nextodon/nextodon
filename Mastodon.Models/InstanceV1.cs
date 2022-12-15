@@ -36,6 +36,8 @@ public sealed class InstanceV1
     /// </summary>
     public sealed partial class ConfigurationHash
     {
+        public required Instance.ConfigurationHash.AccountsHash Accounts { get; set; }
+
         /// <summary>
         /// Limits related to authoring statuses.
         /// </summary>

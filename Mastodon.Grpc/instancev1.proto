@@ -41,13 +41,16 @@ message InstanceV1
     // Configured values and limits for this website.
     message Configuration
     {
+        // Limits related to accounts.
+        Instance.Configuration.Accounts accounts = 1;
+
         // Limits related to authoring statuses.
-        Instance.Configuration.Statuses statuses = 1;
+        Instance.Configuration.Statuses statuses = 2;
 
         // Hints for which attachments will be accepted.
-        optional Instance.Configuration.MediaAttachments mediaAttachments = 2 [json_name="media_attachments"];
+        optional Instance.Configuration.MediaAttachments mediaAttachments = 3 [json_name="media_attachments"];
 
         // Limits related to polls.
-        Instance.Configuration.Polls polls = 3;
+        Instance.Configuration.Polls polls = 4;
     }
 }

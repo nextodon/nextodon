@@ -47,6 +47,7 @@ public static class InstanceExtensionMethods
             Thumbnail = i.Thumbnail,
             Configuration = new InstanceV1.Types.Configuration
             {
+                Accounts = i.Configuration.Accounts.ToGrpc(),
                 MediaAttachments = i.Configuration.MediaAttachments?.ToGrpc(),
                 Polls = i.Configuration.Polls?.ToGrpc(),
                 Statuses = i.Configuration.Statuses?.ToGrpc(),
