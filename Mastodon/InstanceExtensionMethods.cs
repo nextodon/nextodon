@@ -17,12 +17,24 @@ public static class InstanceExtensionMethods
             Thumbnail = i.Thumbnail.ToGrpc(),
             Configuration = i.Configuration.ToGrpc(),
             Registrations = i.Registrations.ToGrpc(),
+            Contact = i.Contact.ToGrpc(),
         };
 
         v.Languages.AddRange(i.Languages);
+        v.Rules.AddRange(i.Rules.Select(x => x.ToGrpc()));
 
         return v;
     }
+    
+    public static Grpc.Instance.Types.Contact ToGrpc(this Mastodon.Models.Instance.ContactHash i)
+    {
+        return new Instance.Types.Contact
+        {
+            Email = i.Email,
+            Account = i.Account.ToGrpc(),
+        };
+    }
+
     public static Grpc.Instance.Types.Registrations ToGrpc(this Mastodon.Models.Instance.RegistrationsHash i)
     {
         return new Instance.Types.Registrations
