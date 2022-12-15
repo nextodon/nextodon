@@ -32,6 +32,8 @@ builder.Services.AddSingleton(new Mastodon.Client.MastodonClient(new Uri("https:
 
 var app = builder.Build();
 
+app.UseCors();
+
 app.UseDefaultFiles();
 app.UseStaticFiles();
 
@@ -40,8 +42,8 @@ app.UseForwardedHeaders();
 
 app.UseRouting();
 
+
 app.UseGrpcWeb();
-app.UseCors();
 
 app.MapGrpcService<MastodonService>().EnableGrpcWeb();
 app.MapGrpcReflectionService().EnableGrpcWeb();
