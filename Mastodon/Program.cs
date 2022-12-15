@@ -1,5 +1,8 @@
 using Mastodon.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http.Extensions;
+using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -11,11 +14,34 @@ builder.Services.AddGrpc().AddJsonTranscoding(options =>
 
 builder.Services.AddGrpcReflection();
 
+builder.Services.Configure<ForwardedHeadersOptions>(options => { options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto; });
+
+builder.Services.AddCors(o =>
+{
+    o.AddDefaultPolicy(
+    builder =>
+    {
+        builder.WithOrigins("https://app.fordem.org")
+                            .AllowAnyHeader()
+                            .AllowAnyMethod();
+    });
+});
+
+
 builder.Services.AddSingleton(new Mastodon.Client.MastodonClient(new Uri("https://mastodon.lol")));
 
 var app = builder.Build();
 
+app.UseDefaultFiles();
+app.UseStaticFiles();
+
+app.UseForwardedHeaders();
+//app.UseHttpsRedirection();
+
+app.UseRouting();
+
 app.UseGrpcWeb();
+app.UseCors();
 
 app.MapGrpcService<MastodonService>().EnableGrpcWeb();
 app.MapGrpcReflectionService().EnableGrpcWeb();
@@ -42,4 +68,5 @@ app.MapFallback(async context =>
     logger?.LogError(content);
     await context.Response.WriteAsync(content);
 });
+
 app.Run();
