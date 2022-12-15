@@ -67,19 +67,19 @@ message Account
     bool limited = 19;
 
     // When the account was created.
-    optional google.protobuf.Timestamp createdAt = 20;
+    optional google.protobuf.Timestamp createdAt = 20 [json_name="created_at"];
 
     // When the most recent status was posted.
-    optional google.protobuf.Timestamp lastStatusAt = 21;
+    optional google.protobuf.Timestamp lastStatusAt = 21 [json_name="last_status_at"];
 
     // How many statuses are attached to this account.
-    optional uint32 statusesCount = 22;
+    optional uint32 statusesCount = 22 [json_name="statuses_count"];
 
     // The reported followers of this profile.
-    optional uint32 followersCount = 23;
+    optional uint32 followersCount = 23 [json_name="followers_count"];
 
     // The reported follows of this profile.
-    optional uint32 followingCount = 24;
+    optional uint32 followingCount = 24 [json_name="following_count"];
 
     // An extra attribute that contains source values to be used with API methods that verify credentials and update credentials.
     optional Source source = 25;

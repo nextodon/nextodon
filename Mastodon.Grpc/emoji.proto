@@ -2,8 +2,21 @@ syntax = "proto3";
 
 option csharp_namespace = "Mastodon.Grpc";
 
-
+// Represents a custom emoji.
 message CustomEmoji
 {
+    // The name of the custom emoji.
     string shortcode = 1;
+
+    // A link to the custom emoji.
+    string url = 2;
+
+    // A link to a static copy of the custom emoji.
+    optional string staticUrl = 3 [json_name="static_url"];
+
+    // Whether this Emoji should be visible in the picker or unlisted.
+    optional bool visibleInPicker = 4 [json_name="visible_in_picker"];
+
+    // Used for sorting custom emoji in the picker.
+    optional string category = 5;
 }
