@@ -66,6 +66,17 @@ public static class InstanceExtensionMethods
         return v;
     }
 
+    public static Grpc.Activity ToGrpc(this Mastodon.Models.Activity i)
+    {
+        return new Activity
+        {
+            Logins = i.Logins,
+            Registrations = i.Registrations,
+            Statuses = i.Statuses,
+            Week = i.Week,
+        };
+    }
+
     public static Grpc.Instance.Types.Contact ToGrpc(this Mastodon.Models.Instance.ContactHash i)
     {
         return new Instance.Types.Contact
