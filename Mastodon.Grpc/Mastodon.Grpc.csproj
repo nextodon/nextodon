@@ -16,6 +16,7 @@
 		<Protobuf Include="emoji.proto" />
 		<Protobuf Include="filter.proto" />
 		<Protobuf Include="instance.proto" />
+		<Protobuf Include="instancev1.proto" />
 		<Protobuf Include="mastodon.proto" />
 		<Protobuf Include="media.proto" />
 		<Protobuf Include="poll.proto" />

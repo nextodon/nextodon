@@ -25,7 +25,46 @@ public static class InstanceExtensionMethods
 
         return v;
     }
-    
+
+    public static Grpc.InstanceV1 ToGrpc(this Mastodon.Models.InstanceV1 i)
+    {
+        var v = new Grpc.InstanceV1
+        {
+            Uri = i.Uri,
+            Title = i.Title,
+            Version = i.Version,
+            ApprovalRequired = i.ApprovalRequired,
+            Email = i.Email,
+            InvitesEnabled = i.InvitesEnabled,
+            ShortDescription = i.ShortDescription,
+            Stats = new InstanceV1.Types.StatsHash
+            {
+                DomainCount = i.Stats.DomainCount,
+                StatusCount = i.Stats.StatusCount,
+                UserCount = i.Stats.UserCount,
+            },
+            Description = i.Description,
+            Thumbnail = i.Thumbnail,
+            Configuration = new InstanceV1.Types.Configuration
+            {
+                MediaAttachments = i.Configuration.MediaAttachments?.ToGrpc(),
+                Polls = i.Configuration.Polls?.ToGrpc(),
+                Statuses = i.Configuration.Statuses?.ToGrpc(),
+            },
+            Registrations = i.Registrations,
+            ContactAccount = i.ContactAccount.ToGrpc(),
+            Urls = new InstanceV1.Types.Urls
+            {
+                StreamingApi = i.Urls.StreamingApi
+            },
+        };
+
+        v.Languages.AddRange(i.Languages);
+        v.Rules.AddRange(i.Rules.Select(x => x.ToGrpc()));
+
+        return v;
+    }
+
     public static Grpc.Instance.Types.Contact ToGrpc(this Mastodon.Models.Instance.ContactHash i)
     {
         return new Instance.Types.Contact

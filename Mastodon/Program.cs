@@ -10,6 +10,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddGrpc().AddJsonTranscoding(options =>
 {
     options.JsonSettings.WriteIndented = true;
+    options.JsonSettings.IgnoreDefaultValues = true;
 });
 
 builder.Services.AddGrpcReflection();
