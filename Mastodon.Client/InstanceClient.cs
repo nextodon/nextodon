@@ -35,6 +35,11 @@ public sealed class InstanceClient
     {
         return _client.http.GetFromJsonAsync<List<string>>("api/v1/instance/peers", MastodonClient._options);
     }
+    
+    public Task<List<Activity>?> GetActivitiesAsync()
+    {
+        return _client.http.GetFromJsonAsync<List<Activity>>("api/v1/instance/activity", MastodonClient._options);
+    }
 
 
     /// <summary>
