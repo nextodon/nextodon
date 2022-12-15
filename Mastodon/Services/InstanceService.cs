@@ -2,6 +2,7 @@ using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
 using Mastodon.Client;
 using Mastodon.Grpc;
+using Mastodon.Models;
 
 namespace Mastodon.Services;
 
@@ -13,6 +14,15 @@ public sealed class MastodonService : Mastodon.Grpc.Mastodon.MastodonBase
     {
         _logger = logger;
         _mastodon = mastodon;
+    }
+
+    public override async Task<Grpc.InstanceV1> GetInstanceV1(Empty request, ServerCallContext context)
+    {
+        var instance = (await _mastodon.Instance.GetInstanceV1Async())!;
+
+        instance.Uri = context.GetHttpContext().Request.Host.Value;
+
+        return instance.ToGrpc();
     }
 
     public override async Task<Grpc.Instance> GetInstance(Empty request, ServerCallContext context)
@@ -34,7 +44,7 @@ public sealed class MastodonService : Mastodon.Grpc.Mastodon.MastodonBase
         {
             foreach (var rule in result)
             {
-                var r = new Rule
+                var r = new Grpc.Rule
                 {
                     Id = rule.Id,
                     Text = rule.Text,
