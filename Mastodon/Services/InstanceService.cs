@@ -65,4 +65,23 @@ public sealed class MastodonService : Mastodon.Grpc.Mastodon.MastodonBase
 
         return statuses;
     }
+
+    public override async Task<Statuses> GetPublicTimelineByTag(StringValue request, ServerCallContext context)
+    {
+        var result = (await _mastodon.Timeline.GetTagAsync(request.Value));
+
+        var statuses = new Grpc.Statuses();
+
+        if (result != null)
+        {
+            foreach (var r in result)
+            {
+                statuses.Data.Add(r.ToGrpc());
+            }
+        }
+
+
+        return statuses;
+    }
+
 }
