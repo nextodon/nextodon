@@ -30,3 +30,8 @@ message Tag
         string accounts = 3;
     }
 }
+
+message Tags
+{
+    repeated Tag data = 1;
+}

@@ -38,24 +38,18 @@ public sealed class MastodonService : Mastodon.Grpc.Mastodon.MastodonBase
     {
         var result = (await _mastodon.Instance.GetRulesAsync());
 
-        var rules = new Rules();
+        var v = new Rules();
 
         if (result != null)
         {
-            foreach (var rule in result)
+            foreach (var item in result)
             {
-                var r = new Grpc.Rule
-                {
-                    Id = rule.Id,
-                    Text = rule.Text,
-                };
-
-                rules.Data.Add(r);
+                v.Data.Add(item.ToGrpc());
             }
         }
 
 
-        return rules;
+        return v;
     }
 
     public override async Task<Grpc.Statuses> GetPublicTimeline(Empty request, ServerCallContext context)
