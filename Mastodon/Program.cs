@@ -47,6 +47,7 @@ app.UseRouting();
 app.UseGrpcWeb();
 
 app.MapGrpcService<MastodonService>().EnableGrpcWeb();
+app.MapGrpcService<TrendsService>().EnableGrpcWeb();
 app.MapGrpcReflectionService().EnableGrpcWeb();
 
 app.MapGet("/", () => "Communication with gRPC endpoints must be made through a gRPC client.");
