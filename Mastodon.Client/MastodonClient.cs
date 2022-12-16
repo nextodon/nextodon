@@ -14,6 +14,7 @@ public sealed class MastodonClient
     public readonly PollClient Polls;
     public readonly ConversationClient Conversations;
     public readonly TrendsClient Trends;
+    public readonly DirectoryClient Directory;
 
     internal static JsonSerializerOptions _options = new()
     {
@@ -32,6 +33,7 @@ public sealed class MastodonClient
         Polls = new PollClient(this);
         Conversations = new ConversationClient(this);
         Trends = new TrendsClient(this);
+        Directory = new DirectoryClient(this);
     }
 
     public void SetAuthorizationToken(string token)

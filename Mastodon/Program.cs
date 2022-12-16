@@ -42,12 +42,14 @@ app.UseForwardedHeaders();
 //app.UseHttpsRedirection();
 
 app.UseRouting();
-
-
 app.UseGrpcWeb();
 
-app.MapGrpcService<MastodonService>().EnableGrpcWeb();
+app.MapGrpcService<DirectoryService>().EnableGrpcWeb();
+app.MapGrpcService<InstanceService>().EnableGrpcWeb();
+app.MapGrpcService<TimelineService>().EnableGrpcWeb();
 app.MapGrpcService<TrendsService>().EnableGrpcWeb();
+
+
 app.MapGrpcReflectionService().EnableGrpcWeb();
 
 app.MapGet("/", () => "Communication with gRPC endpoints must be made through a gRPC client.");

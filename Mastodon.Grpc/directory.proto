@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+import "google/api/annotations.proto";
+import "google/protobuf/empty.proto";
+import "account.proto";
+
+option csharp_namespace = "Mastodon.Grpc";
+
+service Directory {
+  rpc GetAccounts (google.protobuf.Empty) returns (Accounts)
+  {
+	option (google.api.http) = {
+      get: "/api/v1/directory"
+      response_body: "data"
+    };
+  }
+}
