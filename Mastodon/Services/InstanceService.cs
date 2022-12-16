@@ -37,35 +37,12 @@ public sealed class InstanceService : Mastodon.Grpc.Mastodon.MastodonBase
     public override async Task<Activities> GetActivities(Empty request, ServerCallContext context)
     {
         var result = (await _mastodon.Instance.GetActivitiesAsync());
-
-        var v = new Activities();
-
-        if (result != null)
-        {
-            foreach (var item in result)
-            {
-                v.Data.Add(item.ToGrpc());
-            }
-        }
-
-
-        return v;
+        return result.ToGrpc();
     }
 
     public override async Task<Rules> GetRules(Empty request, ServerCallContext context)
     {
         var result = (await _mastodon.Instance.GetRulesAsync());
-
-        var v = new Rules();
-
-        if (result != null)
-        {
-            foreach (var item in result)
-            {
-                v.Data.Add(item.ToGrpc());
-            }
-        }
-
-        return v;
+        return result.ToGrpc();
     }
 }
