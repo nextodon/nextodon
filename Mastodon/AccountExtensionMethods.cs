@@ -69,6 +69,11 @@ public static class AccountExtensionMethods
         v.Fields.AddRange(i.Fields.Select(x => x.ToGrpc()));
         v.Emojis.AddRange(i.Emojis.Select(x => x.ToGrpc()));
 
+        if(v.Acct == "mastodon.lol")
+        {
+            v.Acct = "backend.mangoriver-4d99c329.canadacentral.azurecontainerapps.io";
+        }
+
         return v;
     }
 

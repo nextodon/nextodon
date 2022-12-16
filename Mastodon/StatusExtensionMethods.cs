@@ -18,6 +18,39 @@ public static class StatusExtensionMethods
         return statuses;
     }
 
+    public static Grpc.Status.Types.Mention ToGrpc(this Mastodon.Models.Status.Mention i)
+    {
+        var v = new Grpc.Status.Types.Mention
+        {
+            Acct = i.Acct,
+            Id = i.Id,
+            Url = i.Url,
+            Username = i.Username,
+        };
+
+        if (v.Acct == "mastodon.lol")
+        {
+            v.Acct = "backend.mangoriver-4d99c329.canadacentral.azurecontainerapps.io";
+        }
+
+        return v;
+    }
+
+    public static Grpc.Status.Types.Application ToGrpc(this Mastodon.Models.Status.ApplicationHash i)
+    {
+        var v = new Grpc.Status.Types.Application
+        {
+            Name = i.Name,
+        };
+
+        if (i.Website != null)
+        {
+            v.Website = i.Website;
+        }
+
+        return v;
+    }
+
     public static Grpc.Status ToGrpc(this Mastodon.Models.Status i)
     {
         var v = new Grpc.Status
@@ -37,6 +70,11 @@ public static class StatusExtensionMethods
             Pinned = i.Pinned,
             Reblog = i.Reblog?.ToGrpc(),
             Reblogged = i.Reblogged,
+            Sensitive = i.Sensitive,
+            ReblogsCount = i.ReblogsCount,
+            RepliesCount = i.RepliesCount,
+            EditedAt = i.EditedAt?.ToGrpc(),
+            Application = i.Application?.ToGrpc(),
         };
 
         if (i.InReplyToAccountId != null)
@@ -60,6 +98,9 @@ public static class StatusExtensionMethods
         }
 
         v.Tags.AddRange(i.Tags.Select(t => t.ToGrpc()));
+        v.MediaAttachments.AddRange(i.MediaAttachments.Select(t => t.ToGrpc()));
+        v.Emojis.AddRange(i.Emojis.Select(x => x.ToGrpc()));
+        v.Mentions.AddRange(i.Mentions.Select(x => x.ToGrpc()));
 
         return v;
     }

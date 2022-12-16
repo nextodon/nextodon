@@ -21,6 +21,16 @@ public sealed class AccountClient
     }
 
     /// <summary>
+    /// Statuses posted to the given account.
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
+    public Task<List<Status>?> GetStatusesByIdAsync(string id)
+    {
+        return _client.http.GetFromJsonAsync<List<Status>>($"api/v1/accounts/{id}/statuses", MastodonClient._options);
+    }
+
+    /// <summary>
     /// Obtain a list of all accounts that follow a given account, filtered for accounts you follow.
     /// </summary>
     public Task<List<FamiliarFollowers>?> GetFamiliarFollowersAsync()
