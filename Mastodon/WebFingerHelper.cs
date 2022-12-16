@@ -18,7 +18,12 @@ public static class WebFingerHelper
 
         if (u.Host == "mastodon.lol")
         {
-            url = url.Replace("mastodon.lol", "backend.mangoriver-4d99c329.canadacentral.azurecontainerapps.io");
+            var builder = new UriBuilder(url)
+            {
+                Host = "backend.mangoriver-4d99c329.canadacentral.azurecontainerapps.io"
+            };
+
+            url = builder.Uri.ToString();
         }
 
         return url;
