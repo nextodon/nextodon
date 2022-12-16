@@ -6,7 +6,7 @@ public static class WebFingerHelper
     {
         if (acct.EndsWith("@mastodon.lol"))
         {
-            acct = acct.Replace("@mastodon.lol", "backend.mangoriver-4d99c329.canadacentral.azurecontainerapps.io";
+            acct = acct.Replace("@mastodon.lol", "backend.mangoriver-4d99c329.canadacentral.azurecontainerapps.io");
         }
 
         return acct;
