@@ -14,11 +14,16 @@ public static class WebFingerHelper
 
     public static string FixUrl(string url)
     {
-        var u = new Uri(url);
+        if (string.IsNullOrEmpty(url))
+        {
+            return url;
+        }
+
+        var u = new Uri(url, UriKind.RelativeOrAbsolute);
 
         if (u.Host == "mastodon.lol")
         {
-            var builder = new UriBuilder(url)
+            var builder = new UriBuilder(u)
             {
                 Host = "backend.mangoriver-4d99c329.canadacentral.azurecontainerapps.io"
             };
