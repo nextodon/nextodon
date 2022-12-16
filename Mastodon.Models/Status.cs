@@ -50,7 +50,7 @@ public sealed partial class Status
     /// <summary>
     /// The application used to post this status.
     /// </summary>
-    public StatusApplication? Application { get; set; }
+    public ApplicationHash? Application { get; set; }
 
     /// <summary>
     /// Mentions of users within the status content.
@@ -162,7 +162,7 @@ public sealed partial class Status
     /// </summary>
     public List<FilterResult>? Filtered { get; set; }
 
-    public sealed partial class StatusApplication
+    public sealed partial class ApplicationHash
     {
         /// <summary>
         /// The name of the application that posted this status.

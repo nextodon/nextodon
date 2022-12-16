@@ -49,6 +49,13 @@ service Mastodon {
     };
   }
 
+  rpc GetAccountStatusesById (google.protobuf.StringValue) returns (Statuses)
+  {
+	option (google.api.http) = {
+      get: "/api/v1/accounts/{value}/statuses"
+    };
+  }
+
   rpc GetStatusById (google.protobuf.StringValue) returns (Status)
   {
 	option (google.api.http) = {
