@@ -24,7 +24,7 @@ public static class AccountExtensionMethods
         var v = new Account
         {
             Id = i.Id,
-            Acct = i.Acct,
+            Acct = WebFingerHelper.FixAcct(i.Acct),
             Avatar = i.Avatar,
             AvatarStatic = i.AvatarStatic,
             DisplayName = i.DisplayName,
@@ -32,7 +32,7 @@ public static class AccountExtensionMethods
             HeaderStatic = i.HeaderStatic,
             Locked = i.Locked,
             Note = i.Note,
-            Url = i.Url,
+            Url = WebFingerHelper.FixUrl(i.Url),
             Username = i.Username,
             Bot = i.Bot,
             Group = i.Group,
@@ -68,11 +68,6 @@ public static class AccountExtensionMethods
 
         v.Fields.AddRange(i.Fields.Select(x => x.ToGrpc()));
         v.Emojis.AddRange(i.Emojis.Select(x => x.ToGrpc()));
-
-        if(v.Acct == "mastodon.lol")
-        {
-            v.Acct = "backend.mangoriver-4d99c329.canadacentral.azurecontainerapps.io";
-        }
 
         return v;
     }
