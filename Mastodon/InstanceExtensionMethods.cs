@@ -4,6 +4,36 @@ namespace Mastodon;
 
 public static class InstanceExtensionMethods
 {
+    public static Grpc.Rules ToGrpc(this IEnumerable<Mastodon.Models.Rule>? i)
+    {
+        var rules = new Grpc.Rules();
+
+        if (i != null)
+        {
+            foreach (var r in i)
+            {
+                rules.Data.Add(r.ToGrpc());
+            }
+        }
+
+        return rules;
+    }
+
+    public static Grpc.Activities ToGrpc(this IEnumerable<Mastodon.Models.Activity>? i)
+    {
+        var rules = new Grpc.Activities();
+
+        if (i != null)
+        {
+            foreach (var r in i)
+            {
+                rules.Data.Add(r.ToGrpc());
+            }
+        }
+
+        return rules;
+    }
+
     public static Grpc.Instance ToGrpc(this Mastodon.Models.Instance i)
     {
         var v = new Grpc.Instance
