@@ -60,7 +60,6 @@ public static class StatusExtensionMethods
             Bookmarked = i.Bookmarked,
             CreatedAt = Timestamp.FromDateTime(i.CreatedAt),
             Uri = i.Uri,
-            Url = i.Url,
             Content = i.Content,
             Visibility = i.Visibility,
             SpoilerText = i.SpoilerText,
@@ -76,6 +75,11 @@ public static class StatusExtensionMethods
             EditedAt = i.EditedAt?.ToGrpc(),
             Application = i.Application?.ToGrpc(),
         };
+
+        if (i.Url != null)
+        {
+            v.Url = i.Url;
+        }
 
         if (i.InReplyToAccountId != null)
         {
