@@ -3,6 +3,7 @@ syntax = "proto3";
 import "google/api/annotations.proto";
 import "google/protobuf/empty.proto";
 import "google/protobuf/wrappers.proto";
+import "account.proto";
 import "activity.proto";
 import "instance.proto";
 import "instancev1.proto";
@@ -37,6 +38,14 @@ service Mastodon {
   {
 	option (google.api.http) = {
       get: "/api/v1/instance/rules"
+      response_body: "data"
+    };
+  }
+
+  rpc GetAccountById (google.protobuf.StringValue) returns (Account)
+  {
+	option (google.api.http) = {
+      get: "/api/v1/accounts/{value}"
       response_body: "data"
     };
   }
