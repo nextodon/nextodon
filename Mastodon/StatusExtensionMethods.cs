@@ -4,6 +4,20 @@ namespace Mastodon;
 
 public static class StatusExtensionMethods
 {
+    public static Grpc.Statuses ToGrpc(this IEnumerable<Mastodon.Models.Status>? i)
+    {
+        var statuses = new Grpc.Statuses();
+        if (i != null)
+        {
+            foreach (var r in i)
+            {
+                statuses.Data.Add(r.ToGrpc());
+            }
+        }
+
+        return statuses;
+    }
+
     public static Grpc.Status ToGrpc(this Mastodon.Models.Status i)
     {
         var v = new Grpc.Status

@@ -1,0 +1,55 @@
+syntax = "proto3";
+
+import "google/api/annotations.proto";
+import "google/protobuf/empty.proto";
+import "google/protobuf/wrappers.proto";
+import "activity.proto";
+import "instance.proto";
+import "instancev1.proto";
+import "rule.proto";
+import "status.proto";
+
+option csharp_namespace = "Mastodon.Grpc";
+
+service Timeline {
+  rpc GetPublic (google.protobuf.Empty) returns (Statuses)
+  {
+	option (google.api.http) = {
+      get: "/api/v1/timelines/public"
+      response_body: "data"
+    };
+  }
+    
+  rpc GetByTag (google.protobuf.StringValue) returns (Statuses)
+  {
+	option (google.api.http) = {
+      get: "/api/v1/timelines/tag/{value}"
+      response_body: "data"
+    };
+  }
+
+  rpc GetHome (google.protobuf.Empty) returns (Statuses)
+  {
+	option (google.api.http) = {
+      get: "/api/v1/timelines/home"
+      response_body: "data"
+    };
+  }
+    
+  rpc GetList (google.protobuf.StringValue) returns (Statuses)
+  {
+	option (google.api.http) = {
+      get: "/api/v1/timelines/list/{value}"
+      response_body: "data"
+    };
+  }
+
+  rpc GetDirect (google.protobuf.Empty) returns (Statuses)
+  {
+    option deprecated = true;
+	option (google.api.http) = {
+      get: "/api/v1/timelines/direct"
+      response_body: "data"
+    };
+  }
+}

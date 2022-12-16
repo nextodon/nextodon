@@ -14,6 +14,7 @@
 		<Protobuf Include="account.proto" />
 		<Protobuf Include="activity.proto" />
 		<Protobuf Include="card.proto" />
+		<Protobuf Include="directory.proto" />
 		<Protobuf Include="emoji.proto" />
 		<Protobuf Include="filter.proto" />
 		<Protobuf Include="instance.proto" />
@@ -25,6 +26,7 @@
 		<Protobuf Include="rule.proto" />
 		<Protobuf Include="status.proto" />
 		<Protobuf Include="tag.proto" />
+		<Protobuf Include="timeline.proto" />
 		<Protobuf Include="trends.proto" />
 	</ItemGroup>
 </Project>

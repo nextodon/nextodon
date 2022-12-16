@@ -40,20 +40,4 @@ service Mastodon {
       response_body: "data"
     };
   }
-
-  rpc GetPublicTimeline (google.protobuf.Empty) returns (Statuses)
-  {
-	option (google.api.http) = {
-      get: "/api/v1/timelines/public"
-      response_body: "data"
-    };
-  }
-    
-  rpc GetPublicTimelineByTag (google.protobuf.StringValue) returns (Statuses)
-  {
-	option (google.api.http) = {
-      get: "/api/v1/timelines/tag/{value}"
-      response_body: "data"
-    };
-  }
 }

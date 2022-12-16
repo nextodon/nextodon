@@ -6,11 +6,11 @@ using Mastodon.Models;
 
 namespace Mastodon.Services;
 
-public sealed class MastodonService : Mastodon.Grpc.Mastodon.MastodonBase
+public sealed class InstanceService : Mastodon.Grpc.Mastodon.MastodonBase
 {
     private readonly MastodonClient _mastodon;
-    private readonly ILogger<MastodonService> _logger;
-    public MastodonService(ILogger<MastodonService> logger, MastodonClient mastodon)
+    private readonly ILogger<InstanceService> _logger;
+    public InstanceService(ILogger<InstanceService> logger, MastodonClient mastodon)
     {
         _logger = logger;
         _mastodon = mastodon;
@@ -66,44 +66,6 @@ public sealed class MastodonService : Mastodon.Grpc.Mastodon.MastodonBase
             }
         }
 
-
         return v;
     }
-
-    public override async Task<Grpc.Statuses> GetPublicTimeline(Empty request, ServerCallContext context)
-    {
-        var result = (await _mastodon.Timeline.GetPublicAsync());
-
-        var statuses = new Grpc.Statuses();
-
-        if (result != null)
-        {
-            foreach (var r in result)
-            {
-                statuses.Data.Add(r.ToGrpc());
-            }
-        }
-
-
-        return statuses;
-    }
-
-    public override async Task<Statuses> GetPublicTimelineByTag(StringValue request, ServerCallContext context)
-    {
-        var result = (await _mastodon.Timeline.GetTagAsync(request.Value));
-
-        var statuses = new Grpc.Statuses();
-
-        if (result != null)
-        {
-            foreach (var r in result)
-            {
-                statuses.Data.Add(r.ToGrpc());
-            }
-        }
-
-
-        return statuses;
-    }
-
 }

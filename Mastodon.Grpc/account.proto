@@ -126,3 +126,9 @@ message Account
         uint32 followRequestsCount = 6 [json_name="follow_requests_count"];
     }
 }
+
+
+message Accounts
+{
+    repeated Account data = 1;
+}
