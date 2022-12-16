@@ -22,16 +22,11 @@ public static class StatusExtensionMethods
     {
         var v = new Grpc.Status.Types.Mention
         {
-            Acct = i.Acct,
+            Acct = WebFingerHelper.FixAcct(i.Acct),
             Id = i.Id,
-            Url = i.Url,
+            Url = WebFingerHelper.FixUrl(i.Url),
             Username = i.Username,
         };
-
-        if (v.Acct == "mastodon.lol")
-        {
-            v.Acct = "backend.mangoriver-4d99c329.canadacentral.azurecontainerapps.io";
-        }
 
         return v;
     }
