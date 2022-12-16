@@ -15,9 +15,9 @@ public sealed class DirectoryService : Mastodon.Grpc.Directory.DirectoryBase
         _mastodon = mastodon;
     }
 
-    public override async Task<Accounts> GetAccounts(Empty request, ServerCallContext context)
+    public override async Task<Accounts> GetAccounts(GetDirectoryRequest request, ServerCallContext context)
     {
-        var result = (await _mastodon.Directory.GetDirectoryAsync());
+        var result = (await _mastodon.Directory.GetDirectoryAsync(request.Offset, request.Limit, request.Order, request.Local));
         return result.ToGrpc();
     }
 }
