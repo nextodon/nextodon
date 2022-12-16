@@ -53,6 +53,7 @@ service Mastodon {
   {
 	option (google.api.http) = {
       get: "/api/v1/accounts/{value}/statuses"
+      response_body: "data"
     };
   }
 
