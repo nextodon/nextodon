@@ -1,17 +1,24 @@
 syntax = "proto3";
 
 import "google/api/annotations.proto";
-import "google/protobuf/empty.proto";
 import "account.proto";
 
 option csharp_namespace = "Mastodon.Grpc";
 
 service Directory {
-  rpc GetAccounts (google.protobuf.Empty) returns (Accounts)
+  rpc GetAccounts (GetDirectoryRequest) returns (Accounts)
   {
 	option (google.api.http) = {
       get: "/api/v1/directory"
       response_body: "data"
     };
   }
+}
+
+message GetDirectoryRequest
+{
+    optional uint32 offset = 1;
+    optional uint32 limit = 2;
+    optional string order = 3;
+    optional bool local = 4;
 }
