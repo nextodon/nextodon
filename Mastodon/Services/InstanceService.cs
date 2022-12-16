@@ -51,4 +51,10 @@ public sealed class InstanceService : Mastodon.Grpc.Mastodon.MastodonBase
         var result = (await _mastodon.Accounts.GetByIdAsync(request.Value))!;
         return result.ToGrpc();
     }
+
+    public override async Task<Grpc.Status> GetStatusById(StringValue request, ServerCallContext context)
+    {
+        var result = (await _mastodon.Statuses.GetByIdAsync(request.Value))!;
+        return result.ToGrpc();
+    }
 }
