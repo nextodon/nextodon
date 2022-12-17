@@ -1,4 +1,6 @@
 ﻿using Mastodon.Models;
+using System;
+using System.Collections.Generic;
 using System.Net.Http.Json;
 
 namespace Mastodon.Client;
@@ -20,14 +22,41 @@ public sealed class AccountClient
         return _client.http.GetFromJsonAsync<Account>($"api/v1/accounts/{id}", MastodonClient._options);
     }
 
+
     /// <summary>
     /// Statuses posted to the given account.
     /// </summary>
-    /// <param name="id"></param>
+    /// <param name="id">Account ID.</param>
+    /// <param name="maxId">Return results older than this ID.</param>
+    /// <param name="sinceId">Return results newer than this ID.</param>
+    /// <param name="minId">Return results immediately newer than this ID.</param>
+    /// <param name="limit">Maximum number of results to return. Defaults to 20 statuses. Max 40 statuses.</param>
+    /// <param name="onlyMedia">Filter out statuses without attachments.</param>
+    /// <param name="excludeReplies">Filter out statuses in reply to a different account.</param>
+    /// <param name="excludeReblogs">Filter out boosts from the response.</param>
+    /// <param name="pinned">Filter for pinned statuses only.</param>
+    /// <param name="tagged">Filter for statuses using a specific hashtag.</param>
     /// <returns></returns>
-    public Task<List<Status>?> GetStatusesByIdAsync(string id)
+    public Task<List<Status>?> GetStatusesByIdAsync(string id,
+        string? maxId = null, string? sinceId = null, string? minId = null,
+        uint? limit = null, bool? onlyMedia = null, bool? excludeReplies = null,
+        bool? excludeReblogs = null, bool? pinned = null, string? tagged = null)
     {
-        return _client.http.GetFromJsonAsync<List<Status>>($"api/v1/accounts/{id}/statuses", MastodonClient._options);
+        var q = new QueryBuilder();
+
+        q.Add("max_id", maxId);
+        q.Add("since_id", sinceId);
+        q.Add("min_id", minId);
+        q.Add("limit", limit);
+        q.Add("only_media", onlyMedia);
+        q.Add("exclude_replies", excludeReplies);
+        q.Add("exclude_reblogs", excludeReblogs);
+        q.Add("pinned", pinned);
+        q.Add("tagged", tagged);
+
+        var url = q.GetUrl($"api/v1/accounts/{id}/statuses");
+
+        return _client.http.GetFromJsonAsync<List<Status>>(url, MastodonClient._options);
     }
 
     /// <summary>
