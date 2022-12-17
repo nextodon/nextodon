@@ -55,11 +55,15 @@ public sealed class InstanceService : Mastodon.Grpc.Mastodon.MastodonBase
     public override async Task<Statuses> GetAccountStatusesById(GetAccountStatusesByIdRequest request, ServerCallContext context)
     {
         var result = await _mastodon.Accounts.GetStatusesByIdAsync(request.AccountId,
-          maxId: request.MaxId, sinceId: request.SinceId, minId: request.MinId,
-          limit: request.Limit, onlyMedia: request.OnlyMedia,
-           excludeReplies: request.ExcludeReplies,
-           excludeReblogs: request.ExcludeReblogs,
-           pinned: request.Pinned, tagged: request.Tagged);
+            sinceId: request.HasSinceId ? request.SinceId : null,
+            maxId: request.HasMaxId ? request.MaxId : null,
+            minId: request.HasMinId ? request.MinId : null,
+            limit: request.HasLimit ? request.Limit : null,
+            onlyMedia: request.HasOnlyMedia ? request.OnlyMedia : null,
+           excludeReplies: request.HasExcludeReplies ? request.ExcludeReplies : null,
+           excludeReblogs: request.HasExcludeReblogs ? request.ExcludeReblogs : null,
+           pinned: request.HasPinned ? request.Pinned : null,
+           tagged: request.HasTagged ? request.Tagged : null);
 
         return result.ToGrpc();
     }
