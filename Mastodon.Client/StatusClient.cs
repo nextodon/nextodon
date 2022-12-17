@@ -17,6 +17,11 @@ public sealed class StatusClient
         return _client.http.GetFromJsonAsync<Status>($"api/v1/statuses/{id}", MastodonClient._options);
     }
 
+    public Task<Context?> GetContextAsync(string id)
+    {
+        return _client.http.GetFromJsonAsync<Context>($"api/v1/statuses/{id}/context", MastodonClient._options);
+    }
+
     /// <summary>
     /// Obtain the source properties for a status so that it can be edited.
     /// </summary>
