@@ -7,6 +7,9 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
+
+builder.Services.Configure<Mastodon.Data.MongoDbSettings>(builder.Configuration.GetSection("MongoDb"));
+
 builder.Services.AddGrpc().AddJsonTranscoding(options =>
 {
     options.JsonSettings.WriteIndented = true;
@@ -14,6 +17,7 @@ builder.Services.AddGrpc().AddJsonTranscoding(options =>
 });
 
 builder.Services.AddGrpcReflection();
+builder.Services.AddSingleton<DataContext>();
 
 builder.Services.Configure<ForwardedHeadersOptions>(options => { options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto; });
 
