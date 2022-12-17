@@ -44,6 +44,29 @@ app.UseForwardedHeaders();
 app.UseRouting();
 app.UseGrpcWeb();
 
+app.Use(async (context, next) =>
+{
+    context.Request.EnableBuffering();
+
+    var logger = ((IApplicationBuilder)app).ApplicationServices.GetService<ILogger<Program>>();
+    var content = $"{context.Request.Method}: {context.Request.GetDisplayUrl()}";
+
+    using var stream = context.Request.BodyReader.AsStream(true);
+    using var reader = new StreamReader(stream, Encoding.UTF8, leaveOpen: true);
+
+    var body = await reader.ReadToEndAsync();
+
+    if (body != null && body.Length > 0)
+    {
+        content += "\r\n" + body;
+    }
+
+    logger?.LogInformation(content);
+
+    context.Request.Body.Position = 0;
+    await next();
+});
+
 app.MapGrpcService<DirectoryService>().EnableGrpcWeb();
 app.MapGrpcService<InstanceService>().EnableGrpcWeb();
 app.MapGrpcService<TimelineService>().EnableGrpcWeb();
