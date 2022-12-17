@@ -21,35 +21,16 @@ public sealed class DirectoryClient
     /// <param name="local">If true, returns only local accounts.</param>
     public Task<List<Account>?> GetDirectoryAsync(uint? offset = null, uint? limit = null, string? order = null, bool? local = null)
     {
-        var q = new List<string>();
-        if (offset != null && offset != 0)
-        {
-            q.Add($"offset={offset}");
-        }
+        var q = new QueryBuilder();
 
-        if (limit != null && limit != 0)
-        {
-            q.Add($"limit={limit}");
-        }
+        q.Add("offset", offset);
+        q.Add("limit", limit);
+        q.Add("order", order);
+        q.Add("local", local);
 
-        if (!string.IsNullOrWhiteSpace(order))
-        {
-            q.Add($"order={order}");
-        }
+        var url = q.GetUrl("api/v1/directory");
 
-        if (local != null)
-        {
-            q.Add($"local={local}");
-        }
-
-        var all = string.Join("&", q);
-
-        if (all.Length > 0)
-        {
-            all = $"?{all}";
-        }
-
-        return _client.http.GetFromJsonAsync<List<Account>>($"api/v1/directory{all}", MastodonClient._options);
+        return _client.http.GetFromJsonAsync<List<Account>>(url, MastodonClient._options);
     }
 }
 

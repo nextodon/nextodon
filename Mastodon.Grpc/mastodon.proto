@@ -49,10 +49,10 @@ service Mastodon {
     };
   }
 
-  rpc GetAccountStatusesById (google.protobuf.StringValue) returns (Statuses)
+  rpc GetAccountStatusesById (GetAccountStatusesByIdRequest) returns (Statuses)
   {
 	option (google.api.http) = {
-      get: "/api/v1/accounts/{value}/statuses"
+      get: "/api/v1/accounts/{accountId}/statuses"
       response_body: "data"
     };
   }
@@ -63,4 +63,37 @@ service Mastodon {
       get: "/api/v1/statuses/{value}"
     };
   }
+}
+
+message GetAccountStatusesByIdRequest
+{
+    // Account ID.
+    string accountId = 1;
+
+    // Return results older than this ID.
+    optional string max_id = 2;
+    
+    // Return results newer than this ID.
+    optional string since_id = 3;
+
+    // Return results immediately newer than this ID.
+    optional string min_id = 4;
+
+    // Maximum number of results to return. Defaults to 20 statuses. Max 40 statuses.
+    optional uint32 limit = 5;
+
+    // Filter out statuses without attachments.
+    optional bool only_media = 6;
+
+    // Filter out statuses in reply to a different account.
+    optional bool exclude_replies = 7;
+
+    // Filter out boosts from the response.
+    optional bool exclude_reblogs = 8;
+
+    // Filter for pinned statuses only.
+    optional bool pinned = 9;
+
+    // Filter for statuses using a specific hashtag.
+    optional string tagged = 10;
 }
