@@ -130,7 +130,7 @@ public static class StatusExtensionMethods
         }
 
         v.Tags.AddRange(i.Tags.Select(t => t.ToGrpc()));
-        //v.MediaAttachments.AddRange(i.MediaAttachments.Select(t => t.ToGrpc()));
+        v.MediaAttachments.AddRange(i.MediaAttachments.Select(t => t.ToGrpc()));
         v.Emojis.AddRange(i.Emojis.Select(x => x.ToGrpc()));
         v.Mentions.AddRange(i.Mentions.Select(x => x.ToGrpc()));
 
