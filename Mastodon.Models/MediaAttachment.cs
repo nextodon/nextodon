@@ -43,7 +43,7 @@ public sealed partial class MediaAttachment
     /// <summary>
     /// Alternate text that describes what is in the media attachment, to be used for the visually impaired or when media attachments do not load.
     /// </summary>
-    public required string Description { get; set; }
+    public string? Description { get; set; }
 
     /// <summary>
     /// A hash computed by the BlurHash algorithm, for generating colorful preview thumbnails when media has not been downloaded yet.
