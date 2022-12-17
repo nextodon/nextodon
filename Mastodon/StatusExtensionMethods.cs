@@ -46,7 +46,7 @@ public static class StatusExtensionMethods
 
         return v;
     }
-  
+
     public static Grpc.PreviewCard ToGrpc(this Mastodon.Models.PreviewCard i)
     {
         var v = new Grpc.PreviewCard
@@ -133,6 +133,16 @@ public static class StatusExtensionMethods
         v.MediaAttachments.AddRange(i.MediaAttachments.Select(t => t.ToGrpc()));
         v.Emojis.AddRange(i.Emojis.Select(x => x.ToGrpc()));
         v.Mentions.AddRange(i.Mentions.Select(x => x.ToGrpc()));
+
+        return v;
+    }
+
+    public static Grpc.Context ToGrpc(this Mastodon.Models.Context i)
+    {
+        var v = new Grpc.Context();
+
+        v.Ancestors.AddRange(i.Ancestors.Select(x => x.ToGrpc()));
+        v.Descendants.AddRange(i.Descendants.Select(x => x.ToGrpc()));
 
         return v;
     }

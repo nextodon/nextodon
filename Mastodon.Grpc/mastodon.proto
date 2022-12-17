@@ -9,6 +9,7 @@ import "instance.proto";
 import "instancev1.proto";
 import "rule.proto";
 import "status.proto";
+import "context.proto";
 
 option csharp_namespace = "Mastodon.Grpc";
 
@@ -61,6 +62,13 @@ service Mastodon {
   {
 	option (google.api.http) = {
       get: "/api/v1/statuses/{value}"
+    };
+  }
+
+  rpc GetStatusContextById (google.protobuf.StringValue) returns (Context)
+  {
+	option (google.api.http) = {
+      get: "/api/v1/statuses/{value}/context"
     };
   }
 }
