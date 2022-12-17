@@ -1,0 +1,8 @@
+syntax = "proto3";
+
+import "google/api/annotations.proto";
+import "google/protobuf/empty.proto";
+import "google/protobuf/wrappers.proto";
+import "status.proto";
+
+option csharp_namespace = "Mastodon.Grpc";

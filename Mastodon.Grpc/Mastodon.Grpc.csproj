@@ -11,9 +11,12 @@
 		<PackageReference Include="Google.Api.CommonProtos" Version="2.7.0" />
 	</ItemGroup>
 	<ItemGroup>
+		<Protobuf Include="application.proto" />
+		<Protobuf Include="apps.proto" />
 		<Protobuf Include="account.proto" />
 		<Protobuf Include="activity.proto" />
 		<Protobuf Include="card.proto" />
+		<Protobuf Include="context.proto" />
 		<Protobuf Include="directory.proto" />
 		<Protobuf Include="emoji.proto" />
 		<Protobuf Include="filter.proto" />

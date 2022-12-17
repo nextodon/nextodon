@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+import "google/api/annotations.proto";
+import "google/protobuf/empty.proto";
+import "google/protobuf/wrappers.proto";
+import "status.proto";
+
+option csharp_namespace = "Mastodon.Grpc";
+
+// Represents the tree around a given status. Used for reconstructing threads of statuses.
+message Context
+{
+    // Parents in the thread.
+    repeated Status ancestors = 1;
+
+    // Children in the thread.
+    repeated Status descendants = 2;
+}
