@@ -15,6 +15,7 @@
 
 	<ItemGroup>
 	  <ProjectReference Include="..\Mastodon.Client\Mastodon.Client.csproj" />
+	  <ProjectReference Include="..\Mastodon.Data\Mastodon.Data.csproj" />
 	  <ProjectReference Include="..\Mastodon.Grpc\Mastodon.Grpc.csproj" />
 	</ItemGroup>
 

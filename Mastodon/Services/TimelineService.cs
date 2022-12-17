@@ -8,11 +8,13 @@ namespace Mastodon.Services;
 public sealed class TimelineService : Mastodon.Grpc.Timeline.TimelineBase
 {
     private readonly MastodonClient _mastodon;
+    private readonly DataContext _db;
     private readonly ILogger<TimelineService> _logger;
-    public TimelineService(ILogger<TimelineService> logger, MastodonClient mastodon)
+    public TimelineService(ILogger<TimelineService> logger, MastodonClient mastodon, DataContext db)
     {
         _logger = logger;
         _mastodon = mastodon;
+        _db = db;
     }
 
     public override async Task<Grpc.Statuses> GetPublic(Empty request, ServerCallContext context)
