@@ -7,12 +7,16 @@ public static class MediaExtensionMethods
         var v = new Grpc.MediaAttachment
         {
             Id = i.Id,
-            Description = i.Description,
             PreviewUrl = i.PreviewUrl,
             Url = WebFingerHelper.FixUrl(i.Url),
             Type = i.Type,
             Meta = i.Meta.ToGrpc(),
         };
+
+        if (i.Description != null)
+        {
+            v.Description = i.Description;
+        }
 
         if (i.Blurhash != null)
         {
