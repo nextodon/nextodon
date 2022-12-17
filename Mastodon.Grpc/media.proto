@@ -2,8 +2,73 @@ syntax = "proto3";
 
 option csharp_namespace = "Mastodon.Grpc";
 
-
+// Represents a file or media attachment that can be added to a status.
 message MediaAttachment
 {
+    // The ID of the attachment in the database.
     string id = 1;
+
+    // The type of the attachment.
+    // <para>unknown = unsupported or unrecognized file type.</para>
+    // <para>image = Static image.</para>
+    // <para>gifv = Looping, soundless animation.</para>
+    // <para>video = Video clip.</para>
+    // <para>audio = Audio track.</para>
+    string type = 2;
+
+    // The location of the original full-size attachment.
+    string url = 3;
+
+    // The location of a scaled-down preview of the attachment.
+    string previewUrl = 4 [json_name="preview_url"];
+
+    // The location of the full-size original attachment on the remote website.
+    optional string remoteUrl = 5 [json_name="remote_url"];
+
+    // Metadata returned by Paperclip.
+    Meta meta = 6;
+
+    // Alternate text that describes what is in the media attachment, to be used for the visually impaired or when media attachments do not load.
+    string description = 7;
+
+    // A hash computed by the BlurHash algorithm, for generating colorful preview thumbnails when media has not been downloaded yet.
+    optional string blurhash = 8;
+
+    // A shorter URL for the attachment.
+    optional string textUrl = 9 [json_name="text_url"];// Deprecated.
+
+    // May contain subtrees small and original, as well as various other top-level properties.
+    // More importantly, there may be another topl-level focus Hash object on images as of 2.3.0, with coordinates can be used for smart thumbnail cropping – see Focal points for cropped media thumbnails for more.
+    message Meta
+    {
+        optional string length = 1;
+        optional float duration = 2;
+        optional uint32 fps = 3;
+        optional string size = 4;
+        optional uint32 width = 5;
+        optional uint32 height = 6;
+        optional float aspect = 7;
+        optional string audioEncode = 8 [json_name="audio_encode"];
+        optional string audioBitrate = 9 [json_name="audio_bitrate"];
+        optional string audioChannels = 10 [json_name="audio_channels"];
+        optional Original original = 11;
+        optional Small small = 12;
+
+        message Original
+        {
+            uint32 width = 1;
+            uint32 height = 2;
+            optional string frameRate = 3 [json_name="frame_rate"];
+            optional float duration = 4;
+            optional uint32 bitrate = 5;
+        }
+
+        message Small
+        {
+            uint32 width = 1;
+            uint32 height = 2;
+            optional string size = 3;
+            float aspect = 4;
+        }
+    }
 }
