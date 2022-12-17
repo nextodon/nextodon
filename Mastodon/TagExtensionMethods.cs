@@ -24,7 +24,7 @@ public static class TagExtensionMethods
         var v = new Tag
         {
             Name = i.Name,
-            Url = i.Url,
+            Url = WebFingerHelper.FixUrl(i.Url),
             Following = i.Following ?? false,
         };
 

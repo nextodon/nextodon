@@ -8,7 +8,7 @@ public static class MediaExtensionMethods
         {
             Id = i.Id,
             PreviewUrl = i.PreviewUrl,
-            Url = WebFingerHelper.FixUrl(i.Url),
+            Url = i.Url,
             Type = i.Type,
             Meta = i.Meta.ToGrpc(),
         };
