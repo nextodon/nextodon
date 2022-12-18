@@ -4,12 +4,22 @@ public static class ApplicationExtensionMethods
 {
     public static Grpc.Application ToGrpc(this Mastodon.Models.Application i)
     {
-        var v = new Grpc.Application
+        var v = new Grpc.Application();
+
+        if (i.Id != null)
         {
-            Id = i.Id,
-            Name = i.Name,
-            VapidKey = i.VapidKey,
-        };
+            v.Id = i.Id;
+        }
+
+        if (i.Name != null)
+        {
+            v.Name = i.Name;
+        }
+
+        if (i.VapidKey != null)
+        {
+            v.VapidKey = i.VapidKey;
+        }
 
         if (i.ClientId != null)
         {

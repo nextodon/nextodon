@@ -6,10 +6,10 @@ option csharp_namespace = "Mastodon.Grpc";
 
 message Application
 {
-    string id = 1;
+    optional string id = 1;
 
     // The name of your application.
-    string name = 2;
+    optional string name = 2;
 
     // The website associated with your application.
     optional string website = 3;
@@ -23,5 +23,5 @@ message Application
     optional string clientSecret = 6 [json_name="client_secret"];
 
     // Used for Push Streaming API. Returned with POST /api/v1/apps. Equivalent to WebPushSubscription#server_key
-    string vapidKey = 7 [json_name="vapid_key"];
+    optional string vapidKey = 7 [json_name="vapid_key"];
 }

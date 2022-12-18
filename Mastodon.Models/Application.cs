@@ -2,12 +2,12 @@
 
 public sealed partial class Application
 {
-    public required string Id { get; set; }
+    public string? Id { get; set; }
 
     /// <summary>
     /// The name of your application.
     /// </summary>
-    public required string Name { get; set; }
+    public string? Name { get; set; }
 
     /// <summary>
     /// The website associated with your application.
@@ -29,5 +29,5 @@ public sealed partial class Application
     /// <summary>
     /// Used for Push Streaming API. Returned with POST /api/v1/apps. Equivalent to WebPushSubscription#server_key
     /// </summary>
-    public required string VapidKey { get; set; }
+    public string? VapidKey { get; set; }
 }
