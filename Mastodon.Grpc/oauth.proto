@@ -5,15 +5,7 @@ import "token.proto";
 
 option csharp_namespace = "Mastodon.Grpc";
 
-service OAuth {
-  rpc Authorize (AuthorizeRequest) returns (AuthorizeResponse)
-  {
-	option (google.api.http) = {
-      post: "/oauth/authorize"
-      body: "*"
-    };
-  } 
-  
+service OAuth {  
   // Obtain an access token, to be used during API calls that are not public.
   rpc ObtainToken (ObtainTokenRequest) returns (Token)
   {
