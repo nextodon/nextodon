@@ -93,11 +93,15 @@ public static class AccountExtensionMethods
         var v = new Account.Types.Source
         {
             FollowRequestsCount = i.FollowRequestsCount,
-            Language = i.Language,
             Note = i.Note,
             Privacy = i.Privacy,
             Sensitive = i.Sensitive,
         };
+
+        if(i.Language != null)
+        {
+            v.Language = i.Language;
+        }
 
         v.Fields.AddRange(i.Fields.Select(x => x.ToGrpc()));
 
