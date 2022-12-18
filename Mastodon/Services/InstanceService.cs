@@ -49,6 +49,7 @@ public sealed class InstanceService : Mastodon.Grpc.Mastodon.MastodonBase
     public override async Task<Grpc.Account> GetAccountById(StringValue request, ServerCallContext context)
     {
         var authorization = context.GetHttpContext().Request.Headers.Authorization.ToString();
+        _logger.LogError(authorization);
         _mastodon.SetAuthorizationToken(authorization);
 
         var result = (await _mastodon.Accounts.GetByIdAsync(request.Value))!;
