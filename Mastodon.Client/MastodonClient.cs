@@ -7,11 +7,12 @@ public sealed class MastodonClient
 {
     internal readonly HttpClient http;
 
+    public readonly AccountClient Accounts;
     public readonly TimelineClient Timeline;
     public readonly InstanceClient Instance;
+    public readonly ListClient Lists;
     public readonly MediaClient Media;
     public readonly StatusClient Statuses;
-    public readonly AccountClient Accounts;
     public readonly PollClient Polls;
     public readonly ConversationClient Conversations;
     public readonly TrendsClient Trends;
@@ -43,6 +44,7 @@ public sealed class MastodonClient
         Directory = new DirectoryClient(this);
         Apps = new AppsClient(this);
         OAuth = new OAuthClient(this);
+        Lists = new ListClient(this);
     }
 
     public void SetAuthorizationToken(string value)
