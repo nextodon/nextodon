@@ -1,5 +1,6 @@
 ﻿using Mastodon.Models;
 using System.Net.Http.Json;
+using System.Text.Json;
 
 namespace Mastodon.Client;
 
@@ -39,8 +40,9 @@ public sealed class AppsClient
 
         var form = new FormUrlEncodedContent(values);
         var response = await _client.http.PostAsync("api/v1/apps", form);
+        var content = await response.Content.ReadAsStringAsync();
 
-        var app = await response.Content.ReadFromJsonAsync<Application>();
+        var app = JsonSerializer.Deserialize<Application>(content, MastodonClient._options);
 
         return app;
     }
