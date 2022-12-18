@@ -46,6 +46,16 @@ public sealed class InstanceService : Mastodon.Grpc.Mastodon.MastodonBase
         return result.ToGrpc();
     }
 
+    public override async Task<Lists> GetLists(Empty request, ServerCallContext context)
+    {
+        var authorization = context.GetHttpContext().Request.Headers.Authorization.ToString();
+        _logger.LogError(authorization);
+        _mastodon.SetAuthorizationToken(authorization);
+
+        var result = (await _mastodon.Lists.GetListsAsync());
+        return result.ToGrpc();
+    }
+
     public override async Task<Grpc.Account> GetAccountById(StringValue request, ServerCallContext context)
     {
         var authorization = context.GetHttpContext().Request.Headers.Authorization.ToString();
