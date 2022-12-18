@@ -22,7 +22,7 @@ public static class RoleExtensionMethods
 
         if (i.Permissions != null)
         {
-            v.Permissions = i.Permissions.Value;
+            v.Permissions = i.Permissions;
         }
 
         if (i.Position != null)

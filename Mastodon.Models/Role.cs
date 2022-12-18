@@ -28,7 +28,7 @@ public sealed partial class Role
     /// <summary>
     /// A bitmask that represents the sum of all permissions granted to the role.
     /// </summary>
-    public int? Permissions { get; set; }
+    public string? Permissions { get; set; }
 
     /// <summary>
     /// Whether the role is publicly visible as a badge on user profiles.

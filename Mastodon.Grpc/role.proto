@@ -19,7 +19,7 @@ message Role {
     optional int32 position = 4;
 
      // A bitmask that represents the sum of all permissions granted to the role.
-    optional int32 permissions = 5;
+    optional string permissions = 5;
 
      // Whether the role is publicly visible as a badge on user profiles.
     optional bool highlighted = 6;
