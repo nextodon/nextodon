@@ -36,7 +36,7 @@ builder.Services.AddCors(o =>
 });
 
 
-builder.Services.AddSingleton(new Mastodon.Client.MastodonClient(new Uri("https://mastodon.lol")));
+builder.Services.AddScoped((s) => new Mastodon.Client.MastodonClient(new Uri("https://mastodon.lol")));
 
 var app = builder.Build();
 

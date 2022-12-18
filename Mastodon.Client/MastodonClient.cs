@@ -5,7 +5,8 @@ namespace Mastodon.Client;
 
 public sealed class MastodonClient
 {
-    internal readonly HttpClient http;
+    internal HttpClient http => new HttpClient { BaseAddress = baseAddress };
+
     public readonly TimelineClient Timeline;
     public readonly InstanceClient Instance;
     public readonly MediaClient Media;
@@ -18,6 +19,8 @@ public sealed class MastodonClient
     public readonly AppsClient Apps;
     public readonly OAuthClient OAuth;
 
+    private readonly Uri baseAddress;
+
     internal static JsonSerializerOptions _options = new()
     {
         PropertyNameCaseInsensitive = true,
@@ -26,7 +29,8 @@ public sealed class MastodonClient
 
     public MastodonClient(Uri baseAddress)
     {
-        http = new HttpClient { BaseAddress = baseAddress };
+        this.baseAddress = baseAddress;
+
         Timeline = new TimelineClient(this);
         Instance = new InstanceClient(this);
         Media = new MediaClient(this);
@@ -40,11 +44,10 @@ public sealed class MastodonClient
         OAuth = new OAuthClient(this);
     }
 
-    public void SetAuthorizationToken(string token)
+    public void SetAuthorizationToken(string value)
     {
-        http.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+        http.DefaultRequestHeaders.TryAddWithoutValidation("Authorization", value);
     }
-
 
     private sealed class SnakeCaseNamingPolicy : JsonNamingPolicy
     {
