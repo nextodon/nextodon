@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+option csharp_namespace = "Mastodon.Grpc";
+
+// Represents a rule that server users should follow.
+message Token {
+	string accessToken = 1 [json_name="access_token"];
+	string tokenType = 2 [json_name="token_type"];
+	string scope = 3;
+	uint32 createdAt = 4 [json_name="created_at"];
+}

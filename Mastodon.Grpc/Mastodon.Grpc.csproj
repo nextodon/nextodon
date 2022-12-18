@@ -31,6 +31,7 @@
 		<Protobuf Include="status.proto" />
 		<Protobuf Include="tag.proto" />
 		<Protobuf Include="timeline.proto" />
+		<Protobuf Include="token.proto" />
 		<Protobuf Include="trends.proto" />
 	</ItemGroup>
 </Project>
