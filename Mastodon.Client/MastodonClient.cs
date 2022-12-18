@@ -5,7 +5,7 @@ namespace Mastodon.Client;
 
 public sealed class MastodonClient
 {
-    internal HttpClient http => new HttpClient { BaseAddress = baseAddress };
+    internal readonly HttpClient http;
 
     public readonly TimelineClient Timeline;
     public readonly InstanceClient Instance;
@@ -30,6 +30,7 @@ public sealed class MastodonClient
     public MastodonClient(Uri baseAddress)
     {
         this.baseAddress = baseAddress;
+        http = new HttpClient { BaseAddress = baseAddress };
 
         Timeline = new TimelineClient(this);
         Instance = new InstanceClient(this);
