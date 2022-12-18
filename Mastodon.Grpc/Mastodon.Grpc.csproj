@@ -22,6 +22,7 @@
 		<Protobuf Include="filter.proto" />
 		<Protobuf Include="instance.proto" />
 		<Protobuf Include="instancev1.proto" />
+		<Protobuf Include="list.proto" />
 		<Protobuf Include="mastodon.proto" />
 		<Protobuf Include="media.proto" />
 		<Protobuf Include="oauth.proto" />
