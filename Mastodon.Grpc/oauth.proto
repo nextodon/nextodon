@@ -1,6 +1,7 @@
 syntax = "proto3";
 
 import "google/api/annotations.proto";
+import "token.proto";
 
 option csharp_namespace = "Mastodon.Grpc";
 
@@ -8,7 +9,17 @@ service OAuth {
   rpc Authorize (AuthorizeRequest) returns (AuthorizeResponse)
   {
 	option (google.api.http) = {
-      get: "/oauth/authorize"
+      post: "/oauth/authorize"
+      body: "*"
+    };
+  } 
+  
+  // Obtain an access token, to be used during API calls that are not public.
+  rpc ObtainToken (ObtainTokenRequest) returns (Token)
+  {
+	option (google.api.http) = {
+      post: "/oauth/token"
+      body: "*"
     };
   }
 }
@@ -16,23 +27,45 @@ service OAuth {
 message AuthorizeRequest
 {
     // Should be set equal to code.
-    string response_type = 1;
+    string responseType = 1 [json_name="response_type"];
    
     // The client ID, obtained during app registration.
-    string client_id = 2;
+    string clientId = 2 [json_name="client_id"];
     
     // Set a URI to redirect the user to. If this parameter is set to urn:ietf:wg:oauth:2.0:oob then the authorization code will be shown instead. Must match one of the redirect_uris declared during app registration.
-    string redirect_uri = 3;
+    string redirectUri = 3 [json_name="redirect_uri"];
 
     // List of requested OAuth scopes, separated by spaces (or by pluses, if using query parameters). Must be a subset of scopes declared during app registration. If not provided, defaults to read.
     optional string scope = 4;
 
     // Forces the user to re-login, which is necessary for authorizing with multiple accounts from the same instance.
-    optional bool force_login = 5;
+    optional bool forceLogin = 5 [json_name="force_login"];
 
     // The ISO 639-1 two-letter language code to use while rendering the authorization form.
     optional string lang = 6;
 }
+
+message ObtainTokenRequest
+{
+    // Set equal to authorization_code if code is provided in order to gain user-level access. Otherwise, set equal to client_credentials to obtain app-level access only.
+    string grantType = 1 [json_name="grant_type"];
+
+    // A user authorization code, obtained via GET /oauth/authorize.
+    optional string code = 2;
+   
+    // The client ID, obtained during app registration.
+    string clientId = 3 [json_name="client_id"];
+
+    // The client secret, obtained durign app registration.
+    string clientSecret = 4 [json_name="client_secret"];
+   
+    // Set a URI to redirect the user to. If this parameter is set to urn:ietf:wg:oauth:2.0:oob then the token will be shown instead. Must match one of the redirect_uris declared during app registration.
+    string redirectUri = 5 [json_name="redirect_uri"];
+
+    // List of requested OAuth scopes, separated by spaces (or by pluses, if using query parameters). Must be a subset of scopes declared during app registration. If not provided, defaults to read.
+    optional string scope = 6;
+}
+
 
 message AuthorizeResponse
 {

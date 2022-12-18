@@ -74,6 +74,7 @@ app.Use(async (context, next) =>
 app.MapGrpcService<AppsService>().EnableGrpcWeb();
 app.MapGrpcService<DirectoryService>().EnableGrpcWeb();
 app.MapGrpcService<InstanceService>().EnableGrpcWeb();
+app.MapGrpcService<OAuthService>().EnableGrpcWeb();
 app.MapGrpcService<TimelineService>().EnableGrpcWeb();
 app.MapGrpcService<TrendsService>().EnableGrpcWeb();
 
