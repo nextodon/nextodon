@@ -10,14 +10,15 @@ service Apps {
   {
 	option (google.api.http) = {
       post: "/api/v1/apps"
+      body: "*"
     };
   }
 }
 
 message CreateApplicationRequest
 {
-    string client_name  = 1;
-    string redirect_uris = 2;
+    string clientName  = 1 [json_name="client_name"];
+    string redirectUris = 2 [json_name="redirect_uris"];
     optional string scopes = 3;
     optional string website = 4;
 }
