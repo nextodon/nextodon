@@ -26,6 +26,6 @@ public sealed class OAuthService : Mastodon.Grpc.OAuth.OAuthBase
            scope: request.Scope);
 
 
-        return result.ToGrpc();
+        return result!.ToGrpc();
     }
 }

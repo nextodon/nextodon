@@ -194,7 +194,7 @@ public sealed partial class Account
         /// <summary>
         /// The default posting language for new statuses.
         /// </summary>
-        public required string Language { get; set; }
+        public string? Language { get; set; }
 
         /// <summary>
         /// The number of pending follow requests.
