@@ -23,5 +23,5 @@ public sealed partial class Token
     /// <summary>
     /// When the token was generated.
     /// </summary>
-    public required ulong CreatedAt { get; set; }
+    public required uint CreatedAt { get; set; }
 }
