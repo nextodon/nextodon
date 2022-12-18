@@ -1,0 +1,40 @@
+syntax = "proto3";
+
+import "google/api/annotations.proto";
+
+option csharp_namespace = "Mastodon.Grpc";
+
+service OAuth {
+  rpc Authorize (AuthorizeRequest) returns (AuthorizeResponse)
+  {
+	option (google.api.http) = {
+      get: "/oauth/authorize"
+    };
+  }
+}
+
+message AuthorizeRequest
+{
+    // Should be set equal to code.
+    string response_type = 1;
+   
+    // The client ID, obtained during app registration.
+    string client_id = 2;
+    
+    // Set a URI to redirect the user to. If this parameter is set to urn:ietf:wg:oauth:2.0:oob then the authorization code will be shown instead. Must match one of the redirect_uris declared during app registration.
+    string redirect_uri = 3;
+
+    // List of requested OAuth scopes, separated by spaces (or by pluses, if using query parameters). Must be a subset of scopes declared during app registration. If not provided, defaults to read.
+    optional string scope = 4;
+
+    // Forces the user to re-login, which is necessary for authorizing with multiple accounts from the same instance.
+    optional bool force_login = 5;
+
+    // The ISO 639-1 two-letter language code to use while rendering the authorization form.
+    optional string lang = 6;
+}
+
+message AuthorizeResponse
+{
+
+}

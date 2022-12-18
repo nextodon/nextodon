@@ -15,6 +15,7 @@ public sealed class MastodonClient
     public readonly ConversationClient Conversations;
     public readonly TrendsClient Trends;
     public readonly DirectoryClient Directory;
+    public readonly AppsClient Apps;
 
     internal static JsonSerializerOptions _options = new()
     {
@@ -34,6 +35,7 @@ public sealed class MastodonClient
         Conversations = new ConversationClient(this);
         Trends = new TrendsClient(this);
         Directory = new DirectoryClient(this);
+        Apps = new AppsClient(this);
     }
 
     public void SetAuthorizationToken(string token)
