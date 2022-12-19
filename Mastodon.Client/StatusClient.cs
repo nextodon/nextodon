@@ -70,6 +70,22 @@ public sealed class StatusClient
         return result;
     }
 
+    public async Task<Status?> PinAsync(string id)
+    {
+        var response = await _client.http.PostAsync($"api/v1/statuses/{id}/pin", new StringContent(string.Empty));
+        var result = await response.Content.ReadFromJsonAsync<Status>(MastodonClient._options);
+
+        return result;
+    }
+
+    public async Task<Status?> UnpinAsync(string id)
+    {
+        var response = await _client.http.PostAsync($"api/v1/statuses/{id}/unpin", new StringContent(string.Empty));
+        var result = await response.Content.ReadFromJsonAsync<Status>(MastodonClient._options);
+
+        return result;
+    }
+
     /// <summary>
     /// Obtain the source properties for a status so that it can be edited.
     /// </summary>
