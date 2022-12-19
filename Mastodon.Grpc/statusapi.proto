@@ -1,16 +1,9 @@
 syntax = "proto3";
 
 import "google/api/annotations.proto";
-import "google/protobuf/empty.proto";
 import "google/protobuf/wrappers.proto";
-import "account.proto";
-import "activity.proto";
-import "instance.proto";
-import "instancev1.proto";
-import "list.proto";
-import "rule.proto";
-import "status.proto";
 import "context.proto";
+import "status.proto";
 
 option csharp_namespace = "Mastodon.Grpc";
 
@@ -54,6 +47,20 @@ service StatusApi {
   {
 	option (google.api.http) = {
       post: "/api/v1/statuses/{value}/unbookmark"
+    };
+  }
+
+  rpc Mute (google.protobuf.StringValue) returns (Status)
+  {
+	option (google.api.http) = {
+      post: "/api/v1/statuses/{value}/mute"
+    };
+  }
+  
+  rpc Unmute (google.protobuf.StringValue) returns (Status)
+  {
+	option (google.api.http) = {
+      post: "/api/v1/statuses/{value}/unmute"
     };
   }
 }
