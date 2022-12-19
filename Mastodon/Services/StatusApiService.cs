@@ -52,4 +52,22 @@ public sealed class StatusApiService : Mastodon.Grpc.StatusApi.StatusApiBase
         var result = await _mastodon.Statuses.UnfavoriteAsync(request.Value);
         return result!.ToGrpc();
     }
+
+    public override async Task<Grpc.Status> Bookmark(StringValue request, ServerCallContext context)
+    {
+        var authorization = context.GetHttpContext().Request.Headers.Authorization.ToString();
+        _mastodon.SetAuthorizationToken(authorization);
+
+        var result = await _mastodon.Statuses.BookmarkAsync(request.Value);
+        return result!.ToGrpc();
+    }
+
+    public override async Task<Grpc.Status> Unbookmark(StringValue request, ServerCallContext context)
+    {
+        var authorization = context.GetHttpContext().Request.Headers.Authorization.ToString();
+        _mastodon.SetAuthorizationToken(authorization);
+
+        var result = await _mastodon.Statuses.UnbookmarkAsync(request.Value);
+        return result!.ToGrpc();
+    }
 }
