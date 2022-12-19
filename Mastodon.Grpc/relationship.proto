@@ -1,0 +1,51 @@
+syntax = "proto3";
+
+option csharp_namespace = "Mastodon.Grpc";
+
+
+// Represents the relationship between accounts, such as following/blocking/muting/etc.
+message Relationship
+{
+    // The account ID.
+    string id = 1;
+
+    // Are you following this user?
+    bool following = 2;
+
+    // Are you receiving this user’s boosts in your home timeline?
+    bool showingReblogs = 3 [json_name="showing_reblogs"];
+
+    // Have you enabled notifications for this user?
+    bool notifying = 4;
+
+    // Which languages are you following from this user?
+    repeated string languages = 5;
+
+    // Are you followed by this user?
+    bool followedBy = 6 [json_name="followed_by"];
+
+    // Are you blocking this user?
+    bool blocking = 7;
+
+    // Is this user blocking you?
+    bool blockedBy = 8 [json_name="blocked_by"];
+
+    // Are you muting this user?
+    bool muting = 9;
+
+    // Are you muting notifications from this user?
+    bool mutingNotifications = 10 [json_name="muting_notifications"];
+
+    // Do you have a pending follow request for this user?
+    bool requested = 11;
+
+    // Are you blocking this user’s domain?
+    bool domainBlocking = 12 [json_name="domain_blocking"];
+
+    // Are you featuring this user on your profile?
+    bool endorsed = 13;
+
+    // This user’s profile bio
+    optional string note = 14;
+}
+

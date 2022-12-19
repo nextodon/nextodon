@@ -43,4 +43,22 @@ public sealed class AccountApiService : Mastodon.Grpc.AccountApi.AccountApiBase
 
         return result.ToGrpc();
     }
+
+    public override async Task<Grpc.Relationship> Follow(StringValue request, ServerCallContext context)
+    {
+        var authorization = context.GetHttpContext().Request.Headers.Authorization.ToString();
+        _mastodon.SetAuthorizationToken(authorization);
+
+        var result = await _mastodon.Accounts.FollowAsync(request.Value);
+        return result!.ToGrpc();
+    }
+
+    public override async Task<Grpc.Relationship> Unfollow(StringValue request, ServerCallContext context)
+    {
+        var authorization = context.GetHttpContext().Request.Headers.Authorization.ToString();
+        _mastodon.SetAuthorizationToken(authorization);
+
+        var result = await _mastodon.Accounts.UnfollowAsync(request.Value);
+        return result!.ToGrpc();
+    }
 }
