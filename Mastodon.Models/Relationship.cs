@@ -74,5 +74,5 @@ public sealed partial class Relationship
     /// <summary>
     /// This user’s profile bio
     /// </summary>
-    public required string Note { get; set; }
+    public string? Note { get; set; }
 }
