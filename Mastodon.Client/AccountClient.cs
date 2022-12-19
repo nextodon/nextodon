@@ -38,6 +38,22 @@ public sealed class AccountClient
         return result;
     }
 
+    public async Task<Relationship?> BlockAsync(string id)
+    {
+        var response = await _client.http.PostAsync($"api/v1/accounts/{id}/block", new StringContent(string.Empty));
+        var result = await response.Content.ReadFromJsonAsync<Relationship>(MastodonClient._options);
+
+        return result;
+    }
+
+    public async Task<Relationship?> UnblockAsync(string id)
+    {
+        var response = await _client.http.PostAsync($"api/v1/accounts/{id}/unblock", new StringContent(string.Empty));
+        var result = await response.Content.ReadFromJsonAsync<Relationship>(MastodonClient._options);
+
+        return result;
+    }
+
 
     /// <summary>
     /// Statuses posted to the given account.
