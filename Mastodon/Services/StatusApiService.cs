@@ -43,4 +43,13 @@ public sealed class StatusApiService : Mastodon.Grpc.StatusApi.StatusApiBase
         var result = await _mastodon.Statuses.FavoriteAsync(request.Value);
         return result!.ToGrpc();
     }
+
+    public override async Task<Grpc.Status> Unfavourite(StringValue request, ServerCallContext context)
+    {
+        var authorization = context.GetHttpContext().Request.Headers.Authorization.ToString();
+        _mastodon.SetAuthorizationToken(authorization);
+
+        var result = await _mastodon.Statuses.UnfavoriteAsync(request.Value);
+        return result!.ToGrpc();
+    }
 }

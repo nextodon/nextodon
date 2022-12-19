@@ -35,4 +35,11 @@ service StatusApi {
       post: "/api/v1/statuses/{value}/favourite"
     };
   }
+  
+  rpc Unfavourite (google.protobuf.StringValue) returns (Status)
+  {
+	option (google.api.http) = {
+      post: "/api/v1/statuses/{value}/unfavourite"
+    };
+  }
 }
