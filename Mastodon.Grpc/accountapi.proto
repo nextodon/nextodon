@@ -73,6 +73,20 @@ service AccountApi {
       post: "/api/v1/statuses/{value}/unmute"
     };
   }
+
+  rpc Pin (google.protobuf.StringValue) returns (Relationship)
+  {
+	option (google.api.http) = {
+      post: "/api/v1/accounts/{value}/pin"
+    };
+  }
+  
+  rpc Unpin (google.protobuf.StringValue) returns (Relationship)
+  {
+	option (google.api.http) = {
+      post: "/api/v1/statuses/{value}/unpin"
+    };
+  }
 }
 
 message GetStatusesRequest
