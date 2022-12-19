@@ -22,6 +22,14 @@ public sealed class StatusClient
         return _client.http.GetFromJsonAsync<Context>($"api/v1/statuses/{id}/context", MastodonClient._options);
     }
 
+    public async Task<Status?> FavoriteAsync(string id)
+    {
+        var response = await _client.http.PostAsync($"api/v1/statuses/{id}/favourite", new StringContent(string.Empty));
+        var result = await response.Content.ReadFromJsonAsync<Status>(MastodonClient._options);
+
+        return result;
+    }
+
     /// <summary>
     /// Obtain the source properties for a status so that it can be edited.
     /// </summary>

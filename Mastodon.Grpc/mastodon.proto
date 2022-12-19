@@ -58,20 +58,6 @@ service Mastodon {
       response_body: "data"
     };
   }
-
-  rpc GetStatusById (google.protobuf.StringValue) returns (Status)
-  {
-	option (google.api.http) = {
-      get: "/api/v1/statuses/{value}"
-    };
-  }
-
-  rpc GetStatusContextById (google.protobuf.StringValue) returns (Context)
-  {
-	option (google.api.http) = {
-      get: "/api/v1/statuses/{value}/context"
-    };
-  }
   
   rpc GetLists (google.protobuf.Empty) returns (Lists)
   {
