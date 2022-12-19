@@ -30,6 +30,7 @@
 		<Protobuf Include="role.proto" />
 		<Protobuf Include="rule.proto" />
 		<Protobuf Include="status.proto" />
+		<Protobuf Include="statusapi.proto" />
 		<Protobuf Include="tag.proto" />
 		<Protobuf Include="timeline.proto" />
 		<Protobuf Include="token.proto" />

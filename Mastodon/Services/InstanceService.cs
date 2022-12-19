@@ -49,7 +49,6 @@ public sealed class InstanceService : Mastodon.Grpc.Mastodon.MastodonBase
     public override async Task<Lists> GetLists(Empty request, ServerCallContext context)
     {
         var authorization = context.GetHttpContext().Request.Headers.Authorization.ToString();
-        _logger.LogError(authorization);
         _mastodon.SetAuthorizationToken(authorization);
 
         var result = (await _mastodon.Lists.GetListsAsync());
@@ -59,7 +58,6 @@ public sealed class InstanceService : Mastodon.Grpc.Mastodon.MastodonBase
     public override async Task<Grpc.Account> GetAccountById(StringValue request, ServerCallContext context)
     {
         var authorization = context.GetHttpContext().Request.Headers.Authorization.ToString();
-        _logger.LogError(authorization);
         _mastodon.SetAuthorizationToken(authorization);
 
         var result = (await _mastodon.Accounts.GetByIdAsync(request.Value))!;
@@ -79,18 +77,6 @@ public sealed class InstanceService : Mastodon.Grpc.Mastodon.MastodonBase
            pinned: request.HasPinned ? request.Pinned : null,
            tagged: request.HasTagged ? request.Tagged : null);
 
-        return result.ToGrpc();
-    }
-
-    public override async Task<Grpc.Status> GetStatusById(StringValue request, ServerCallContext context)
-    {
-        var result = (await _mastodon.Statuses.GetByIdAsync(request.Value))!;
-        return result.ToGrpc();
-    }
-
-    public override async Task<Grpc.Context> GetStatusContextById(StringValue request, ServerCallContext context)
-    {
-        var result = (await _mastodon.Statuses.GetContextAsync(request.Value))!;
         return result.ToGrpc();
     }
 }

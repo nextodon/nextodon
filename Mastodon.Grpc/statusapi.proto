@@ -1,0 +1,38 @@
+syntax = "proto3";
+
+import "google/api/annotations.proto";
+import "google/protobuf/empty.proto";
+import "google/protobuf/wrappers.proto";
+import "account.proto";
+import "activity.proto";
+import "instance.proto";
+import "instancev1.proto";
+import "list.proto";
+import "rule.proto";
+import "status.proto";
+import "context.proto";
+
+option csharp_namespace = "Mastodon.Grpc";
+
+service StatusApi {
+  rpc GetStatus (google.protobuf.StringValue) returns (Status)
+  {
+	option (google.api.http) = {
+      get: "/api/v1/statuses/{value}"
+    };
+  }
+
+  rpc GetContext (google.protobuf.StringValue) returns (Context)
+  {
+	option (google.api.http) = {
+      get: "/api/v1/statuses/{value}/context"
+    };
+  }
+
+  rpc Favourite (google.protobuf.StringValue) returns (Status)
+  {
+	option (google.api.http) = {
+      post: "/api/v1/statuses/{value}/favourite"
+    };
+  }
+}
