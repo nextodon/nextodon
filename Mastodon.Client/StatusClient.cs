@@ -38,6 +38,22 @@ public sealed class StatusClient
         return result;
     }
 
+    public async Task<Status?> BookmarkAsync(string id)
+    {
+        var response = await _client.http.PostAsync($"api/v1/statuses/{id}/bookmark", new StringContent(string.Empty));
+        var result = await response.Content.ReadFromJsonAsync<Status>(MastodonClient._options);
+
+        return result;
+    }
+
+    public async Task<Status?> UnbookmarkAsync(string id)
+    {
+        var response = await _client.http.PostAsync($"api/v1/statuses/{id}/unbookmark", new StringContent(string.Empty));
+        var result = await response.Content.ReadFromJsonAsync<Status>(MastodonClient._options);
+
+        return result;
+    }
+
     /// <summary>
     /// Obtain the source properties for a status so that it can be edited.
     /// </summary>

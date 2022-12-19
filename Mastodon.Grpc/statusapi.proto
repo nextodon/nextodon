@@ -42,4 +42,18 @@ service StatusApi {
       post: "/api/v1/statuses/{value}/unfavourite"
     };
   }
+
+  rpc Bookmark (google.protobuf.StringValue) returns (Status)
+  {
+	option (google.api.http) = {
+      post: "/api/v1/statuses/{value}/bookmark"
+    };
+  }
+  
+  rpc Unbookmark (google.protobuf.StringValue) returns (Status)
+  {
+	option (google.api.http) = {
+      post: "/api/v1/statuses/{value}/unbookmark"
+    };
+  }
 }
