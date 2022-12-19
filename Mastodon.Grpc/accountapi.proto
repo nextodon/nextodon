@@ -59,6 +59,20 @@ service AccountApi {
       post: "/api/v1/statuses/{value}/unblock"
     };
   }
+
+  rpc Mute (google.protobuf.StringValue) returns (Relationship)
+  {
+	option (google.api.http) = {
+      post: "/api/v1/accounts/{value}/mute"
+    };
+  }
+  
+  rpc Unmute (google.protobuf.StringValue) returns (Relationship)
+  {
+	option (google.api.http) = {
+      post: "/api/v1/statuses/{value}/unmute"
+    };
+  }
 }
 
 message GetStatusesRequest

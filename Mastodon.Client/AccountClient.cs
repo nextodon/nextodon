@@ -54,6 +54,22 @@ public sealed class AccountClient
         return result;
     }
 
+    public async Task<Relationship?> MuteAsync(string id)
+    {
+        var response = await _client.http.PostAsync($"api/v1/accounts/{id}/mute", new StringContent(string.Empty));
+        var result = await response.Content.ReadFromJsonAsync<Relationship>(MastodonClient._options);
+
+        return result;
+    }
+
+    public async Task<Relationship?> UnmuteAsync(string id)
+    {
+        var response = await _client.http.PostAsync($"api/v1/accounts/{id}/unmute", new StringContent(string.Empty));
+        var result = await response.Content.ReadFromJsonAsync<Relationship>(MastodonClient._options);
+
+        return result;
+    }
+
 
     /// <summary>
     /// Statuses posted to the given account.
