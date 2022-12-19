@@ -70,6 +70,22 @@ public sealed class AccountClient
         return result;
     }
 
+    public async Task<Relationship?> PinAsync(string id)
+    {
+        var response = await _client.http.PostAsync($"api/v1/accounts/{id}/pin", new StringContent(string.Empty));
+        var result = await response.Content.ReadFromJsonAsync<Relationship>(MastodonClient._options);
+
+        return result;
+    }
+
+    public async Task<Relationship?> UnpinAsync(string id)
+    {
+        var response = await _client.http.PostAsync($"api/v1/accounts/{id}/unpin", new StringContent(string.Empty));
+        var result = await response.Content.ReadFromJsonAsync<Relationship>(MastodonClient._options);
+
+        return result;
+    }
+
 
     /// <summary>
     /// Statuses posted to the given account.
