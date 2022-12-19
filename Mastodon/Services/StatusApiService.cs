@@ -70,4 +70,22 @@ public sealed class StatusApiService : Mastodon.Grpc.StatusApi.StatusApiBase
         var result = await _mastodon.Statuses.UnbookmarkAsync(request.Value);
         return result!.ToGrpc();
     }
+
+    public override async Task<Grpc.Status> Mute(StringValue request, ServerCallContext context)
+    {
+        var authorization = context.GetHttpContext().Request.Headers.Authorization.ToString();
+        _mastodon.SetAuthorizationToken(authorization);
+
+        var result = await _mastodon.Statuses.MuteAsync(request.Value);
+        return result!.ToGrpc();
+    }
+
+    public override async Task<Grpc.Status> Unmute(StringValue request, ServerCallContext context)
+    {
+        var authorization = context.GetHttpContext().Request.Headers.Authorization.ToString();
+        _mastodon.SetAuthorizationToken(authorization);
+
+        var result = await _mastodon.Statuses.UnmuteAsync(request.Value);
+        return result!.ToGrpc();
+    }
 }
