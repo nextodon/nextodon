@@ -45,6 +45,20 @@ service AccountApi {
       post: "/api/v1/statuses/{value}/unfollow"
     };
   }
+  
+  rpc Block (google.protobuf.StringValue) returns (Relationship)
+  {
+	option (google.api.http) = {
+      post: "/api/v1/accounts/{value}/block"
+    };
+  }
+  
+  rpc Unblock (google.protobuf.StringValue) returns (Relationship)
+  {
+	option (google.api.http) = {
+      post: "/api/v1/statuses/{value}/unblock"
+    };
+  }
 }
 
 message GetStatusesRequest
