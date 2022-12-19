@@ -98,7 +98,7 @@ public static class AccountExtensionMethods
             Sensitive = i.Sensitive,
         };
 
-        if(i.Language != null)
+        if (i.Language != null)
         {
             v.Language = i.Language;
         }
@@ -119,6 +119,34 @@ public static class AccountExtensionMethods
         if (i.VerifiedAt != null)
         {
             v.VerifiedAt = Timestamp.FromDateTime(i.VerifiedAt.Value.ToUniversalTime());
+        }
+
+        return v;
+    }
+
+    public static Grpc.Relationship ToGrpc(this Mastodon.Models.Relationship i)
+    {
+        var v = new Relationship
+        {
+            BlockedBy = i.BlockedBy,
+            Blocking = i.Blocking,
+            DomainBlocking = i.DomainBlocking,
+            Endorsed = i.Endorsed,
+            FollowedBy = i.FollowedBy,
+            Following = i.Following,
+            Id = i.Id,
+            Muting = i.Muting,
+            MutingNotifications = i.MutingNotifications,
+            Notifying = i.Notifying,
+            Requested = i.Requested,
+            ShowingReblogs = i.ShowingReblogs,
+        };
+
+        v.Languages.AddRange(i.Languages);
+
+        if (i.Note != null)
+        {
+            v.Note = i.Note;
         }
 
         return v;

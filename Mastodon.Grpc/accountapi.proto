@@ -5,12 +5,13 @@ import "google/protobuf/empty.proto";
 import "google/protobuf/wrappers.proto";
 import "account.proto";
 import "activity.proto";
+import "context.proto";
 import "instance.proto";
 import "instancev1.proto";
 import "list.proto";
 import "rule.proto";
+import "relationship.proto";
 import "status.proto";
-import "context.proto";
 
 option csharp_namespace = "Mastodon.Grpc";
 
@@ -28,6 +29,20 @@ service AccountApi {
 	option (google.api.http) = {
       get: "/api/v1/accounts/{accountId}/statuses"
       response_body: "data"
+    };
+  }
+
+  rpc Follow (google.protobuf.StringValue) returns (Relationship)
+  {
+	option (google.api.http) = {
+      post: "/api/v1/accounts/{value}/follow"
+    };
+  }
+  
+  rpc Unfollow (google.protobuf.StringValue) returns (Relationship)
+  {
+	option (google.api.http) = {
+      post: "/api/v1/statuses/{value}/unfollow"
     };
   }
 }

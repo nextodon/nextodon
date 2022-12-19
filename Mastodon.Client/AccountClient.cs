@@ -22,6 +22,22 @@ public sealed class AccountClient
         return _client.http.GetFromJsonAsync<Account>($"api/v1/accounts/{id}", MastodonClient._options);
     }
 
+    public async Task<Relationship?> FollowAsync(string id)
+    {
+        var response = await _client.http.PostAsync($"api/v1/accounts/{id}/follow", new StringContent(string.Empty));
+        var result = await response.Content.ReadFromJsonAsync<Relationship>(MastodonClient._options);
+
+        return result;
+    }
+
+    public async Task<Relationship?> UnfollowAsync(string id)
+    {
+        var response = await _client.http.PostAsync($"api/v1/accounts/{id}/unfollow", new StringContent(string.Empty));
+        var result = await response.Content.ReadFromJsonAsync<Relationship>(MastodonClient._options);
+
+        return result;
+    }
+
 
     /// <summary>
     /// Statuses posted to the given account.
