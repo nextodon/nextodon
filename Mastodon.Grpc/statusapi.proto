@@ -63,4 +63,18 @@ service StatusApi {
       post: "/api/v1/statuses/{value}/unmute"
     };
   }
+
+  rpc Pin (google.protobuf.StringValue) returns (Status)
+  {
+	option (google.api.http) = {
+      post: "/api/v1/statuses/{value}/pin"
+    };
+  }
+  
+  rpc Unpin (google.protobuf.StringValue) returns (Status)
+  {
+	option (google.api.http) = {
+      post: "/api/v1/statuses/{value}/unpin"
+    };
+  }
 }
