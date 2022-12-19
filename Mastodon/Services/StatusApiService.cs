@@ -19,18 +19,27 @@ public sealed class StatusApiService : Mastodon.Grpc.StatusApi.StatusApiBase
 
     public override async Task<Grpc.Status> GetStatus(StringValue request, ServerCallContext context)
     {
+        var authorization = context.GetHttpContext().Request.Headers.Authorization.ToString();
+        _mastodon.SetAuthorizationToken(authorization);
+
         var result = (await _mastodon.Statuses.GetByIdAsync(request.Value))!;
         return result.ToGrpc();
     }
 
     public override async Task<Grpc.Context> GetContext(StringValue request, ServerCallContext context)
     {
+        var authorization = context.GetHttpContext().Request.Headers.Authorization.ToString();
+        _mastodon.SetAuthorizationToken(authorization);
+
         var result = await _mastodon.Statuses.GetContextAsync(request.Value);
         return result!.ToGrpc();
     }
 
     public override async Task<Grpc.Status> Favourite(StringValue request, ServerCallContext context)
     {
+        var authorization = context.GetHttpContext().Request.Headers.Authorization.ToString();
+        _mastodon.SetAuthorizationToken(authorization);
+
         var result = await _mastodon.Statuses.FavoriteAsync(request.Value);
         return result!.ToGrpc();
     }
