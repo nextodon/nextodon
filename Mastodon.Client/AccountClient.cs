@@ -86,6 +86,22 @@ public sealed class AccountClient
         return result;
     }
 
+    /// <summary>
+    /// Sets a private note on a user.
+    /// </summary>
+    /// <param name="id">The ID of the Account in the database.</param>
+    /// <param name="comment">The comment to be set on that user. Provide an empty string or leave out this parameter to clear the currently set note.</param>
+    /// <returns></returns>
+    public async Task<Relationship?> NoteAsync(string id, string? comment)
+    {
+        var form = new FormUrlEncodedContent(new Dictionary<string, string?> { ["comment"] = comment });
+
+        var response = await _client.http.PostAsync($"api/v1/accounts/{id}/note", form);
+        var result = await response.Content.ReadFromJsonAsync<Relationship>(MastodonClient._options);
+
+        return result;
+    }
+
 
     /// <summary>
     /// Statuses posted to the given account.
