@@ -87,6 +87,14 @@ service AccountApi {
       post: "/api/v1/statuses/{value}/unpin"
     };
   }
+  
+  rpc Note (NoteRequest) returns (Relationship)
+  {
+	option (google.api.http) = {
+      post: "/api/v1/statuses/{accountId}/note"
+      body: "*"
+    };
+  }
 }
 
 message GetStatusesRequest
@@ -120,4 +128,10 @@ message GetStatusesRequest
 
     // Filter for statuses using a specific hashtag.
     optional string tagged = 10;
+}
+
+message NoteRequest
+{
+    string accountId = 1;
+    optional string comment = 2;
 }

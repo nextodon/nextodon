@@ -115,4 +115,16 @@ public sealed class AccountApiService : Mastodon.Grpc.AccountApi.AccountApiBase
         var result = await _mastodon.Accounts.UnpinAsync(request.Value);
         return result!.ToGrpc();
     }
+
+    /// <summary>
+    /// Sets a private note on a user.
+    /// </summary>
+    public override async Task<Grpc.Relationship> Note(NoteRequest request, ServerCallContext context)
+    {
+        var authorization = context.GetHttpContext().Request.Headers.Authorization.ToString();
+        _mastodon.SetAuthorizationToken(authorization);
+
+        var result = await _mastodon.Accounts.NoteAsync(request.AccountId, request.HasComment ? request.Comment : null);
+        return result!.ToGrpc();
+    }
 }
