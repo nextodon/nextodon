@@ -7,6 +7,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Buffers;
 using System.Net;
 using System.Text;
+using static Google.Rpc.Context.AttributeContext.Types;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -96,10 +97,12 @@ app.MapPost("/auth/sign_in", async (context) =>
         var content = await response.Content.ReadAsStringAsync();
         var utf8 = Encoding.UTF8.GetBytes(content);
 
+        context.Response.StatusCode = (int)response.StatusCode;
+
         var d = context.Response.Cookies;
-        foreach (var cookie0 in cookieContainer.GetAllCookies().ToList())
+        foreach (var ck in cookieContainer.GetAllCookies().ToList())
         {
-            d.Append(cookie0.Name, cookie0.Value);
+            d.Append(ck.Name, ck.Value);
         }
 
         await context.Response.BodyWriter.WriteAsync(utf8);
@@ -141,10 +144,12 @@ app.MapPost("/oauth/authorize", async (context) =>
         var content = await response.Content.ReadAsStringAsync();
         var utf8 = Encoding.UTF8.GetBytes(content);
 
+        context.Response.StatusCode = (int)response.StatusCode;
+
         var d = context.Response.Cookies;
-        foreach (var cookie0 in cookieContainer.GetAllCookies().ToList())
+        foreach (var ck in cookieContainer.GetAllCookies().ToList())
         {
-            d.Append(cookie0.Name, cookie0.Value);
+            d.Append(ck.Name, ck.Value);
         }
 
         await context.Response.BodyWriter.WriteAsync(utf8);
