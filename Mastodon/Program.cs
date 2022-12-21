@@ -36,6 +36,12 @@ builder.Services.AddScoped((s) => new Mastodon.Client.MastodonClient(new Uri("ht
 
 var app = builder.Build();
 
+app.Use((context, next) =>
+{
+    Console.WriteLine(context.Request.Headers.ContentType.ToString());
+    return next();
+});
+
 app.UseCors();
 
 app.UseDefaultFiles();
