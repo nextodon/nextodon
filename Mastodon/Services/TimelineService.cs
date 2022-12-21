@@ -8,28 +8,28 @@ namespace Mastodon.Services;
 public sealed class TimelineService : Mastodon.Grpc.Timeline.TimelineBase
 {
     private readonly MastodonClient _mastodon;
-    private readonly DataContext _db;
+    //private readonly DataContext _db;
     private readonly ILogger<TimelineService> _logger;
-    public TimelineService(ILogger<TimelineService> logger, MastodonClient mastodon, DataContext db)
+    public TimelineService(ILogger<TimelineService> logger, MastodonClient mastodon/*, DataContext db*/)
     {
         _logger = logger;
         _mastodon = mastodon;
-        _db = db;
+        //_db = db;
     }
 
     public override async Task<Grpc.Statuses> GetPublic(Empty request, ServerCallContext context)
     {
-        var authorization = context.GetHttpContext().Request.Headers.Authorization.ToString();
-        _mastodon.SetAuthorizationToken(authorization);
+        _mastodon.SetHeaders(context);
 
-        var result = (await _mastodon.Timeline.GetPublicAsync());
-        return result.ToGrpc();
+        var result = await _mastodon.Timeline.GetPublicAsync();
+        await result.WriteHeadersTo(context);
+
+        return result.Data.ToGrpc();
     }
 
     public override async Task<Statuses> GetByTag(StringValue request, ServerCallContext context)
     {
-        var authorization = context.GetHttpContext().Request.Headers.Authorization.ToString();
-        _mastodon.SetAuthorizationToken(authorization);
+        _mastodon.SetHeaders(context);
 
         var result = (await _mastodon.Timeline.GetTagAsync(request.Value));
         return result.ToGrpc();
@@ -37,8 +37,7 @@ public sealed class TimelineService : Mastodon.Grpc.Timeline.TimelineBase
 
     public override async Task<Statuses> GetHome(Empty request, ServerCallContext context)
     {
-        var authorization = context.GetHttpContext().Request.Headers.Authorization.ToString();
-        _mastodon.SetAuthorizationToken(authorization);
+        _mastodon.SetHeaders(context);
 
         var result = (await _mastodon.Timeline.GetHomeAsync());
         return result.ToGrpc();
@@ -46,8 +45,7 @@ public sealed class TimelineService : Mastodon.Grpc.Timeline.TimelineBase
 
     public override async Task<Statuses> GetList(StringValue request, ServerCallContext context)
     {
-        var authorization = context.GetHttpContext().Request.Headers.Authorization.ToString();
-        _mastodon.SetAuthorizationToken(authorization);
+        _mastodon.SetHeaders(context);
 
         var result = (await _mastodon.Timeline.GetListAsync(request.Value));
         return result.ToGrpc();
@@ -57,8 +55,7 @@ public sealed class TimelineService : Mastodon.Grpc.Timeline.TimelineBase
     [Obsolete]
     public override async Task<Statuses> GetDirect(Empty request, ServerCallContext context)
     {
-        var authorization = context.GetHttpContext().Request.Headers.Authorization.ToString();
-        _mastodon.SetAuthorizationToken(authorization);
+        _mastodon.SetHeaders(context);
 
         var result = (await _mastodon.Timeline.GetDirectAsync());
         return result.ToGrpc();

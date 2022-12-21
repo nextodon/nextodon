@@ -2,7 +2,6 @@ using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
 using Mastodon.Client;
 using Mastodon.Grpc;
-using Mastodon.Models;
 
 namespace Mastodon.Services;
 
@@ -10,6 +9,7 @@ public sealed class AccountApiService : Mastodon.Grpc.AccountApi.AccountApiBase
 {
     private readonly MastodonClient _mastodon;
     private readonly ILogger<AccountApiService> _logger;
+
     public AccountApiService(ILogger<AccountApiService> logger, MastodonClient mastodon)
     {
         _logger = logger;
@@ -18,8 +18,7 @@ public sealed class AccountApiService : Mastodon.Grpc.AccountApi.AccountApiBase
 
     public override async Task<Grpc.Account> GetAccount(StringValue request, ServerCallContext context)
     {
-        var authorization = context.GetHttpContext().Request.Headers.Authorization.ToString();
-        _mastodon.SetAuthorizationToken(authorization);
+        _mastodon.SetHeaders(context);
 
         var result = (await _mastodon.Accounts.GetByIdAsync(request.Value))!;
         return result.ToGrpc();
@@ -27,8 +26,7 @@ public sealed class AccountApiService : Mastodon.Grpc.AccountApi.AccountApiBase
 
     public override async Task<Statuses> GetStatuses(GetStatusesRequest request, ServerCallContext context)
     {
-        var authorization = context.GetHttpContext().Request.Headers.Authorization.ToString();
-        _mastodon.SetAuthorizationToken(authorization);
+        _mastodon.SetHeaders(context);
 
         var result = await _mastodon.Accounts.GetStatusesByIdAsync(request.AccountId,
             sinceId: request.HasSinceId ? request.SinceId : null,
@@ -46,8 +44,7 @@ public sealed class AccountApiService : Mastodon.Grpc.AccountApi.AccountApiBase
 
     public override async Task<Grpc.Relationship> Follow(StringValue request, ServerCallContext context)
     {
-        var authorization = context.GetHttpContext().Request.Headers.Authorization.ToString();
-        _mastodon.SetAuthorizationToken(authorization);
+        _mastodon.SetHeaders(context);
 
         var result = await _mastodon.Accounts.FollowAsync(request.Value);
         return result!.ToGrpc();
@@ -55,8 +52,7 @@ public sealed class AccountApiService : Mastodon.Grpc.AccountApi.AccountApiBase
 
     public override async Task<Grpc.Relationship> Unfollow(StringValue request, ServerCallContext context)
     {
-        var authorization = context.GetHttpContext().Request.Headers.Authorization.ToString();
-        _mastodon.SetAuthorizationToken(authorization);
+        _mastodon.SetHeaders(context);
 
         var result = await _mastodon.Accounts.UnfollowAsync(request.Value);
         return result!.ToGrpc();
@@ -64,8 +60,7 @@ public sealed class AccountApiService : Mastodon.Grpc.AccountApi.AccountApiBase
 
     public override async Task<Grpc.Relationship> Block(StringValue request, ServerCallContext context)
     {
-        var authorization = context.GetHttpContext().Request.Headers.Authorization.ToString();
-        _mastodon.SetAuthorizationToken(authorization);
+        _mastodon.SetHeaders(context);
 
         var result = await _mastodon.Accounts.BlockAsync(request.Value);
         return result!.ToGrpc();
@@ -73,8 +68,7 @@ public sealed class AccountApiService : Mastodon.Grpc.AccountApi.AccountApiBase
 
     public override async Task<Grpc.Relationship> Unblock(StringValue request, ServerCallContext context)
     {
-        var authorization = context.GetHttpContext().Request.Headers.Authorization.ToString();
-        _mastodon.SetAuthorizationToken(authorization);
+        _mastodon.SetHeaders(context);
 
         var result = await _mastodon.Accounts.UnblockAsync(request.Value);
         return result!.ToGrpc();
@@ -82,8 +76,7 @@ public sealed class AccountApiService : Mastodon.Grpc.AccountApi.AccountApiBase
 
     public override async Task<Grpc.Relationship> Mute(StringValue request, ServerCallContext context)
     {
-        var authorization = context.GetHttpContext().Request.Headers.Authorization.ToString();
-        _mastodon.SetAuthorizationToken(authorization);
+        _mastodon.SetHeaders(context);
 
         var result = await _mastodon.Accounts.MuteAsync(request.Value);
         return result!.ToGrpc();
@@ -91,8 +84,7 @@ public sealed class AccountApiService : Mastodon.Grpc.AccountApi.AccountApiBase
 
     public override async Task<Grpc.Relationship> Unmute(StringValue request, ServerCallContext context)
     {
-        var authorization = context.GetHttpContext().Request.Headers.Authorization.ToString();
-        _mastodon.SetAuthorizationToken(authorization);
+        _mastodon.SetHeaders(context);
 
         var result = await _mastodon.Accounts.UnmuteAsync(request.Value);
         return result!.ToGrpc();
@@ -100,8 +92,7 @@ public sealed class AccountApiService : Mastodon.Grpc.AccountApi.AccountApiBase
 
     public override async Task<Grpc.Relationship> Pin(StringValue request, ServerCallContext context)
     {
-        var authorization = context.GetHttpContext().Request.Headers.Authorization.ToString();
-        _mastodon.SetAuthorizationToken(authorization);
+        _mastodon.SetHeaders(context);
 
         var result = await _mastodon.Accounts.PinAsync(request.Value);
         return result!.ToGrpc();
@@ -109,8 +100,7 @@ public sealed class AccountApiService : Mastodon.Grpc.AccountApi.AccountApiBase
 
     public override async Task<Grpc.Relationship> Unpin(StringValue request, ServerCallContext context)
     {
-        var authorization = context.GetHttpContext().Request.Headers.Authorization.ToString();
-        _mastodon.SetAuthorizationToken(authorization);
+        _mastodon.SetHeaders(context);
 
         var result = await _mastodon.Accounts.UnpinAsync(request.Value);
         return result!.ToGrpc();
@@ -121,8 +111,7 @@ public sealed class AccountApiService : Mastodon.Grpc.AccountApi.AccountApiBase
     /// </summary>
     public override async Task<Grpc.Relationship> Note(NoteRequest request, ServerCallContext context)
     {
-        var authorization = context.GetHttpContext().Request.Headers.Authorization.ToString();
-        _mastodon.SetAuthorizationToken(authorization);
+        _mastodon.SetHeaders(context);
 
         var result = await _mastodon.Accounts.NoteAsync(request.AccountId, request.HasComment ? request.Comment : null);
         return result!.ToGrpc();

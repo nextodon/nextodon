@@ -1,4 +1,3 @@
-using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
 using Mastodon.Client;
 using Mastodon.Grpc;
@@ -17,11 +16,7 @@ public sealed class DirectoryService : Mastodon.Grpc.Directory.DirectoryBase
 
     public override async Task<Accounts> GetAccounts(GetDirectoryRequest request, ServerCallContext context)
     {
-        var authorization = context.GetHttpContext().Request.Headers.Authorization.ToString();
-        _mastodon.SetAuthorizationToken(authorization);
-
-        var link = context.GetHttpContext().Request.Headers["link"].ToString();
-        context.ResponseTrailers.Add("link", link);
+        _mastodon.SetHeaders(context);
 
         var result = await _mastodon.Directory.GetDirectoryAsync(
             offset: request.HasOffset ? request.Offset : null,
@@ -29,6 +24,8 @@ public sealed class DirectoryService : Mastodon.Grpc.Directory.DirectoryBase
             order: request.HasOrder ? request.Order : null,
             local: request.HasLocal ? request.Local : null);
 
-        return result.ToGrpc();
+        await result.WriteHeadersTo(context);
+
+        return result.Data.ToGrpc();
     }
 }

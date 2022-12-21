@@ -14,6 +14,6 @@ public sealed class PollClient
 
     public Task<Poll?> GetPollAsync(string id)
     {
-        return _client.http.GetFromJsonAsync<Poll>($"api/v1/polls/{id}", MastodonClient._options);
+        return _client.HttpClient.GetFromJsonAsync<Poll>($"api/v1/polls/{id}", MastodonClient._options);
     }
 }

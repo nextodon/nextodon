@@ -15,9 +15,9 @@ public sealed class TimelineClient
     /// <summary>
     /// View public statuses.
     /// </summary>
-    public Task<List<Status>?> GetPublicAsync()
+    public Task<Response<List<Status>>> GetPublicAsync()
     {
-        return _client.http.GetFromJsonAsync<List<Status>>("api/v1/timelines/public", MastodonClient._options);
+        return _client.HttpClient.GetFromJsonWithHeadersAsync<List<Status>>("api/v1/timelines/public", MastodonClient._options);
     }
 
     /// <summary>
@@ -25,7 +25,7 @@ public sealed class TimelineClient
     /// </summary>
     public Task<List<Status>?> GetHomeAsync()
     {
-        return _client.http.GetFromJsonAsync<List<Status>>("api/v1/timelines/home", MastodonClient._options);
+        return _client.HttpClient.GetFromJsonAsync<List<Status>>("api/v1/timelines/home", MastodonClient._options);
     }
 
     /// <summary>
@@ -34,7 +34,7 @@ public sealed class TimelineClient
     /// <param name="hashtag">The name of the hashtag (not including the # symbol).</param>
     public Task<List<Status>?> GetTagAsync(string hashtag)
     {
-        return _client.http.GetFromJsonAsync<List<Status>>($"api/v1/timelines/tag/{hashtag}", MastodonClient._options);
+        return _client.HttpClient.GetFromJsonAsync<List<Status>>($"api/v1/timelines/tag/{hashtag}", MastodonClient._options);
     }
 
     /// <summary>
@@ -43,7 +43,7 @@ public sealed class TimelineClient
     /// <param name="listId">Local ID of the List in the database.</param>
     public Task<List<Status>?> GetListAsync(string listId)
     {
-        return _client.http.GetFromJsonAsync<List<Status>>($"api/v1/timelines/list/{listId}", MastodonClient._options);
+        return _client.HttpClient.GetFromJsonAsync<List<Status>>($"api/v1/timelines/list/{listId}", MastodonClient._options);
     }
 
     /// <summary>
@@ -52,7 +52,7 @@ public sealed class TimelineClient
     [Obsolete]
     public Task<List<Status>?> GetDirectAsync()
     {
-        return _client.http.GetFromJsonAsync<List<Status>>("api/v1/timelines/direct", MastodonClient._options);
+        return _client.HttpClient.GetFromJsonAsync<List<Status>>("api/v1/timelines/direct", MastodonClient._options);
     }
 
     /// <summary>
@@ -60,6 +60,6 @@ public sealed class TimelineClient
     /// </summary>
     public Task<List<Status>?> GetTrendsAsync()
     {
-        return _client.http.GetFromJsonAsync<List<Status>>("api/v1/trends/statuses", MastodonClient._options);
+        return _client.HttpClient.GetFromJsonAsync<List<Status>>("api/v1/trends/statuses", MastodonClient._options);
     }
 }

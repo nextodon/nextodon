@@ -5,7 +5,7 @@ namespace Mastodon.Client;
 
 public sealed class MastodonClient
 {
-    internal readonly HttpClient http;
+    public readonly HttpClient HttpClient;
 
     public readonly AccountClient Accounts;
     public readonly TimelineClient Timeline;
@@ -31,7 +31,7 @@ public sealed class MastodonClient
     public MastodonClient(Uri baseAddress)
     {
         this.baseAddress = baseAddress;
-        http = new HttpClient { BaseAddress = baseAddress };
+        HttpClient = new HttpClient { BaseAddress = baseAddress };
 
         Timeline = new TimelineClient(this);
         Instance = new InstanceClient(this);
@@ -45,11 +45,6 @@ public sealed class MastodonClient
         Apps = new AppsClient(this);
         OAuth = new OAuthClient(this);
         Lists = new ListClient(this);
-    }
-
-    public void SetAuthorizationToken(string value)
-    {
-        http.DefaultRequestHeaders.TryAddWithoutValidation("Authorization", value);
     }
 
     private sealed class SnakeCaseNamingPolicy : JsonNamingPolicy

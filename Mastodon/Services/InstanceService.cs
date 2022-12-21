@@ -2,7 +2,6 @@ using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
 using Mastodon.Client;
 using Mastodon.Grpc;
-using Mastodon.Models;
 
 namespace Mastodon.Services;
 
@@ -48,8 +47,7 @@ public sealed class InstanceService : Mastodon.Grpc.Mastodon.MastodonBase
 
     public override async Task<Lists> GetLists(Empty request, ServerCallContext context)
     {
-        var authorization = context.GetHttpContext().Request.Headers.Authorization.ToString();
-        _mastodon.SetAuthorizationToken(authorization);
+        _mastodon.SetHeaders(context);
 
         var result = (await _mastodon.Lists.GetListsAsync());
         return result.ToGrpc();

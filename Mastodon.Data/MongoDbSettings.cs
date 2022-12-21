@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Mastodon.Data;
+﻿namespace Mastodon.Data;
 
 /// <summary>
 /// A class representing the settings for the MongoDb server.

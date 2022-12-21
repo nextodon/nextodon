@@ -1,5 +1,4 @@
 ﻿using Google.Protobuf.WellKnownTypes;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace Mastodon;
 
