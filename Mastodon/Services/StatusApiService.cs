@@ -106,4 +106,22 @@ public sealed class StatusApiService : Mastodon.Grpc.StatusApi.StatusApiBase
         var result = await _mastodon.Statuses.UnpinAsync(request.Value);
         return result!.ToGrpc();
     }
+
+    public override async Task<Grpc.Status> Reblog(ReblogRequest request, ServerCallContext context)
+    {
+        var authorization = context.GetHttpContext().Request.Headers.Authorization.ToString();
+        _mastodon.SetAuthorizationToken(authorization);
+
+        var result = await _mastodon.Statuses.ReblogAsync(request.StatusId, visibility: request.HasVisibility ? request.Visibility : null);
+        return result!.ToGrpc();
+    }
+
+    public override async Task<Grpc.Status> Unreblog(StringValue request, ServerCallContext context)
+    {
+        var authorization = context.GetHttpContext().Request.Headers.Authorization.ToString();
+        _mastodon.SetAuthorizationToken(authorization);
+
+        var result = await _mastodon.Statuses.UnreblogAsync(request.Value);
+        return result!.ToGrpc();
+    }
 }
