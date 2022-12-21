@@ -32,6 +32,22 @@ public sealed class AccountApiService : Mastodon.Grpc.AccountApi.AccountApiBase
         return result.Data!.ToGrpc();
     }
 
+    public override async Task<Account> VerifyCredentials(Empty request, ServerCallContext context)
+    {
+        _mastodon.SetDefaults(context);
+
+        var result = await _mastodon.Accounts.VerifyCredentials();
+
+        if (!result.IsSuccessStatusCode)
+        {
+            throw new RpcException(new global::Grpc.Core.Status(StatusCode.Internal, result.StatusCode.ToString()));
+        }
+
+        await result.WriteHeadersTo(context);
+
+        return result.Data!.ToGrpc();
+    }
+
     public override async Task<Statuses> GetStatuses(GetStatusesRequest request, ServerCallContext context)
     {
         _mastodon.SetDefaults(context);
