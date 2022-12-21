@@ -39,6 +39,8 @@ var app = builder.Build();
 app.Use((context, next) =>
 {
     var contentType = context.Request.Headers.ContentType;
+    Console.WriteLine($"ContentType: {contentType}");
+
     if (contentType.Count == 0 || string.IsNullOrWhiteSpace(contentType.ToString()))
     {
         if (context.Request.Path.StartsWithSegments("/api/v1/"))
@@ -46,6 +48,9 @@ app.Use((context, next) =>
             context.Request.Headers.ContentType = new Microsoft.Extensions.Primitives.StringValues("application/json");
         }
     }
+
+    Console.WriteLine($"ContentType: {contentType}");
+
 
     return next();
 });
