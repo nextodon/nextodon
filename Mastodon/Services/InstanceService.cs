@@ -2,6 +2,7 @@ using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
 using Mastodon.Client;
 using Mastodon.Grpc;
+using Microsoft.AspNetCore.Http.Extensions;
 
 namespace Mastodon.Services;
 
@@ -17,11 +18,16 @@ public sealed class InstanceService : Mastodon.Grpc.Mastodon.MastodonBase
 
     public override async Task<Grpc.InstanceV1> GetInstanceV1(Empty request, ServerCallContext context)
     {
-        var instance = (await _mastodon.Instance.GetInstanceV1Async())!;
+        _mastodon.SetDefaults(context);
 
-        instance.Uri = context.GetHttpContext().Request.Host.Value;
+        var result = await _mastodon.Instance.GetInstanceV1Async();
+        result.RaiseExceptions();
 
-        return instance.ToGrpc();
+        await result.WriteHeadersTo(context);
+
+        result.Data!.Uri = WebFingerHelper.FixUrl(result.Data!.Uri, context.GetHttpContext().Request.GetEncodedUrl());
+
+        return result.Data!.ToGrpc();
     }
 
     public override async Task<Grpc.Instance> GetInstance(Empty request, ServerCallContext context)

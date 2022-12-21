@@ -12,20 +12,29 @@ public static class WebFingerHelper
         return acct;
     }
 
-    public static string FixUrl(string url)
+    public static string FixUrl(string url, string? preferred = null)
     {
         if (string.IsNullOrEmpty(url))
         {
             return url;
         }
 
-        var u = new Uri(url, UriKind.RelativeOrAbsolute);
+        var u = new UriBuilder(url)
+        {
+            Scheme = "https",
+            Port = 443,
+        };
+        var p = new UriBuilder(preferred ?? "backend.mangoriver-4d99c329.canadacentral.azurecontainerapps.io")
+        {
+            Scheme = "https",
+            Port = 443,
+        };
 
         if (u.Host == "mastodon.lol")
         {
-            var builder = new UriBuilder(u)
+            var builder = new UriBuilder(u.ToString())
             {
-                Host = "backend.mangoriver-4d99c329.canadacentral.azurecontainerapps.io"
+                Host = p.Host,
             };
 
             url = builder.Uri.ToString();
