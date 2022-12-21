@@ -39,7 +39,7 @@ public sealed class TimelineService : Mastodon.Grpc.Timeline.TimelineBase
     {
         _mastodon.SetDefaults(context);
 
-        var result = (await _mastodon.Timeline.GetHomeAsync());
+        var result = await _mastodon.Timeline.GetHomeAsync();
         return result.ToGrpc();
     }
 
@@ -47,7 +47,7 @@ public sealed class TimelineService : Mastodon.Grpc.Timeline.TimelineBase
     {
         _mastodon.SetDefaults(context);
 
-        var result = (await _mastodon.Timeline.GetListAsync(request.Value));
+        var result = await _mastodon.Timeline.GetListAsync(request.Value);
         return result.ToGrpc();
     }
 
@@ -57,7 +57,7 @@ public sealed class TimelineService : Mastodon.Grpc.Timeline.TimelineBase
     {
         _mastodon.SetDefaults(context);
 
-        var result = (await _mastodon.Timeline.GetDirectAsync());
+        var result = await _mastodon.Timeline.GetDirectAsync();
         return result.ToGrpc();
     }
 #pragma warning restore CS0809
