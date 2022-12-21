@@ -23,6 +23,14 @@ service StatusApi {
       response_body: "data"
     };
   }
+  
+  rpc GetFavouritedBy (GetFavouritedByRequest) returns (Accounts)
+  {
+	option (google.api.http) = {
+      get: "/api/v1/statuses/{statusId}/favourited_by"
+      response_body: "data"
+    };
+  }
 
   rpc GetContext (google.protobuf.StringValue) returns (Context)
   {
@@ -104,6 +112,23 @@ service StatusApi {
 }
 
 message GetRebloggedByRequest
+{
+    string statusId = 1;
+
+    // Internal parameter. Use HTTP Link header for pagination.
+    optional string max_id = 2;
+
+    // Internal parameter. Use HTTP Link header for pagination.
+    optional string since_id = 3;
+    
+    // Internal parameter. Use HTTP Link header for pagination.
+    optional string min_id = 4;
+    
+    // Maximum number of results to return. Defaults to 40 accounts. Max 80 accounts.
+    optional uint32 limit = 5; 
+}
+
+message GetFavouritedByRequest
 {
     string statusId = 1;
 
