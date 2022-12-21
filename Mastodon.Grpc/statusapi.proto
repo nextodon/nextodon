@@ -77,4 +77,25 @@ service StatusApi {
       post: "/api/v1/statuses/{value}/unpin"
     };
   }
+
+  rpc Reblog (ReblogRequest) returns (Status)
+  {
+	option (google.api.http) = {
+      post: "/api/v1/statuses/{statusId}/reblog"
+      body: "*"
+    };
+  }
+  
+  rpc Unreblog (google.protobuf.StringValue) returns (Status)
+  {
+	option (google.api.http) = {
+      post: "/api/v1/statuses/{value}/unreblog"
+    };
+  }
+}
+
+message ReblogRequest
+{
+    string statusId = 1;
+    optional string visibility = 2;
 }
