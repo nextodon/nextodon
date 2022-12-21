@@ -20,8 +20,16 @@ public sealed class AccountApiService : Mastodon.Grpc.AccountApi.AccountApiBase
     {
         _mastodon.SetDefaults(context);
 
-        var result = (await _mastodon.Accounts.GetByIdAsync(request.Value))!;
-        return result.ToGrpc();
+        var result = await _mastodon.Accounts.GetByIdAsync(request.Value);
+
+        if (!result.IsSuccessStatusCode)
+        {
+            throw new RpcException(new global::Grpc.Core.Status(StatusCode.Internal, result.StatusCode.ToString()));
+        }
+
+        await result.WriteHeadersTo(context);
+
+        return result.Data!.ToGrpc();
     }
 
     public override async Task<Statuses> GetStatuses(GetStatusesRequest request, ServerCallContext context)
