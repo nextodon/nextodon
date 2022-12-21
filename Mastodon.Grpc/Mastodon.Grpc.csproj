@@ -26,6 +26,7 @@
 		<Protobuf Include="list.proto" />
 		<Protobuf Include="mastodon.proto" />
 		<Protobuf Include="media.proto" />
+		<Protobuf Include="mediaapi.proto" />
 		<Protobuf Include="oauth.proto" />
 		<Protobuf Include="poll.proto" />
 		<Protobuf Include="relationship.proto" />
