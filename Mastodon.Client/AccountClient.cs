@@ -15,9 +15,9 @@ public sealed class AccountClient
     /// <summary>
     /// Obtain a list of all accounts that follow a given account, filtered for accounts you follow.
     /// </summary>
-    public Task<Account?> GetByIdAsync(string id)
+    public Task<Response<Account>> GetByIdAsync(string id)
     {
-        return _client.HttpClient.GetFromJsonAsync<Account>($"api/v1/accounts/{id}", MastodonClient._options);
+        return _client.HttpClient.GetFromJsonWithHeadersAsync<Account>($"api/v1/accounts/{id}", MastodonClient._options);
     }
 
     public async Task<Relationship?> FollowAsync(string id)

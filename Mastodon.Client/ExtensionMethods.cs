@@ -13,12 +13,15 @@ internal static class ExtensionMethods
 
         var response = await client.GetAsync(requestUri, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
         var headers = response.Headers.ToDictionary(x => x.Key.ToLower(), x => x.Value);
+        TValue? data = default;
 
-        var content = await response.Content.ReadAsStringAsync();
+        if (response.IsSuccessStatusCode)
+        {
+            var content = await response.Content.ReadAsStringAsync();
+            data = JsonSerializer.Deserialize<TValue>(content, options);
+        }
 
-        var data = JsonSerializer.Deserialize<TValue>(content, options);
-
-        return new Response<TValue>(data, headers);
+        return new Response<TValue>(response.StatusCode, data, headers);
     }
 
     public static async Task<Response<TValue>> PostFromAsync<TValue>(this HttpClient client, string? requestUri, IEnumerable<KeyValuePair<string, string>> form, JsonSerializerOptions? options, CancellationToken cancellationToken = default)
@@ -30,10 +33,14 @@ internal static class ExtensionMethods
 
         var response = await client.PostAsync(requestUri, new FormUrlEncodedContent(form), cancellationToken);
         var headers = response.Headers.ToDictionary(x => x.Key.ToLower(), x => x.Value);
+        TValue? data = default;
 
-        var content = await response.Content.ReadAsStringAsync();
-        var data = JsonSerializer.Deserialize<TValue>(content, options);
+        if (response.IsSuccessStatusCode)
+        {
+            var content = await response.Content.ReadAsStringAsync();
+            data = JsonSerializer.Deserialize<TValue>(content, options);
+        }
 
-        return new Response<TValue>(data, headers);
+        return new Response<TValue>(response.StatusCode, data, headers);
     }
 }
