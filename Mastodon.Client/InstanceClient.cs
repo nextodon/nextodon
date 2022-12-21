@@ -15,9 +15,9 @@ public sealed class InstanceClient
     /// <summary>
     /// Obtain general information about the server.
     /// </summary>
-    public Task<InstanceV1?> GetInstanceV1Async()
+    public Task<Response<InstanceV1>> GetInstanceV1Async()
     {
-        return _client.HttpClient.GetFromJsonAsync<InstanceV1>("api/v1/instance", MastodonClient._options);
+        return _client.HttpClient.GetFromJsonWithHeadersAsync<InstanceV1>("api/v1/instance", MastodonClient._options);
     }
 
     /// <summary>
