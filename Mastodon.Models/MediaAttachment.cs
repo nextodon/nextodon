@@ -28,7 +28,7 @@ public sealed partial class MediaAttachment
     /// <summary>
     /// The location of a scaled-down preview of the attachment.
     /// </summary>
-    public required string PreviewUrl { get; set; }
+    public string? PreviewUrl { get; set; }
 
     /// <summary>
     /// The location of the full-size original attachment on the remote website.

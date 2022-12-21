@@ -21,11 +21,7 @@ public sealed class AccountApiService : Mastodon.Grpc.AccountApi.AccountApiBase
         _mastodon.SetDefaults(context);
 
         var result = await _mastodon.Accounts.GetByIdAsync(request.Value);
-
-        if (!result.IsSuccessStatusCode)
-        {
-            throw new RpcException(new global::Grpc.Core.Status(StatusCode.Internal, result.StatusCode.ToString()));
-        }
+        result.RaiseExceptions();
 
         await result.WriteHeadersTo(context);
 
