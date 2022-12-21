@@ -130,13 +130,16 @@ public sealed class StatusClient
         return result;
     }
 
-    public async Task<Status?> ReblogAsync(string id, string? visibility = null)
+    public Task<Response<Status>> ReblogAsync(string id, string? visibility = null)
     {
-        var form = new FormUrlEncodedContent(new Dictionary<string, string?> { ["visibility"] = visibility });
-        var response = await _client.HttpClient.PostAsync($"api/v1/statuses/{id}/reblog", form);
-        var result = await response.Content.ReadFromJsonAsync<Status>(MastodonClient._options);
+        var form = new List<KeyValuePair<string, string>>();
 
-        return result;
+        if (!string.IsNullOrWhiteSpace(visibility))
+        {
+            form.Add(new KeyValuePair<string, string>("visibility", visibility));
+        }
+
+        return _client.HttpClient.PostFromAsync<Status>($"api/v1/statuses/{id}/reblog", form, MastodonClient._options);
     }
 
     public async Task<Status?> UnreblogAsync(string id)

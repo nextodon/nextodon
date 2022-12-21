@@ -20,4 +20,20 @@ internal static class ExtensionMethods
 
         return new Response<TValue>(data, headers);
     }
+
+    public static async Task<Response<TValue>> PostFromAsync<TValue>(this HttpClient client, string? requestUri, IEnumerable<KeyValuePair<string, string>> form, JsonSerializerOptions? options, CancellationToken cancellationToken = default)
+    {
+        if (client is null)
+        {
+            throw new ArgumentNullException(nameof(client));
+        }
+
+        var response = await client.PostAsync(requestUri, new FormUrlEncodedContent(form), cancellationToken);
+        var headers = response.Headers.ToDictionary(x => x.Key.ToLower(), x => x.Value);
+
+        var content = await response.Content.ReadAsStringAsync();
+        var data = JsonSerializer.Deserialize<TValue>(content, options);
+
+        return new Response<TValue>(data, headers);
+    }
 }
