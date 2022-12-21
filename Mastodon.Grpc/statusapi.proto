@@ -24,6 +24,13 @@ service StatusApi {
     };
   }
   
+  rpc DeleteStatus (google.protobuf.StringValue) returns (Status)
+  {
+	option (google.api.http) = {
+      delete: "/api/v1/statuses/{value}"
+    };
+  }
+  
   rpc GetRebloggedBy (GetRebloggedByRequest) returns (Accounts)
   {
 	option (google.api.http) = {

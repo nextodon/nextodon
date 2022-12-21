@@ -109,7 +109,6 @@ public static class StatusExtensionMethods
             Bookmarked = i.Bookmarked,
             CreatedAt = Timestamp.FromDateTime(i.CreatedAt),
             Uri = WebFingerHelper.FixUrl(i.Uri),
-            Content = i.Content,
             Visibility = i.Visibility,
             SpoilerText = i.SpoilerText,
             Favourited = i.Favourited,
@@ -125,6 +124,11 @@ public static class StatusExtensionMethods
             Application = i.Application?.ToGrpc(),
             Card = i.Card?.ToGrpc(),
         };
+
+        if (i.Content != null)
+        {
+            v.Content = i.Content;
+        }
 
         if (i.Url != null)
         {

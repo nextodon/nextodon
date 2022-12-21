@@ -32,6 +32,15 @@ public sealed class StatusApiService : Mastodon.Grpc.StatusApi.StatusApiBase
         return result.ToGrpc();
     }
 
+    public override async Task<Grpc.Status> DeleteStatus(StringValue request, ServerCallContext context)
+    {
+        _mastodon.SetDefaults(context);
+
+        var result = await _mastodon.Statuses.DeleteByIdAsync(request.Value);
+
+        return result!.ToGrpc();
+    }
+
     public override async Task<Accounts> GetRebloggedBy(GetRebloggedByRequest request, ServerCallContext context)
     {
         _mastodon.SetDefaults(context);
