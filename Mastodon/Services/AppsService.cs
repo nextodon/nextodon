@@ -1,4 +1,5 @@
-﻿using Grpc.Core;
+﻿using Google.Protobuf.WellKnownTypes;
+using Grpc.Core;
 using Mastodon.Client;
 using Mastodon.Grpc;
 
@@ -24,5 +25,17 @@ public sealed class AppsService : Mastodon.Grpc.Apps.AppsBase
             );
 
         return result!.ToGrpc();
+    }
+
+    public override async Task<Application> VerifyCredentials(Empty request, ServerCallContext context)
+    {
+        _mastodon.SetDefaults(context);
+
+        var result = await _mastodon.Apps.VerifyCredentials();
+        result.RaiseExceptions();
+
+        await result.WriteHeadersTo(context);
+
+        return result.Data!.ToGrpc();
     }
 }
