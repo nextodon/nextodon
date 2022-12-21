@@ -77,6 +77,29 @@ public static class StatusExtensionMethods
         return v;
     }
 
+    public static Client.CreateStatus ToRest(this Grpc.CreateStatusRequest i)
+    {
+        return new Client.CreateStatus
+        {
+            Status = i.Status,
+            Visibility = i.Visibility,
+            MediaIds = i.MediaIds.ToList(),
+            Sensitive = i.Sensitive,
+            Poll = i.Poll?.ToRest(),
+        };
+    }
+
+    public static Client.CreateStatus.Types.Poll ToRest(this Grpc.CreateStatusRequest.Types.Poll i)
+    {
+        return new Client.CreateStatus.Types.Poll
+        {
+            ExpiresIn = i.ExpiresIn,
+            HideTotals = i.HideTotals,
+            Multiple = i.Multiple,
+            Options = i.Options.ToList(),
+        };
+    }
+
     public static Grpc.Status ToGrpc(this Mastodon.Models.Status i)
     {
         var v = new Grpc.Status

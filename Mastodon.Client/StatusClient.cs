@@ -1,5 +1,6 @@
 ﻿using Mastodon.Models;
 using System.Net.Http.Json;
+using System.Text.Json;
 
 namespace Mastodon.Client;
 
@@ -10,6 +11,16 @@ public sealed class StatusClient
     internal StatusClient(MastodonClient client)
     {
         _client = client;
+    }
+
+    public async Task<Status?> CreateAsync(CreateStatus status)
+    {
+        var response = await _client.HttpClient.PostAsJsonAsync($"api/v1/statuses", status, MastodonClient._options);
+        var content = await response.Content.ReadAsStringAsync();
+
+        var result = JsonSerializer.Deserialize<Status>(content, MastodonClient._options);
+
+        return result;
     }
 
     public Task<Status?> GetByIdAsync(string id)
@@ -114,12 +125,9 @@ public sealed class StatusClient
         return result;
     }
 
-    public async Task<Status?> PinAsync(string id)
+    public Task<Response<Status>> PinAsync(string id)
     {
-        var response = await _client.HttpClient.PostAsync($"api/v1/statuses/{id}/pin", new StringContent(string.Empty));
-        var result = await response.Content.ReadFromJsonAsync<Status>(MastodonClient._options);
-
-        return result;
+        return _client.HttpClient.PostFromAsync<Status>($"api/v1/statuses/{id}/pin", MastodonClient._options);
     }
 
     public async Task<Status?> UnpinAsync(string id)

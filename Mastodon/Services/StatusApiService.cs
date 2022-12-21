@@ -16,6 +16,14 @@ public sealed class StatusApiService : Mastodon.Grpc.StatusApi.StatusApiBase
         _mastodon = mastodon;
     }
 
+    public override async Task<Grpc.Status> CreateStatus(CreateStatusRequest request, ServerCallContext context)
+    {
+        _mastodon.SetDefaults(context);
+
+        var result = await _mastodon.Statuses.CreateAsync(request.ToRest());
+        return result!.ToGrpc();
+    }
+
     public override async Task<Grpc.Status> GetStatus(StringValue request, ServerCallContext context)
     {
         _mastodon.SetDefaults(context);
@@ -113,7 +121,9 @@ public sealed class StatusApiService : Mastodon.Grpc.StatusApi.StatusApiBase
         _mastodon.SetDefaults(context);
 
         var result = await _mastodon.Statuses.PinAsync(request.Value);
-        return result!.ToGrpc();
+        result.RaiseExceptions();
+
+        return result.Data!.ToGrpc();
     }
 
     public override async Task<Grpc.Status> Unpin(StringValue request, ServerCallContext context)
@@ -129,11 +139,8 @@ public sealed class StatusApiService : Mastodon.Grpc.StatusApi.StatusApiBase
         _mastodon.SetDefaults(context);
 
         var result = await _mastodon.Statuses.ReblogAsync(request.StatusId, visibility: request.HasVisibility ? request.Visibility : null);
-
-        if (!result.IsSuccessStatusCode)
-        {
-            throw new RpcException(new global::Grpc.Core.Status(StatusCode.Internal, result.StatusCode.ToString()));
-        }
+        
+        result.RaiseExceptions();
 
         await result.WriteHeadersTo(context);
 

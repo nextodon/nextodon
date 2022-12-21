@@ -1,6 +1,9 @@
+using Mastodon;
+using Mastodon.Client;
 using Mastodon.Services;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.Extensions.Logging;
 using System.Net;
 using System.Text;
 
@@ -160,6 +163,7 @@ app.MapPost("/oauth/authorize", async (context) =>
         var utf8 = Encoding.UTF8.GetBytes(content);
 
         context.Response.StatusCode = (int)response.StatusCode;
+        context.Response.Headers.Location = new Microsoft.Extensions.Primitives.StringValues(response.Headers.Location?.ToString());
 
         var d = context.Response.Cookies;
         foreach (var ck in cookieContainer.GetAllCookies().ToList())
@@ -206,6 +210,38 @@ app.MapGet("/oauth/authorize", async (context) =>
     {
         //
     }
+});
+
+app.MapPost("/api/v1/media", async (context) =>
+{
+    var form = await context.Request.ReadFormAsync();
+
+    var client = new MastodonClient(new Uri("https://mastodon.lol"));
+    client.SetDefaults(context);
+
+    var content = new MultipartContent();
+    foreach (var f in form)
+    {
+        //
+    }
+    foreach (var f in form.Files)
+    {
+        var sc = new StreamContent(f.OpenReadStream());
+        sc.Headers.ContentDisposition = System.Net.Http.Headers.ContentDispositionHeaderValue.Parse(f.ContentDisposition);
+        sc.Headers.ContentLength = f.Length;
+        sc.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(f.ContentType);
+
+        content.Add(sc);
+    }
+
+    var resp = await client!.HttpClient.PostAsync("api/v1/media", content);
+
+    var c = await resp.Content.ReadAsStringAsync();
+
+    context.Response.ContentType = resp.Content.Headers.ContentType?.MediaType;
+    context.Response.ContentLength = resp.Content.Headers.ContentLength;
+    context.Response.StatusCode = (int)resp.StatusCode;
+    await context.Response.WriteAsync(c);
 });
 
 app.MapFallback(async context =>

@@ -21,7 +21,7 @@ internal static class ExtensionMethods
             data = JsonSerializer.Deserialize<TValue>(content, options);
         }
 
-        return new Response<TValue>(response.StatusCode, data, headers);
+        return new Response<TValue>(response.StatusCode, data, headers, response.ReasonPhrase);
     }
 
     public static async Task<Response<TValue>> PostFromAsync<TValue>(this HttpClient client, string? requestUri, JsonSerializerOptions? options, IEnumerable<KeyValuePair<string, string>>? form = null, CancellationToken cancellationToken = default)
@@ -35,14 +35,14 @@ internal static class ExtensionMethods
 
         var response = await client.PostAsync(requestUri, httpcontent, cancellationToken);
         var headers = response.Headers.ToDictionary(x => x.Key.ToLower(), x => x.Value);
+        var content = await response.Content.ReadAsStringAsync();
         TValue? data = default;
 
         if (response.IsSuccessStatusCode)
         {
-            var content = await response.Content.ReadAsStringAsync();
             data = JsonSerializer.Deserialize<TValue>(content, options);
         }
 
-        return new Response<TValue>(response.StatusCode, data, headers);
+        return new Response<TValue>(response.StatusCode, data, headers, content);
     }
 }
