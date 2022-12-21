@@ -20,6 +20,10 @@ public sealed class AccountClient
         return _client.HttpClient.GetFromJsonWithHeadersAsync<Account>($"api/v1/accounts/{id}", MastodonClient._options);
     }
 
+    public Task<Response<Account>> VerifyCredentials()
+    {
+        return _client.HttpClient.GetFromJsonWithHeadersAsync<Account>($"api/v1/accounts/verify_credentials", MastodonClient._options);
+    }
     public async Task<Relationship?> FollowAsync(string id)
     {
         var response = await _client.HttpClient.PostAsync($"api/v1/accounts/{id}/follow", new StringContent(string.Empty));
