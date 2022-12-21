@@ -13,6 +13,38 @@ public sealed class AccountClient
     }
 
     /// <summary>
+    /// Creates a user and account records.
+    /// Returns an account access token for the app that initiated the request.
+    /// The app should save this token for later, and should wait for the user
+    /// to confirm their account by clicking a link in their email inbox.
+    /// </summary>
+    /// <param name="username">The desired username for the account.</param>
+    /// <param name="email">The email address to be used for login.</param>
+    /// <param name="password">The password to be used for login.</param>
+    /// <param name="agreement">Whether the user agrees to the local rules, terms, and policies. These should be presented to the user in order to allow them to consent before setting this parameter to TRUE.</param>
+    /// <param name="locale">The language of the confirmation email that will be sent.</param>
+    /// <param name="reason">If registrations require manual approval, this text will be reviewed by moderators.</param>
+    /// <returns></returns>
+    public Task<Response<Token>> Register(string username, string email, string password, bool agreement, string locale, string? reason)
+    {
+        var form = new Dictionary<string, string>
+        {
+            ["username"] = username,
+            ["email"] = email,
+            ["password"] = password,
+            ["agreement"] = agreement.ToString(),
+            ["locale"] = locale,
+        };
+
+        if (!string.IsNullOrEmpty(reason))
+        {
+            form["reason"] = reason;
+        }
+
+        return _client.HttpClient.PostFromAsync<Token>($"api/v1/accounts", MastodonClient._options, form);
+    }
+
+    /// <summary>
     /// Obtain a list of all accounts that follow a given account, filtered for accounts you follow.
     /// </summary>
     public Task<Response<Account>> GetByIdAsync(string id)
