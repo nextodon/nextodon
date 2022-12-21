@@ -8,12 +8,13 @@ public static class ProxyExtensionMethods
     public static Task WriteHeadersTo<T>(this Response<T> response, ServerCallContext context)
     {
         var metadata = new Metadata();
+        var headers = response.Headers;
 
-        foreach (var header in response.Headers)
+        if (headers.TryGetValue("link", out var links))
         {
-            foreach (var value in header.Value)
+            foreach (var value in links)
             {
-                metadata.Add(header.Key, value);
+                metadata.Add("link", value);
             }
         }
 
