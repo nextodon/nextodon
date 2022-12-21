@@ -28,6 +28,14 @@ public sealed class StatusClient
         return _client.HttpClient.GetFromJsonAsync<Status>($"api/v1/statuses/{id}", MastodonClient._options);
     }
 
+    public async Task<Status?> DeleteByIdAsync(string id)
+    {
+        var response = await _client.HttpClient.DeleteAsync($"api/v1/statuses/{id}");
+        var content = await response.Content.ReadAsStringAsync();
+
+        return JsonSerializer.Deserialize<Status>(content, MastodonClient._options);
+    }
+
     /// <summary>
     /// View who reblogged a given status.
     /// </summary>
