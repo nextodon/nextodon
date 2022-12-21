@@ -244,6 +244,38 @@ app.MapPost("/api/v1/media", async (context) =>
     await context.Response.WriteAsync(c);
 });
 
+app.MapPost("/api/v2/media", async (context) =>
+{
+    var form = await context.Request.ReadFormAsync();
+
+    var client = new MastodonClient(new Uri("https://mastodon.lol"));
+    client.SetDefaults(context);
+
+    var content = new MultipartContent();
+    foreach (var f in form)
+    {
+        //
+    }
+    foreach (var f in form.Files)
+    {
+        var sc = new StreamContent(f.OpenReadStream());
+        sc.Headers.ContentDisposition = System.Net.Http.Headers.ContentDispositionHeaderValue.Parse(f.ContentDisposition);
+        sc.Headers.ContentLength = f.Length;
+        sc.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(f.ContentType);
+
+        content.Add(sc);
+    }
+
+    var resp = await client!.HttpClient.PostAsync("api/v2/media", content);
+
+    var c = await resp.Content.ReadAsStringAsync();
+
+    context.Response.ContentType = resp.Content.Headers.ContentType?.MediaType;
+    context.Response.ContentLength = resp.Content.Headers.ContentLength;
+    context.Response.StatusCode = (int)resp.StatusCode;
+    await context.Response.WriteAsync(c);
+});
+
 app.MapFallback(async context =>
 {
     var logger = ((IApplicationBuilder)app).ApplicationServices.GetService<ILogger<Program>>();
