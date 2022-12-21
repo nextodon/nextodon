@@ -1,6 +1,7 @@
 syntax = "proto3";
 
 import "google/api/annotations.proto";
+import "google/protobuf/empty.proto";
 import "application.proto";
 
 option csharp_namespace = "Mastodon.Grpc";
@@ -11,6 +12,13 @@ service Apps {
 	option (google.api.http) = {
       post: "/api/v1/apps"
       body: "*"
+    };
+  }
+  
+  rpc VerifyCredentials(google.protobuf.Empty) returns (Application)
+  {
+	option (google.api.http) = {
+      get: "/api/v1/apps/verify_credentials"
     };
   }
 }

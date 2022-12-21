@@ -45,4 +45,9 @@ public sealed class AppsClient
 
         return app;
     }
+
+    public Task<Response<Application>> VerifyCredentials()
+    {
+        return _client.HttpClient.GetFromJsonWithHeadersAsync<Application>("api/v1/apps/verify_credentials", MastodonClient._options);
+    }
 }
