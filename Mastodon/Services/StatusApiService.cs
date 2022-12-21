@@ -26,6 +26,20 @@ public sealed class StatusApiService : Mastodon.Grpc.StatusApi.StatusApiBase
         return result.ToGrpc();
     }
 
+    public override async Task<Accounts> GetRebloggedBy(GetRebloggedByRequest request, ServerCallContext context)
+    {
+        var authorization = context.GetHttpContext().Request.Headers.Authorization.ToString();
+        _mastodon.SetAuthorizationToken(authorization);
+
+        var result = await _mastodon.Statuses.GetRebloggedByAsync(request.StatusId,
+            maxId: request.HasMaxId ? request.MaxId : null,
+            sinceId: request.HasSinceId ? request.SinceId : null,
+            minId: request.HasMinId ? request.MinId : null,
+            limit: request.HasLimit ? request.Limit : null);
+
+        return result!.ToGrpc();
+    }
+
     public override async Task<Grpc.Context> GetContext(StringValue request, ServerCallContext context)
     {
         var authorization = context.GetHttpContext().Request.Headers.Authorization.ToString();

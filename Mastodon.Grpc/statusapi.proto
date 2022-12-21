@@ -2,6 +2,7 @@ syntax = "proto3";
 
 import "google/api/annotations.proto";
 import "google/protobuf/wrappers.proto";
+import "account.proto";
 import "context.proto";
 import "status.proto";
 
@@ -12,6 +13,14 @@ service StatusApi {
   {
 	option (google.api.http) = {
       get: "/api/v1/statuses/{value}"
+    };
+  }
+  
+  rpc GetRebloggedBy (GetRebloggedByRequest) returns (Accounts)
+  {
+	option (google.api.http) = {
+      get: "/api/v1/statuses/{statusId}/reblogged_by"
+      response_body: "data"
     };
   }
 
@@ -92,6 +101,23 @@ service StatusApi {
       post: "/api/v1/statuses/{value}/unreblog"
     };
   }
+}
+
+message GetRebloggedByRequest
+{
+    string statusId = 1;
+
+    // Internal parameter. Use HTTP Link header for pagination.
+    optional string max_id = 2;
+
+    // Internal parameter. Use HTTP Link header for pagination.
+    optional string since_id = 3;
+    
+    // Internal parameter. Use HTTP Link header for pagination.
+    optional string min_id = 4;
+    
+    // Maximum number of results to return. Defaults to 40 accounts. Max 80 accounts.
+    optional uint32 limit = 5; 
 }
 
 message ReblogRequest

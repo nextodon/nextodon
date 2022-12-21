@@ -1,5 +1,8 @@
-﻿using Mastodon.Models;
+﻿using Google.Protobuf.WellKnownTypes;
+using Mastodon.Models;
+using System;
 using System.Net.Http.Json;
+using System.Runtime.CompilerServices;
 
 namespace Mastodon.Client;
 
@@ -11,11 +14,35 @@ public sealed class StatusClient
     {
         _client = client;
     }
-    
+
     public Task<Status?> GetByIdAsync(string id)
     {
         return _client.http.GetFromJsonAsync<Status>($"api/v1/statuses/{id}", MastodonClient._options);
     }
+
+    /// <summary>
+    /// View who favourited a given status.
+    /// </summary>
+    /// <param name="id"></param>
+    /// <param name="maxId">Internal parameter. Use HTTP Link header for pagination.</param>
+    /// <param name="sinceId">Internal parameter. Use HTTP Link header for pagination.</param>
+    /// <param name="minId">Internal parameter. Use HTTP Link header for pagination.</param>
+    /// <param name="limit">Maximum number of results to return. Defaults to 40 accounts. Max 80 accounts.</param>
+    /// <returns>View who favourited a given status.</returns>
+    public Task<List<Account>?> GetRebloggedByAsync(string id, string? maxId = null, string? sinceId = null, string? minId = null, uint? limit = null)
+    {
+        var q = new QueryBuilder();
+
+        q.Add("max_id", maxId);
+        q.Add("since_id", sinceId);
+        q.Add("min_id", minId);
+        q.Add("limit", limit);
+
+        var url = q.GetUrl($"api/v1/statuses/{id}/reblogged_by");
+
+        return _client.http.GetFromJsonAsync<List<Account>>(url, MastodonClient._options);
+    }
+
 
     public Task<Context?> GetContextAsync(string id)
     {
