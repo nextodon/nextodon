@@ -12,7 +12,7 @@ internal static class ExtensionMethods
         }
 
         var response = await client.GetAsync(requestUri, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
-        var headers = response.Headers.ToDictionary(x => x.Key, x => x.Value);
+        var headers = response.Headers.ToDictionary(x => x.Key.ToLower(), x => x.Value);
 
         var content = await response.Content.ReadAsStringAsync();
 
