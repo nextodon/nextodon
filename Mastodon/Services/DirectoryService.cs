@@ -17,6 +17,12 @@ public sealed class DirectoryService : Mastodon.Grpc.Directory.DirectoryBase
 
     public override async Task<Accounts> GetAccounts(GetDirectoryRequest request, ServerCallContext context)
     {
+        var authorization = context.GetHttpContext().Request.Headers.Authorization.ToString();
+        _mastodon.SetAuthorizationToken(authorization);
+
+        var link = context.GetHttpContext().Request.Headers["link"].ToString();
+        context.ResponseTrailers.Add("link", link);
+
         var result = await _mastodon.Directory.GetDirectoryAsync(
             offset: request.HasOffset ? request.Offset : null,
             limit: request.HasLimit ? request.Limit : null,
