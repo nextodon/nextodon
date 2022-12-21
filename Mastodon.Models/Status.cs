@@ -28,7 +28,7 @@ public sealed partial class Status
     /// <summary>
     /// HTML-encoded status content.
     /// </summary>
-    public required string Content { get; set; }
+    public string? Content { get; set; }
 
     /// <summary>
     /// Visibility of this status.
