@@ -24,6 +24,13 @@ service AccountApi {
     };
   }
 
+  rpc VerifyCredentials (google.protobuf.Empty) returns (Account)
+  {
+	option (google.api.http) = {
+      get: "/api/v1/accounts/verify_credentials"
+    };
+  }
+
   rpc GetStatuses (GetStatusesRequest) returns (Statuses)
   {
 	option (google.api.http) = {
