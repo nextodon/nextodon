@@ -16,6 +16,22 @@ public sealed class AccountApiService : Mastodon.Grpc.AccountApi.AccountApiBase
         _mastodon = mastodon;
     }
 
+    public override async Task<Token> Register(RegisterRequest request, ServerCallContext context)
+    {
+        _mastodon.SetDefaults(context);
+
+        var result = await _mastodon.Accounts.Register(
+            request.Username, request.Email,
+            request.Password, request.Agreement, request.Locale,
+            request.HasReason ? request.Reason : null);
+
+        result.RaiseExceptions();
+
+        await result.WriteHeadersTo(context);
+
+        return result.Data!.ToGrpc();
+    }
+
     public override async Task<Grpc.Account> GetAccount(StringValue request, ServerCallContext context)
     {
         _mastodon.SetDefaults(context);
