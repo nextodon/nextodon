@@ -21,7 +21,7 @@ public sealed class ListClient
     /// <param name="local">If true, returns only local accounts.</param>
     public Task<List<List>?> GetListsAsync()
     {
-        return _client.http.GetFromJsonAsync<List<List>>("api/v1/lists", MastodonClient._options);
+        return _client.HttpClient.GetFromJsonAsync<List<List>>("api/v1/lists", MastodonClient._options);
     }
 }
 

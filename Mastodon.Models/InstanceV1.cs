@@ -11,7 +11,7 @@ public sealed class InstanceV1
     public required UrlsHash Urls { get; set; }
     public required StatsHash Stats { get; set; }
     public required string Thumbnail { get; set; }
-    public required List< string> Languages { get; set; }
+    public required List<string> Languages { get; set; }
     public required bool Registrations { get; set; }
     public required bool ApprovalRequired { get; set; }
     public required bool InvitesEnabled { get; set; }

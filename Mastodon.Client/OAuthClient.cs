@@ -1,6 +1,5 @@
 ﻿using Mastodon.Models;
 using System.Net.Http.Json;
-using static System.Formats.Asn1.AsnWriter;
 
 namespace Mastodon.Client;
 
@@ -54,7 +53,7 @@ public sealed class OAuthClient
 
         var form = new FormUrlEncodedContent(values);
 
-        var response = await _client.http.PostAsync("oauth/token", form);
+        var response = await _client.HttpClient.PostAsync("oauth/token", form);
         var token = await response.Content.ReadFromJsonAsync<Token>(MastodonClient._options);
 
         return token;

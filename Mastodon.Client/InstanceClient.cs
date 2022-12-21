@@ -17,7 +17,7 @@ public sealed class InstanceClient
     /// </summary>
     public Task<InstanceV1?> GetInstanceV1Async()
     {
-        return _client.http.GetFromJsonAsync<InstanceV1>("api/v1/instance", MastodonClient._options);
+        return _client.HttpClient.GetFromJsonAsync<InstanceV1>("api/v1/instance", MastodonClient._options);
     }
 
     /// <summary>
@@ -25,7 +25,7 @@ public sealed class InstanceClient
     /// </summary>
     public Task<Instance?> GetInstanceAsync()
     {
-        return _client.http.GetFromJsonAsync<Instance>("api/v2/instance", MastodonClient._options);
+        return _client.HttpClient.GetFromJsonAsync<Instance>("api/v2/instance", MastodonClient._options);
     }
 
     /// <summary>
@@ -33,12 +33,12 @@ public sealed class InstanceClient
     /// </summary>
     public Task<List<string>?> GetConnectedDomainsAsync()
     {
-        return _client.http.GetFromJsonAsync<List<string>>("api/v1/instance/peers", MastodonClient._options);
+        return _client.HttpClient.GetFromJsonAsync<List<string>>("api/v1/instance/peers", MastodonClient._options);
     }
-    
+
     public Task<List<Activity>?> GetActivitiesAsync()
     {
-        return _client.http.GetFromJsonAsync<List<Activity>>("api/v1/instance/activity", MastodonClient._options);
+        return _client.HttpClient.GetFromJsonAsync<List<Activity>>("api/v1/instance/activity", MastodonClient._options);
     }
 
 
@@ -47,7 +47,7 @@ public sealed class InstanceClient
     /// </summary>
     public Task<List<Rule>?> GetRulesAsync()
     {
-        return _client.http.GetFromJsonAsync<List<Rule>>("api/v1/instance/rules", MastodonClient._options);
+        return _client.HttpClient.GetFromJsonAsync<List<Rule>>("api/v1/instance/rules", MastodonClient._options);
     }
 
 
@@ -56,7 +56,7 @@ public sealed class InstanceClient
     /// </summary>
     public Task<ExtendedDescription?> GetExtendedDescriptionAsync()
     {
-        return _client.http.GetFromJsonAsync<ExtendedDescription>("api/v1/instance/extended_description", MastodonClient._options);
+        return _client.HttpClient.GetFromJsonAsync<ExtendedDescription>("api/v1/instance/extended_description", MastodonClient._options);
     }
 
     /// <summary>
@@ -64,7 +64,7 @@ public sealed class InstanceClient
     /// </summary>
     public Task<List<DomainBlock>?> GetDomainBlocksAsync()
     {
-        return _client.http.GetFromJsonAsync<List<DomainBlock>>("api/v1/instance/domain_block", MastodonClient._options);
+        return _client.HttpClient.GetFromJsonAsync<List<DomainBlock>>("api/v1/instance/domain_block", MastodonClient._options);
     }
 }
 

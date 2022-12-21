@@ -1,13 +1,8 @@
 using Mastodon.Services;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.HttpOverrides;
-using Microsoft.IdentityModel.Tokens;
-using System.Buffers;
 using System.Net;
 using System.Text;
-using static Google.Rpc.Context.AttributeContext.Types;
 
 var builder = WebApplication.CreateBuilder(args);
 

@@ -19,7 +19,7 @@ public sealed class ConversationClient
     /// </summary>
     public Task<List<Conversation>?> GetConversationsAsync()
     {
-        return _client.http.GetFromJsonAsync<List<Conversation>>($"api/v1/conversations", MastodonClient._options);
+        return _client.HttpClient.GetFromJsonAsync<List<Conversation>>($"api/v1/conversations", MastodonClient._options);
     }
 
     /// <summary>
@@ -29,7 +29,7 @@ public sealed class ConversationClient
     /// <returns></returns>
     public Task DeleteAsync(string id)
     {
-        return _client.http.DeleteAsync($"api/v1/conversations/{id}");
+        return _client.HttpClient.DeleteAsync($"api/v1/conversations/{id}");
     }
 
     /// <summary>
@@ -39,7 +39,7 @@ public sealed class ConversationClient
     /// <returns></returns>
     public async Task<Conversation?> MarkReadAsync(string id)
     {
-        var result = await _client.http.PostAsync($"api/v1/conversations/{id}/read", new StringContent(string.Empty));
+        var result = await _client.HttpClient.PostAsync($"api/v1/conversations/{id}/read", new StringContent(string.Empty));
         return await result.Content.ReadFromJsonAsync<Conversation>();
     }
 }

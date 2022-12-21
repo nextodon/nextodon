@@ -1,6 +1,4 @@
 ﻿using Mastodon.Models;
-using System;
-using System.Collections.Generic;
 using System.Net.Http.Json;
 
 namespace Mastodon.Client;
@@ -19,12 +17,12 @@ public sealed class AccountClient
     /// </summary>
     public Task<Account?> GetByIdAsync(string id)
     {
-        return _client.http.GetFromJsonAsync<Account>($"api/v1/accounts/{id}", MastodonClient._options);
+        return _client.HttpClient.GetFromJsonAsync<Account>($"api/v1/accounts/{id}", MastodonClient._options);
     }
 
     public async Task<Relationship?> FollowAsync(string id)
     {
-        var response = await _client.http.PostAsync($"api/v1/accounts/{id}/follow", new StringContent(string.Empty));
+        var response = await _client.HttpClient.PostAsync($"api/v1/accounts/{id}/follow", new StringContent(string.Empty));
         var result = await response.Content.ReadFromJsonAsync<Relationship>(MastodonClient._options);
 
         return result;
@@ -32,7 +30,7 @@ public sealed class AccountClient
 
     public async Task<Relationship?> UnfollowAsync(string id)
     {
-        var response = await _client.http.PostAsync($"api/v1/accounts/{id}/unfollow", new StringContent(string.Empty));
+        var response = await _client.HttpClient.PostAsync($"api/v1/accounts/{id}/unfollow", new StringContent(string.Empty));
         var result = await response.Content.ReadFromJsonAsync<Relationship>(MastodonClient._options);
 
         return result;
@@ -40,7 +38,7 @@ public sealed class AccountClient
 
     public async Task<Relationship?> BlockAsync(string id)
     {
-        var response = await _client.http.PostAsync($"api/v1/accounts/{id}/block", new StringContent(string.Empty));
+        var response = await _client.HttpClient.PostAsync($"api/v1/accounts/{id}/block", new StringContent(string.Empty));
         var result = await response.Content.ReadFromJsonAsync<Relationship>(MastodonClient._options);
 
         return result;
@@ -48,7 +46,7 @@ public sealed class AccountClient
 
     public async Task<Relationship?> UnblockAsync(string id)
     {
-        var response = await _client.http.PostAsync($"api/v1/accounts/{id}/unblock", new StringContent(string.Empty));
+        var response = await _client.HttpClient.PostAsync($"api/v1/accounts/{id}/unblock", new StringContent(string.Empty));
         var result = await response.Content.ReadFromJsonAsync<Relationship>(MastodonClient._options);
 
         return result;
@@ -56,7 +54,7 @@ public sealed class AccountClient
 
     public async Task<Relationship?> MuteAsync(string id)
     {
-        var response = await _client.http.PostAsync($"api/v1/accounts/{id}/mute", new StringContent(string.Empty));
+        var response = await _client.HttpClient.PostAsync($"api/v1/accounts/{id}/mute", new StringContent(string.Empty));
         var result = await response.Content.ReadFromJsonAsync<Relationship>(MastodonClient._options);
 
         return result;
@@ -64,7 +62,7 @@ public sealed class AccountClient
 
     public async Task<Relationship?> UnmuteAsync(string id)
     {
-        var response = await _client.http.PostAsync($"api/v1/accounts/{id}/unmute", new StringContent(string.Empty));
+        var response = await _client.HttpClient.PostAsync($"api/v1/accounts/{id}/unmute", new StringContent(string.Empty));
         var result = await response.Content.ReadFromJsonAsync<Relationship>(MastodonClient._options);
 
         return result;
@@ -72,7 +70,7 @@ public sealed class AccountClient
 
     public async Task<Relationship?> PinAsync(string id)
     {
-        var response = await _client.http.PostAsync($"api/v1/accounts/{id}/pin", new StringContent(string.Empty));
+        var response = await _client.HttpClient.PostAsync($"api/v1/accounts/{id}/pin", new StringContent(string.Empty));
         var result = await response.Content.ReadFromJsonAsync<Relationship>(MastodonClient._options);
 
         return result;
@@ -80,7 +78,7 @@ public sealed class AccountClient
 
     public async Task<Relationship?> UnpinAsync(string id)
     {
-        var response = await _client.http.PostAsync($"api/v1/accounts/{id}/unpin", new StringContent(string.Empty));
+        var response = await _client.HttpClient.PostAsync($"api/v1/accounts/{id}/unpin", new StringContent(string.Empty));
         var result = await response.Content.ReadFromJsonAsync<Relationship>(MastodonClient._options);
 
         return result;
@@ -96,7 +94,7 @@ public sealed class AccountClient
     {
         var form = new FormUrlEncodedContent(new Dictionary<string, string?> { ["comment"] = comment });
 
-        var response = await _client.http.PostAsync($"api/v1/accounts/{id}/note", form);
+        var response = await _client.HttpClient.PostAsync($"api/v1/accounts/{id}/note", form);
         var result = await response.Content.ReadFromJsonAsync<Relationship>(MastodonClient._options);
 
         return result;
@@ -136,7 +134,7 @@ public sealed class AccountClient
 
         var url = q.GetUrl($"api/v1/accounts/{id}/statuses");
 
-        return _client.http.GetFromJsonAsync<List<Status>>(url, MastodonClient._options);
+        return _client.HttpClient.GetFromJsonAsync<List<Status>>(url, MastodonClient._options);
     }
 
     /// <summary>
@@ -144,6 +142,6 @@ public sealed class AccountClient
     /// </summary>
     public Task<List<FamiliarFollowers>?> GetFamiliarFollowersAsync()
     {
-        return _client.http.GetFromJsonAsync<List<FamiliarFollowers>>($"api/v1/accounts/familiar_followers", MastodonClient._options);
+        return _client.HttpClient.GetFromJsonAsync<List<FamiliarFollowers>>($"api/v1/accounts/familiar_followers", MastodonClient._options);
     }
 }

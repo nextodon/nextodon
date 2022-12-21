@@ -14,6 +14,6 @@ public sealed class MediaClient
 
     public Task<MediaAttachment?> GetMediaAsync(string id)
     {
-        return _client.http.GetFromJsonAsync<MediaAttachment>($"api/v1/media/{id}", MastodonClient._options);
+        return _client.HttpClient.GetFromJsonAsync<MediaAttachment>($"api/v1/media/{id}", MastodonClient._options);
     }
 }

@@ -1,11 +1,4 @@
-﻿using Mastodon.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Mastodon.Client;
+﻿namespace Mastodon.Client;
 
 internal sealed class QueryBuilder
 {

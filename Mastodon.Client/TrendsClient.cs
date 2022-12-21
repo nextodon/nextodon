@@ -14,11 +14,11 @@ public sealed class TrendsClient
 
     public Task<List<Tag>?> GetTagsAsync()
     {
-        return _client.http.GetFromJsonAsync<List<Tag>>("api/v1/trends/tags", MastodonClient._options);
+        return _client.HttpClient.GetFromJsonAsync<List<Tag>>("api/v1/trends/tags", MastodonClient._options);
     }
 
     public Task<List<Status>?> GetStatusesAsync()
     {
-        return _client.http.GetFromJsonAsync<List<Status>>("api/v1/trends/statuses", MastodonClient._options);
+        return _client.HttpClient.GetFromJsonAsync<List<Status>>("api/v1/trends/statuses", MastodonClient._options);
     }
 }
