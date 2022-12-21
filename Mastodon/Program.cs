@@ -43,7 +43,7 @@ app.Use((context, next) =>
 
     if (contentType.Count == 0 || string.IsNullOrWhiteSpace(contentType.ToString()))
     {
-        if (context.Request.Path.StartsWithSegments("/api/v1/"))
+        if (context.Request.Path.StartsWithSegments("/api/v1", StringComparison.OrdinalIgnoreCase))
         {
             context.Request.Headers.ContentType = new Microsoft.Extensions.Primitives.StringValues("application/json");
         }
