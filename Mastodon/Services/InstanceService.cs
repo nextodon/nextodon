@@ -47,7 +47,7 @@ public sealed class InstanceService : Mastodon.Grpc.Mastodon.MastodonBase
 
     public override async Task<Lists> GetLists(Empty request, ServerCallContext context)
     {
-        _mastodon.SetHeaders(context);
+        _mastodon.SetDefaults(context);
 
         var result = (await _mastodon.Lists.GetListsAsync());
         return result.ToGrpc();

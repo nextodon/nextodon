@@ -20,16 +20,10 @@ public static class ProxyExtensionMethods
         return context.WriteResponseHeadersAsync(metadata);
     }
 
-    public static void SetHeaders(this MastodonClient client, ServerCallContext context)
+    public static void SetDefaults(this MastodonClient client, ServerCallContext context)
     {
         var headers = context.GetHttpContext().Request.Headers;
 
-        foreach (var header in headers)
-        {
-            foreach (var value in header.Value)
-            {
-                client.HttpClient.DefaultRequestHeaders.TryAddWithoutValidation(header.Key, value);
-            }
-        }
+        client.HttpClient.DefaultRequestHeaders.TryAddWithoutValidation("Authorization", headers.Authorization.ToString());
     }
 }
