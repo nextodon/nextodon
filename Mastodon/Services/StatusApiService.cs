@@ -127,9 +127,14 @@ public sealed class StatusApiService : Mastodon.Grpc.StatusApi.StatusApiBase
     public override async Task<Grpc.Status> Reblog(ReblogRequest request, ServerCallContext context)
     {
         _mastodon.SetDefaults(context);
-        _logger.LogError(context.GetHttpContext().Request.Headers.Authorization);
 
         var result = await _mastodon.Statuses.ReblogAsync(request.StatusId, visibility: request.HasVisibility ? request.Visibility : null);
+
+        if (!result.IsSuccessStatusCode)
+        {
+            throw new RpcException(new global::Grpc.Core.Status(StatusCode.Internal, result.StatusCode.ToString()));
+        }
+
         await result.WriteHeadersTo(context);
 
         return result.Data!.ToGrpc();
@@ -140,6 +145,8 @@ public sealed class StatusApiService : Mastodon.Grpc.StatusApi.StatusApiBase
         _mastodon.SetDefaults(context);
 
         var result = await _mastodon.Statuses.UnreblogAsync(request.Value);
-        return result!.ToGrpc();
+        await result.WriteHeadersTo(context);
+
+        return result.Data!.ToGrpc();
     }
 }

@@ -102,7 +102,7 @@ app.MapPost("/auth/sign_in", async (context) =>
 
         await context.Response.BodyWriter.WriteAsync(utf8);
     }
-    catch (Exception ex)
+    catch (Exception)
     {
         //
     }
@@ -149,7 +149,7 @@ app.MapPost("/oauth/authorize", async (context) =>
 
         await context.Response.BodyWriter.WriteAsync(utf8);
     }
-    catch (Exception ex)
+    catch (Exception)
     {
         //
     }
@@ -182,7 +182,7 @@ app.MapGet("/oauth/authorize", async (context) =>
 
         await context.Response.BodyWriter.WriteAsync(utf8);
     }
-    catch (Exception ex)
+    catch (Exception)
     {
         //
     }
