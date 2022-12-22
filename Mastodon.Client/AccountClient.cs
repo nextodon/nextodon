@@ -1,5 +1,7 @@
-﻿using Mastodon.Models;
+﻿using Google.Protobuf.WellKnownTypes;
+using Mastodon.Models;
 using System.Net.Http.Json;
+using System.Runtime.CompilerServices;
 
 namespace Mastodon.Client;
 
@@ -70,6 +72,68 @@ public sealed class AccountClient
         var result = await response.Content.ReadFromJsonAsync<Relationship>(MastodonClient._options);
 
         return result;
+    }
+
+    /// <summary>
+    /// User lists that you have added this account to.
+    /// </summary>
+    /// <param name="id">The ID of the Account in the database.</param>
+    public Task<Response<List<List>>> ListsAsync(string id)
+    {
+        return _client.HttpClient.GetFromJsonWithHeadersAsync<List<List>>($"api/v1/accounts/{id}/lists", MastodonClient._options);
+    }
+
+    public Task<Response<Relationship>> RemoveFromFollowersAsync(string id)
+    {
+        return _client.HttpClient.PostFromAsync<Relationship>($"api/v1/accounts/{id}/remove_from_followers", MastodonClient._options);
+    }
+
+    public Task<Response<List<Account>>> GetFollowersAsync(string id, string? maxId = null, string? sinceId = null, string? minId = null, uint? limit = null)
+    {
+        var q = new QueryBuilder();
+
+        q.Add("max_id", maxId);
+        q.Add("since_id", sinceId);
+        q.Add("min_id", minId);
+        q.Add("limit", limit);
+
+        var url = q.GetUrl($"api/v1/accounts/{id}/followers");
+
+        return _client.HttpClient.GetFromJsonWithHeadersAsync<List<Account>>(url, MastodonClient._options);
+    }
+
+    public Task<Response<List<Account>>> GetFollowingAsync(string id, string? maxId = null, string? sinceId = null, string? minId = null, uint? limit = null)
+    {
+        var q = new QueryBuilder();
+
+        q.Add("max_id", maxId);
+        q.Add("since_id", sinceId);
+        q.Add("min_id", minId);
+        q.Add("limit", limit);
+
+        var url = q.GetUrl($"api/v1/accounts/{id}/following");
+
+        return _client.HttpClient.GetFromJsonWithHeadersAsync<List<Account>>(url, MastodonClient._options);
+    }
+
+    public Task<Response<List<List>>> GetListsAsync(string id)
+    {
+        return _client.HttpClient.GetFromJsonWithHeadersAsync<List<List>>($"api/v1/accounts/{id}/lists", MastodonClient._options);
+    }
+
+    public Task<Response<List<Relationship>>> GetRelationshipsAsync(IEnumerable<string> ids)
+    {
+        var q = new QueryBuilder();
+
+        foreach (var id in ids)
+        {
+            q.Add("id", id);
+
+        }
+
+        var url = q.GetUrl("api/v1/accounts/relationships");
+
+        return _client.HttpClient.GetFromJsonWithHeadersAsync<List<Relationship>>(url, MastodonClient._options);
     }
 
     public async Task<Relationship?> BlockAsync(string id)
@@ -151,7 +215,7 @@ public sealed class AccountClient
     /// <param name="pinned">Filter for pinned statuses only.</param>
     /// <param name="tagged">Filter for statuses using a specific hashtag.</param>
     /// <returns></returns>
-    public Task<List<Status>?> GetStatusesByIdAsync(string id,
+    public Task<Response<List<Status>>> GetStatusesByIdAsync(string id,
         string? maxId = null, string? sinceId = null, string? minId = null,
         uint? limit = null, bool? onlyMedia = null, bool? excludeReplies = null,
         bool? excludeReblogs = null, bool? pinned = null, string? tagged = null)
@@ -170,7 +234,7 @@ public sealed class AccountClient
 
         var url = q.GetUrl($"api/v1/accounts/{id}/statuses");
 
-        return _client.HttpClient.GetFromJsonAsync<List<Status>>(url, MastodonClient._options);
+        return _client.HttpClient.GetFromJsonWithHeadersAsync<List<Status>>(url, MastodonClient._options);
     }
 
     /// <summary>

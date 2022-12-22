@@ -22,5 +22,5 @@ public sealed partial class List
     /// <para>list = Show replies to members of the list</para>
     /// <para>none = Show replies to no one</para>
     /// </summary>
-    public required string RepliesPolicy { get; set; }
+    public string? RepliesPolicy { get; set; }
 }

@@ -4,6 +4,7 @@ import "google/api/annotations.proto";
 import "google/protobuf/empty.proto";
 import "google/protobuf/wrappers.proto";
 import "account.proto";
+import "list.proto";
 import "relationship.proto";
 import "status.proto";
 import "token.proto";
@@ -19,13 +20,6 @@ service AccountApi {
     };
   }
 
-  rpc GetAccount (google.protobuf.StringValue) returns (Account)
-  {
-	option (google.api.http) = {
-      get: "/api/v1/accounts/{value}"
-    };
-  }
-
   rpc VerifyCredentials (google.protobuf.Empty) returns (Account)
   {
 	option (google.api.http) = {
@@ -33,10 +27,57 @@ service AccountApi {
     };
   }
 
+  rpc GetAccount (google.protobuf.StringValue) returns (Account)
+  {
+	option (google.api.http) = {
+      get: "/api/v1/accounts/{value}"
+    };
+  }
+
+  rpc GetFollowers (GetFollowersRequest) returns (Accounts)
+  {
+	option (google.api.http) = {
+      get: "/api/v1/accounts/{accountId}/followers"
+      response_body: "data"
+    };
+  }
+
+  rpc GetFollowing (GetFollowingRequest) returns (Accounts)
+  {
+	option (google.api.http) = {
+      get: "/api/v1/accounts/{accountId}/following"
+      response_body: "data"
+    };
+  }
+  
+  rpc GetLists (google.protobuf.StringValue) returns (Lists)
+  {
+	option (google.api.http) = {
+      get: "/api/v1/accounts/{value}/lists"
+      response_body: "data"
+    };
+  }
+
   rpc GetStatuses (GetStatusesRequest) returns (Statuses)
   {
 	option (google.api.http) = {
       get: "/api/v1/accounts/{accountId}/statuses"
+      response_body: "data"
+    };
+  }
+
+  // Remove the given account from your followers.
+  rpc RemoveFromFollowers (google.protobuf.StringValue) returns (Relationship)
+  {
+	option (google.api.http) = {
+      post: "/api/v1/accounts/{value}/remove_from_followers"
+    };
+  }
+
+  rpc GetRelationships (GetRelationshipsRequest) returns (Relationships)
+  {
+	option (google.api.http) = {
+      get: "/api/v1/accounts/relationships"
       response_body: "data"
     };
   }
@@ -125,6 +166,48 @@ message RegisterRequest
     
     // If registrations require manual approval, this text will be reviewed by moderators.
     optional string reason = 6;
+}
+
+message GetRelationshipsRequest
+{
+    repeated string ids = 1 [json_name="id[]"];
+}
+
+
+message GetFollowersRequest
+{
+    // Account ID.
+    string accountId = 1;
+
+    // Return results older than this ID.
+    optional string max_id = 2;
+    
+    // Return results newer than this ID.
+    optional string since_id = 3;
+
+    // Return results immediately newer than this ID.
+    optional string min_id = 4;
+
+    // Maximum number of results to return. Defaults to 20 statuses. Max 40 statuses.
+    optional uint32 limit = 5;
+}
+
+message GetFollowingRequest
+{
+    // Account ID.
+    string accountId = 1;
+
+    // Return results older than this ID.
+    optional string max_id = 2;
+    
+    // Return results newer than this ID.
+    optional string since_id = 3;
+
+    // Return results immediately newer than this ID.
+    optional string min_id = 4;
+
+    // Maximum number of results to return. Defaults to 20 statuses. Max 40 statuses.
+    optional uint32 limit = 5;
 }
 
 message GetStatusesRequest

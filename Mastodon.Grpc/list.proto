@@ -16,7 +16,7 @@ message List
     // <para>followed = Show replies to any followed user</para>
     // <para>list = Show replies to members of the list</para>
     // <para>none = Show replies to no one</para>
-    string repliesPolicy = 3 [json_name="replies_policy"];
+    optional string repliesPolicy = 3 [json_name="replies_policy"];
 }
 
 message Lists {
