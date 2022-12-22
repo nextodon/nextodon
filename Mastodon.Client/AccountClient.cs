@@ -50,6 +50,22 @@ public sealed class AccountClient
     }
 
     /// <summary>
+    /// Lookup account ID from Webfinger address.
+    /// <br />
+    /// Quickly lookup a username to see if it is available, skipping WebFinger resolution.
+    /// </summary>
+    /// <param name="acct">The username or Webfinger address to lookup.</param>
+    public Task<Response<Account>> LookupAsync(string acct)
+    {
+        var qb = new QueryBuilder();
+        qb.Add("acct", acct);
+
+        var url = qb.GetUrl("api/v1/accounts/lookup");
+
+        return _client.HttpClient.GetFromJsonWithHeadersAsync<Account>(url, MastodonClient._options);
+    }
+
+    /// <summary>
     /// Search for matching accounts by username or display name.
     /// </summary>
     /// <param name="q">Search query for accounts.</param>
@@ -105,6 +121,13 @@ public sealed class AccountClient
     public Task<Response<Relationship>> RemoveFromFollowersAsync(string id)
     {
         return _client.HttpClient.PostFromAsync<Relationship>($"api/v1/accounts/{id}/remove_from_followers", MastodonClient._options);
+    }
+
+    public Task<Response<List<FeaturedTag>>> GetFeaturedTagsAsync(string id)
+    {
+        var url = $"api/v1/accounts/{id}/featured_tags";
+
+        return _client.HttpClient.GetFromJsonWithHeadersAsync<List<FeaturedTag>>(url, MastodonClient._options);
     }
 
     public Task<Response<List<Account>>> GetFollowersAsync(string id, string? maxId = null, string? sinceId = null, string? minId = null, uint? limit = null)

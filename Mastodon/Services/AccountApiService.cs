@@ -32,11 +32,28 @@ public sealed class AccountApiService : Mastodon.Grpc.AccountApi.AccountApiBase
         return result.Data!.ToGrpc();
     }
 
-    public override async Task<Grpc.Account> GetAccount(StringValue request, ServerCallContext context)
+    public override async Task<Grpc.Account> GetById(StringValue request, ServerCallContext context)
     {
         _mastodon.SetDefaults(context);
 
         var result = await _mastodon.Accounts.GetByIdAsync(request.Value);
+        result.RaiseExceptions();
+
+        await result.WriteHeadersTo(context);
+
+        return result.Data!.ToGrpc();
+    }
+
+    /// <summary>
+    /// Lookup account ID from Webfinger address.
+    /// <br />
+    /// Quickly lookup a username to see if it is available, skipping WebFinger resolution.
+    /// </summary>
+    public override async Task<Account> Lookup(LookupRequest request, ServerCallContext context)
+    {
+        _mastodon.SetDefaults(context);
+
+        var result = await _mastodon.Accounts.LookupAsync(request.Acct);
         result.RaiseExceptions();
 
         await result.WriteHeadersTo(context);
@@ -91,6 +108,19 @@ public sealed class AccountApiService : Mastodon.Grpc.AccountApi.AccountApiBase
            excludeReblogs: request.HasExcludeReblogs ? request.ExcludeReblogs : null,
            pinned: request.HasPinned ? request.Pinned : null,
            tagged: request.HasTagged ? request.Tagged : null);
+
+        result.RaiseExceptions();
+
+        await result.WriteHeadersTo(context);
+
+        return result.Data!.ToGrpc();
+    }
+
+    public override async Task<FeaturedTags> GetFeaturedTags(StringValue request, ServerCallContext context)
+    {
+        _mastodon.SetDefaults(context);
+
+        var result = await _mastodon.Accounts.GetFeaturedTagsAsync(request.Value);
 
         result.RaiseExceptions();
 

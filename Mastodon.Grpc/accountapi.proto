@@ -4,6 +4,7 @@ import "google/api/annotations.proto";
 import "google/protobuf/empty.proto";
 import "google/protobuf/wrappers.proto";
 import "account.proto";
+import "featuredtag.proto";
 import "list.proto";
 import "relationship.proto";
 import "status.proto";
@@ -35,10 +36,25 @@ service AccountApi {
     };
   }
 
-  rpc GetAccount (google.protobuf.StringValue) returns (Account)
+  rpc GetById (google.protobuf.StringValue) returns (Account)
   {
 	option (google.api.http) = {
       get: "/api/v1/accounts/{value}"
+    };
+  }
+
+  rpc Lookup (LookupRequest) returns (Account)
+  {
+	option (google.api.http) = {
+      get: "/api/v1/accounts/lookup"
+    };
+  }
+
+  rpc GetFeaturedTags (google.protobuf.StringValue) returns (FeaturedTags)
+  {
+	option (google.api.http) = {
+      get: "/api/v1/accounts/{value}/featured_tags"
+      response_body: "data"
     };
   }
 
@@ -272,4 +288,9 @@ message NoteRequest
 {
     string accountId = 1;
     optional string comment = 2;
+}
+
+message LookupRequest
+{
+    string acct = 1;
 }
