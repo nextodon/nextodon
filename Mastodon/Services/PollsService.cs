@@ -1,0 +1,38 @@
+﻿using Google.Protobuf.WellKnownTypes;
+using Grpc.Core;
+using Mastodon.Client;
+using Mastodon.Grpc;
+using Microsoft.AspNetCore.Identity;
+
+namespace Mastodon.Services;
+
+public sealed class PollService : Mastodon.Grpc.PollApi.PollApiBase
+{
+    private readonly MastodonClient _mastodon;
+    private readonly ILogger<PollService> _logger;
+    public PollService(ILogger<PollService> logger, MastodonClient mastodon)
+    {
+        _logger = logger;
+        _mastodon = mastodon;
+    }
+
+    public override async Task<Poll> GetById(StringValue request, ServerCallContext context)
+    {
+        _mastodon.SetDefaults(context);
+        var result = await _mastodon.Polls.GetByIdAsync(request.Value);
+        result.RaiseExceptions();
+
+        await result.WriteHeadersTo(context);
+        return result.Data!.ToGrpc();
+    }
+
+    public override async Task<Poll> Vote(VoteRequest request, ServerCallContext context)
+    {
+        _mastodon.SetDefaults(context);
+        var result = await _mastodon.Polls.VoteAsync(request.PollId, request.Choices.ToArray() );
+        result.RaiseExceptions();
+
+        await result.WriteHeadersTo(context);
+        return result.Data!.ToGrpc();
+    }
+}

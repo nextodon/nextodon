@@ -12,8 +12,18 @@ public sealed class PollClient
         _client = client;
     }
 
-    public Task<Poll?> GetPollAsync(string id)
+    public Task<Response<Poll>> GetByIdAsync(string id)
     {
-        return _client.HttpClient.GetFromJsonAsync<Poll>($"api/v1/polls/{id}", MastodonClient._options);
+        return _client.HttpClient.GetFromJsonWithHeadersAsync<Poll>($"api/v1/polls/{id}", MastodonClient._options);
+    }
+
+    public Task<Response<Poll>> VoteAsync(string id, uint[] choices)
+    {
+        var form = new Dictionary<string, string>
+        {
+            ["choices[]"] = string.Join(",", choices)
+        };
+
+        return _client.HttpClient.PostFromAsync<Poll>($"api/v1/polls/{id}/votes", MastodonClient._options, form);
     }
 }

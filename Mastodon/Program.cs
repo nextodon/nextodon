@@ -75,6 +75,7 @@ app.MapGrpcService<AppsService>().EnableGrpcWeb();
 app.MapGrpcService<DirectoryService>().EnableGrpcWeb();
 app.MapGrpcService<InstanceService>().EnableGrpcWeb();
 app.MapGrpcService<OAuthService>().EnableGrpcWeb();
+app.MapGrpcService<PollService>().EnableGrpcWeb();
 app.MapGrpcService<StatusApiService>().EnableGrpcWeb();
 app.MapGrpcService<TimelineService>().EnableGrpcWeb();
 app.MapGrpcService<TrendsService>().EnableGrpcWeb();
