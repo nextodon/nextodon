@@ -2,7 +2,6 @@
 using Grpc.Core;
 using Mastodon.Client;
 using Mastodon.Grpc;
-using Microsoft.AspNetCore.Identity;
 
 namespace Mastodon.Services;
 
@@ -29,7 +28,7 @@ public sealed class PollService : Mastodon.Grpc.PollApi.PollApiBase
     public override async Task<Poll> Vote(VoteRequest request, ServerCallContext context)
     {
         _mastodon.SetDefaults(context);
-        var result = await _mastodon.Polls.VoteAsync(request.PollId, request.Choices.ToArray() );
+        var result = await _mastodon.Polls.VoteAsync(request.PollId, request.Choices.ToArray());
         result.RaiseExceptions();
 
         await result.WriteHeadersTo(context);

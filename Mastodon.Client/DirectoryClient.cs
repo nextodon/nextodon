@@ -1,6 +1,4 @@
-﻿using Mastodon.Models;
-
-namespace Mastodon.Client;
+﻿namespace Mastodon.Client;
 
 public sealed class DirectoryClient
 {

@@ -44,6 +44,23 @@ public sealed class AccountApiService : Mastodon.Grpc.AccountApi.AccountApiBase
         return result.Data!.ToGrpc();
     }
 
+    public override async Task<Accounts> Search(AccountSearchRequest request, ServerCallContext context)
+    {
+        _mastodon.SetDefaults(context);
+
+        var result = await _mastodon.Accounts.SearchAsync(request.Q,
+            request.HasLimit ? request.Limit : null,
+            request.HasOffset ? request.Offset : null,
+            request.HasResolve ? request.Resolve : null,
+            request.HasFollowing ? request.Following : null);
+
+        result.RaiseExceptions();
+
+        await result.WriteHeadersTo(context);
+
+        return result.Data!.ToGrpc();
+    }
+
     public override async Task<Account> VerifyCredentials(Empty request, ServerCallContext context)
     {
         _mastodon.SetDefaults(context);

@@ -1,5 +1,4 @@
 ﻿using System.Text;
-using System.Text.Json;
 
 namespace Mastodon.Client;
 
@@ -19,6 +18,7 @@ public sealed class MastodonClient
     public readonly DirectoryClient Directory;
     public readonly AppsClient Apps;
     public readonly OAuthClient OAuth;
+    public readonly SearchClient Search;
 
     private readonly Uri baseAddress;
 
@@ -45,6 +45,7 @@ public sealed class MastodonClient
         Apps = new AppsClient(this);
         OAuth = new OAuthClient(this);
         Lists = new ListClient(this);
+        Search = new SearchClient(this);
     }
 
     private sealed class SnakeCaseNamingPolicy : JsonNamingPolicy

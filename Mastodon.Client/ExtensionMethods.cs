@@ -1,6 +1,4 @@
-﻿using System.Text.Json;
-
-namespace Mastodon.Client;
+﻿namespace Mastodon.Client;
 
 internal static class ExtensionMethods
 {

@@ -1,9 +1,4 @@
-﻿using Google.Protobuf.WellKnownTypes;
-using Mastodon.Models;
-using System.Net.Http.Json;
-using System.Runtime.CompilerServices;
-
-namespace Mastodon.Client;
+﻿namespace Mastodon.Client;
 
 public sealed class AccountClient
 {
@@ -52,6 +47,30 @@ public sealed class AccountClient
     public Task<Response<Account>> GetByIdAsync(string id)
     {
         return _client.HttpClient.GetFromJsonWithHeadersAsync<Account>($"api/v1/accounts/{id}", MastodonClient._options);
+    }
+
+    /// <summary>
+    /// Search for matching accounts by username or display name.
+    /// </summary>
+    /// <param name="q">Search query for accounts.</param>
+    /// <param name="limit">Maximum number of results. Defaults to 40 accounts. Max 80 accounts.</param>
+    /// <param name="offset">Skip the first n results.</param>
+    /// <param name="resolve">Attempt WebFinger lookup. Defaults to false. Use this when q is an exact address.</param>
+    /// <param name="following">Limit the search to users you are following. Defaults to false.</param>
+    /// <returns></returns>
+    public Task<Response<List<Account>>> SearchAsync(string q, uint? limit = null, uint? offset = null, bool? resolve = null, bool? following = null)
+    {
+        var qb = new QueryBuilder();
+
+        qb.Add("q", q);
+        qb.Add("limit", limit);
+        qb.Add("offset", offset);
+        qb.Add("resolve", resolve);
+        qb.Add("following", following);
+
+        var url = qb.GetUrl("api/v1/accounts/search");
+
+        return _client.HttpClient.GetFromJsonWithHeadersAsync<List<Account>>(url, MastodonClient._options);
     }
 
     public Task<Response<Account>> VerifyCredentials()

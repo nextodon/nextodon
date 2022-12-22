@@ -148,7 +148,7 @@ public sealed class StatusApiService : Mastodon.Grpc.StatusApi.StatusApiBase
         _mastodon.SetDefaults(context);
 
         var result = await _mastodon.Statuses.ReblogAsync(request.StatusId, visibility: request.HasVisibility ? request.Visibility : null);
-        
+
         result.RaiseExceptions();
 
         await result.WriteHeadersTo(context);
