@@ -1,0 +1,28 @@
+syntax = "proto3";
+import "google/protobuf/timestamp.proto";
+
+option csharp_namespace = "Mastodon.Grpc";
+
+// Represents a hashtag that is featured on a profile.
+message FeaturedTag
+{
+    // The internal ID of the featured tag in the database.
+    string id = 1;
+
+    // The name of the hashtag being featured.
+    string name = 2;
+
+    // A link to all statuses by a user that contain this hashtag.
+    string url = 3;
+
+    // The number of authored statuses containing this hashtag.
+    uint32 statusesCount = 4 [json_name="statuses_count"];
+
+    // The timestamp of the last authored status containing this hashtag.
+    optional google.protobuf.Timestamp lastStatusAt = 5 [json_name="last_status_at"];
+}
+
+message FeaturedTags
+{
+    repeated FeaturedTag data = 1;
+}

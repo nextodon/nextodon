@@ -20,6 +20,7 @@
 		<Protobuf Include="context.proto" />
 		<Protobuf Include="directory.proto" />
 		<Protobuf Include="emoji.proto" />
+		<Protobuf Include="featuredtag.proto" />
 		<Protobuf Include="filter.proto" />
 		<Protobuf Include="instance.proto" />
 		<Protobuf Include="instanceapi.proto" />

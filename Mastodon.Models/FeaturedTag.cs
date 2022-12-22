@@ -23,10 +23,10 @@ public sealed partial class FeaturedTag
     /// <summary>
     /// The number of authored statuses containing this hashtag.
     /// </summary>
-    public required int StatusesCount { get; set; }
+    public required uint StatusesCount { get; set; }
 
     /// <summary>
     /// The timestamp of the last authored status containing this hashtag.
     /// </summary>
-    public required DateTime LastStatusAt { get; set; }
+    public DateTime? LastStatusAt { get; set; }
 }

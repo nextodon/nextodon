@@ -147,4 +147,34 @@ public static class AccountExtensionMethods
 
         return v;
     }
+
+    public static Grpc.FeaturedTags ToGrpc(this IEnumerable<Mastodon.Models.FeaturedTag>? i)
+    {
+        var v = new FeaturedTags();
+
+        if(i != null)
+        {
+            v.Data.AddRange(i.Select(x => x.ToGrpc()));
+        }
+
+        return v;
+    }
+
+    public static Grpc.FeaturedTag ToGrpc(this Mastodon.Models.FeaturedTag i)
+    {
+        var v = new FeaturedTag
+        {
+            Id = i.Id,
+            Name = i.Name,
+            StatusesCount = i.StatusesCount,
+            Url = i.Url,
+        };
+
+        if (i.LastStatusAt != null)
+        {
+            v.LastStatusAt = i.LastStatusAt.Value.ToGrpc();
+        }
+
+        return v;
+    }
 }
