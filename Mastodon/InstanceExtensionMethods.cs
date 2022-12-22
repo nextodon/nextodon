@@ -67,7 +67,7 @@ public static class InstanceExtensionMethods
             Email = i.Email,
             InvitesEnabled = i.InvitesEnabled,
             ShortDescription = i.ShortDescription,
-            Stats = new InstanceV1.Types.StatsHash
+            Stats = new InstanceV1.Types.Stats
             {
                 DomainCount = i.Stats.DomainCount,
                 StatusCount = i.Stats.StatusCount,

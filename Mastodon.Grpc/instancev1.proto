@@ -16,7 +16,7 @@ message InstanceV1
     string email = 5;
     string version = 6;
     Urls urls = 7;
-    StatsHash stats = 8;
+    Stats stats = 8;
     string thumbnail = 9;
     repeated string languages = 10;
     bool registrations = 11;
@@ -31,11 +31,11 @@ message InstanceV1
         string streamingApi = 1 [json_name="streaming_api"];
     }
 
-    message StatsHash
+    message Stats
     {
-        uint32 UserCount = 1 [json_name="user_count"];
-        uint32 StatusCount = 2 [json_name="status_count"];
-        uint32 DomainCount = 3 [json_name="domain_count"];
+        uint32 userCount = 1 [json_name="user_count"];
+        uint32 statusCount = 2 [json_name="status_count"];
+        uint32 domainCount = 3 [json_name="domain_count"];
     }
     
     // Configured values and limits for this website.
