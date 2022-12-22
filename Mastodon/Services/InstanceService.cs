@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Http.Extensions;
 
 namespace Mastodon.Services;
 
-public sealed class InstanceService : Mastodon.Grpc.Mastodon.MastodonBase
+public sealed class InstanceService : Mastodon.Grpc.InstanceApi.InstanceApiBase
 {
     private readonly MastodonClient _mastodon;
     private readonly ILogger<InstanceService> _logger;

@@ -1,7 +1,5 @@
 syntax = "proto3";
 
-import "google/api/annotations.proto";
-
 option csharp_namespace = "Mastodon.Grpc";
 
 message Application

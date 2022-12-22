@@ -22,13 +22,14 @@
 		<Protobuf Include="emoji.proto" />
 		<Protobuf Include="filter.proto" />
 		<Protobuf Include="instance.proto" />
+		<Protobuf Include="instanceapi.proto" />
 		<Protobuf Include="instancev1.proto" />
 		<Protobuf Include="list.proto" />
-		<Protobuf Include="mastodon.proto" />
 		<Protobuf Include="media.proto" />
 		<Protobuf Include="mediaapi.proto" />
 		<Protobuf Include="oauth.proto" />
 		<Protobuf Include="poll.proto" />
+		<Protobuf Include="pollapi.proto" />
 		<Protobuf Include="relationship.proto" />
 		<Protobuf Include="role.proto" />
 		<Protobuf Include="rule.proto" />

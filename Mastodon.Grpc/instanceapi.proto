@@ -7,11 +7,10 @@ import "instance.proto";
 import "instancev1.proto";
 import "list.proto";
 import "rule.proto";
-import "context.proto";
 
 option csharp_namespace = "Mastodon.Grpc";
 
-service Mastodon {
+service InstanceApi {
   rpc GetInstance (google.protobuf.Empty) returns (Instance)
   {
 	option (google.api.http) = {

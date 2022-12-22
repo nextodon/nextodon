@@ -53,7 +53,7 @@ public sealed partial class Poll
     /// <summary>
     /// When called with a user token, which options has the authorized user chosen? Contains an array of index values for options.
     /// </summary>
-    public List<int>? OwnVotes { get; set; }
+    public List<uint>? OwnVotes { get; set; }
 
     public sealed partial class Option
     {
@@ -65,6 +65,6 @@ public sealed partial class Poll
         /// <summary>
         /// The total number of received votes for this option.
         /// </summary>
-        public int? VotesCount { get; set; }
+        public uint? VotesCount { get; set; }
     }
 }

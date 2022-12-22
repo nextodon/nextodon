@@ -1,0 +1,30 @@
+syntax = "proto3";
+
+import "google/api/annotations.proto";
+import "google/protobuf/wrappers.proto";
+import "poll.proto";
+
+option csharp_namespace = "Mastodon.Grpc";
+
+service PollApi {
+  rpc GetById (google.protobuf.StringValue) returns (Poll)
+  {
+	option (google.api.http) = {
+      get: "/api/v1/polls/{value}"
+    };
+  }
+  
+  rpc Vote(VoteRequest) returns (Poll)
+  {
+	option (google.api.http) = {
+      post: "/api/v1/polls/{pollId}/votes"
+      body: "*"
+    };
+  }
+}
+
+message VoteRequest
+{
+    string pollId = 1;
+    repeated uint32 choices = 2;
+}
