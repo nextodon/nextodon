@@ -49,3 +49,7 @@ message Relationship
     optional string note = 14;
 }
 
+message Relationships
+{
+    repeated Relationship data = 1;
+}

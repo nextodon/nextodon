@@ -75,7 +75,83 @@ public sealed class AccountApiService : Mastodon.Grpc.AccountApi.AccountApiBase
            pinned: request.HasPinned ? request.Pinned : null,
            tagged: request.HasTagged ? request.Tagged : null);
 
-        return result.ToGrpc();
+        result.RaiseExceptions();
+
+        await result.WriteHeadersTo(context);
+
+        return result.Data!.ToGrpc();
+    }
+
+    public override async Task<Accounts> GetFollowers(GetFollowersRequest request, ServerCallContext context)
+    {
+        _mastodon.SetDefaults(context);
+
+        var result = await _mastodon.Accounts.GetFollowersAsync(request.AccountId,
+            sinceId: request.HasSinceId ? request.SinceId : null,
+            maxId: request.HasMaxId ? request.MaxId : null,
+            minId: request.HasMinId ? request.MinId : null,
+            limit: request.HasLimit ? request.Limit : null);
+        result.RaiseExceptions();
+
+        await result.WriteHeadersTo(context);
+
+        return result.Data!.ToGrpc();
+    }
+
+    public override async Task<Accounts> GetFollowing(GetFollowingRequest request, ServerCallContext context)
+    {
+        _mastodon.SetDefaults(context);
+
+        var result = await _mastodon.Accounts.GetFollowingAsync(request.AccountId,
+            sinceId: request.HasSinceId ? request.SinceId : null,
+            maxId: request.HasMaxId ? request.MaxId : null,
+            minId: request.HasMinId ? request.MinId : null,
+            limit: request.HasLimit ? request.Limit : null);
+
+        result.RaiseExceptions();
+
+        await result.WriteHeadersTo(context);
+
+        return result.Data!.ToGrpc();
+    }
+
+    public override async Task<Relationship> RemoveFromFollowers(StringValue request, ServerCallContext context)
+    {
+        _mastodon.SetDefaults(context);
+
+        var result = await _mastodon.Accounts.RemoveFromFollowersAsync(request.Value);
+
+        result.RaiseExceptions();
+
+        await result.WriteHeadersTo(context);
+
+        return result.Data!.ToGrpc();
+    }
+
+    public override async Task<Relationships> GetRelationships(GetRelationshipsRequest request, ServerCallContext context)
+    {
+        _mastodon.SetDefaults(context);
+
+        var result = await _mastodon.Accounts.GetRelationshipsAsync(request.Ids);
+
+        result.RaiseExceptions();
+
+        await result.WriteHeadersTo(context);
+
+        return result.Data!.ToGrpc();
+    }
+
+    public override async Task<Lists> GetLists(StringValue request, ServerCallContext context)
+    {
+        _mastodon.SetDefaults(context);
+
+        var result = await _mastodon.Accounts.GetListsAsync(request.Value);
+
+        result.RaiseExceptions();
+
+        await result.WriteHeadersTo(context);
+
+        return result.Data!.ToGrpc();
     }
 
     public override async Task<Grpc.Relationship> Follow(StringValue request, ServerCallContext context)

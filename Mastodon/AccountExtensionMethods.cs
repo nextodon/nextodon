@@ -3,22 +3,6 @@ using Mastodon.Grpc;
 
 namespace Mastodon;
 
-public static class OAuthExtensionMethods
-{
-    public static Grpc.Token ToGrpc(this Mastodon.Models.Token i)
-    {
-        var v = new Grpc.Token
-        {
-            AccessToken = i.AccessToken,
-            CreatedAt = i.CreatedAt,
-            Scope = i.Scope,
-            TokenType = i.TokenType,
-        };
-
-        return v;
-    }
-}
-
 public static class AccountExtensionMethods
 {
     public static Grpc.Accounts ToGrpc(this IEnumerable<Mastodon.Models.Account>? i)
@@ -119,6 +103,18 @@ public static class AccountExtensionMethods
         if (i.VerifiedAt != null)
         {
             v.VerifiedAt = Timestamp.FromDateTime(i.VerifiedAt.Value.ToUniversalTime());
+        }
+
+        return v;
+    }
+
+    public static Grpc.Relationships ToGrpc(this IEnumerable<Mastodon.Models.Relationship>? i)
+    {
+        var v = new Grpc.Relationships();
+
+        if (i != null)
+        {
+            v.Data.AddRange(i.Select(x => x.ToGrpc()));
         }
 
         return v;

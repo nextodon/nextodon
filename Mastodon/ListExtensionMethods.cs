@@ -6,12 +6,18 @@ public static class ListExtensionMethods
 {
     public static Grpc.List ToGrpc(this Mastodon.Models.List i)
     {
-        return new List
+        var v = new List
         {
             Id = i.Id,
-            RepliesPolicy = i.RepliesPolicy,
             Title = i.Title,
         };
+
+        if (i.RepliesPolicy != null)
+        {
+            v.RepliesPolicy = i.RepliesPolicy;
+        }
+
+        return v;
     }
 
     public static Grpc.Lists ToGrpc(this IEnumerable<Mastodon.Models.List>? i)
