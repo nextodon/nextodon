@@ -27,6 +27,14 @@ service AccountApi {
     };
   }
 
+  rpc Search (AccountSearchRequest) returns (Accounts)
+  {
+	option (google.api.http) = {
+      get: "/api/v1/accounts/search"
+      response_body: "data"
+    };
+  }
+
   rpc GetAccount (google.protobuf.StringValue) returns (Account)
   {
 	option (google.api.http) = {
@@ -168,11 +176,28 @@ message RegisterRequest
     optional string reason = 6;
 }
 
+message AccountSearchRequest
+{
+    // Search query for accounts.
+    string q = 1;
+
+    // Maximum number of results. Defaults to 40 accounts. Max 80 accounts.
+    optional uint32 limit = 2;
+
+    // Skip the first n results.
+    optional uint32 offset = 3;
+
+    // Attempt WebFinger lookup. Defaults to false. Use this when q is an exact address.
+    optional bool resolve = 4;
+
+    // Limit the search to users you are following. Defaults to false.
+    optional bool following = 5;
+}
+
 message GetRelationshipsRequest
 {
     repeated string ids = 1 [json_name="id[]"];
 }
-
 
 message GetFollowersRequest
 {

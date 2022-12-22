@@ -1,7 +1,4 @@
-﻿using Mastodon.Models;
-using System.Net.Http.Json;
-
-namespace Mastodon.Client;
+﻿namespace Mastodon.Client;
 
 public sealed class PollClient
 {

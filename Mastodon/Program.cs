@@ -3,7 +3,6 @@ using Mastodon.Client;
 using Mastodon.Services;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.HttpOverrides;
-using Microsoft.Extensions.Logging;
 using System.Net;
 using System.Text;
 
@@ -76,6 +75,7 @@ app.MapGrpcService<DirectoryService>().EnableGrpcWeb();
 app.MapGrpcService<InstanceService>().EnableGrpcWeb();
 app.MapGrpcService<OAuthService>().EnableGrpcWeb();
 app.MapGrpcService<PollService>().EnableGrpcWeb();
+app.MapGrpcService<SearchService>().EnableGrpcWeb();
 app.MapGrpcService<StatusApiService>().EnableGrpcWeb();
 app.MapGrpcService<TimelineService>().EnableGrpcWeb();
 app.MapGrpcService<TrendsService>().EnableGrpcWeb();

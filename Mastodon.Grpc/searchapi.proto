@@ -1,0 +1,48 @@
+syntax = "proto3";
+
+import "google/api/annotations.proto";
+import "search.proto";
+
+option csharp_namespace = "Mastodon.Grpc";
+
+service SearchApi {  
+  rpc Search (SearchRequest) returns (SearchResult)
+  {
+	option (google.api.http) = {
+      get: "/api/v2/search"
+    };
+  }
+}
+
+message SearchRequest
+{
+    // The search query.
+    string q = 1;
+
+    // Specify whether to search for only accounts, hashtags, statuses
+    optional string type = 2;
+
+    // Attempt WebFinger lookup? Defaults to false.
+    optional bool resolve = 3;
+
+    // Only include accounts that the user is following? Defaults to false.
+    optional bool following = 4;
+
+    // If provided, will only return statuses authored by this account.
+    optional string account_id = 5;
+
+    // Filter out unreviewed tags? Defaults to false. Use true when trying to find trending tags.
+    optional bool exclude_unreviewed = 6;
+
+    // Return results older than this ID.
+    optional string max_id = 7;
+
+    // Return results immediately newer than this ID.
+    optional string min_id = 8;
+
+    // Maximum number of results to return, per type. Defaults to 20 results per category. Max 40 results per category.
+    optional uint32 limit = 9;
+
+    // Skip the first n results.
+    optional uint32 offset = 10;
+}

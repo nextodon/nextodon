@@ -1,8 +1,4 @@
-﻿using Mastodon.Models;
-using System.Net.Http.Json;
-using System.Text.Json;
-
-namespace Mastodon.Client;
+﻿namespace Mastodon.Client;
 
 public sealed class StatusClient
 {
