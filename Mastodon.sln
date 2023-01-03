@@ -11,7 +11,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mastodon.Client", "Mastodon
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mastodon.Models", "Mastodon.Models\Mastodon.Models.csproj", "{1191933D-1A7F-4561-952F-499BA878170D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mastodon.Data", "Mastodon.Data\Mastodon.Data.csproj", "{CF42AD93-1574-49E9-B843-E009FBC142E0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mastodon.Data", "Mastodon.Data\Mastodon.Data.csproj", "{CF42AD93-1574-49E9-B843-E009FBC142E0}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mastodon.Services", "Mastodon.Services\Mastodon.Services.csproj", "{6AA1EE58-CA8B-4D43-9C7E-7189A0486755}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +41,10 @@ Global
 		{CF42AD93-1574-49E9-B843-E009FBC142E0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CF42AD93-1574-49E9-B843-E009FBC142E0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CF42AD93-1574-49E9-B843-E009FBC142E0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6AA1EE58-CA8B-4D43-9C7E-7189A0486755}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6AA1EE58-CA8B-4D43-9C7E-7189A0486755}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6AA1EE58-CA8B-4D43-9C7E-7189A0486755}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6AA1EE58-CA8B-4D43-9C7E-7189A0486755}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
