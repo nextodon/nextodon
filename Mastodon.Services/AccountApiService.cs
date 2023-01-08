@@ -1,10 +1,6 @@
-using Google.Protobuf.WellKnownTypes;
-using Grpc.Core;
-using Mastodon.Grpc;
-using Microsoft.Extensions.Logging;
-
 namespace Mastodon.Services;
 
+[Authorize]
 public sealed class AccountApiService : Mastodon.Grpc.AccountApi.AccountApiBase
 {
     private readonly ILogger<AccountApiService> _logger;

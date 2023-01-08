@@ -1,8 +1,3 @@
-using Google.Protobuf.WellKnownTypes;
-using Grpc.Core;
-using Mastodon.Grpc;
-using Microsoft.Extensions.Logging;
-
 namespace Mastodon.Services;
 
 public sealed class TimelineApiService : Mastodon.Grpc.Timeline.TimelineBase

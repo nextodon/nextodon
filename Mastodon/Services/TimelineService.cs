@@ -17,11 +17,20 @@ public sealed class TimelineService : Mastodon.Grpc.Timeline.TimelineBase
         //_db = db;
     }
 
-    public override async Task<Grpc.Statuses> GetPublic(Empty request, ServerCallContext context)
+    public override async Task<Grpc.Statuses> GetPublic(GetPublicTimelineRequest request, ServerCallContext context)
     {
         _mastodon.SetDefaults(context);
 
-        var result = await _mastodon.Timeline.GetPublicAsync();
+        var result = await _mastodon.Timeline.GetPublicAsync(
+            local: request.Local,
+            remote: request.Remote,
+            onlyMedia: request.OnlyMedia,
+            sinceId: request.HasSinceId ? request.SinceId : null,
+            maxId: request.HasMaxId ? request.MaxId : null,
+            minId: request.HasMinId ? request.MinId : null,
+            limit: request.HasLimit ? request.Limit : null
+            );
+
         await result.WriteHeadersTo(context);
 
         return result.Data.ToGrpc();
@@ -35,11 +44,17 @@ public sealed class TimelineService : Mastodon.Grpc.Timeline.TimelineBase
         return result.ToGrpc();
     }
 
-    public override async Task<Statuses> GetHome(Empty request, ServerCallContext context)
+    public override async Task<Statuses> GetHome(DefaultPaginationParameters request, ServerCallContext context)
     {
         _mastodon.SetDefaults(context);
 
-        var result = await _mastodon.Timeline.GetHomeAsync();
+        var result = await _mastodon.Timeline.GetHomeAsync(
+            sinceId: request.HasSinceId ? request.SinceId : null,
+            maxId: request.HasMaxId ? request.MaxId : null,
+            minId: request.HasMinId ? request.MinId : null,
+            limit: request.HasLimit ? request.Limit : null
+        );
+
         return result.ToGrpc();
     }
 
@@ -53,11 +68,17 @@ public sealed class TimelineService : Mastodon.Grpc.Timeline.TimelineBase
 
 #pragma warning disable CS0809
     [Obsolete]
-    public override async Task<Statuses> GetDirect(Empty request, ServerCallContext context)
+    public override async Task<Statuses> GetDirect(DefaultPaginationParameters request, ServerCallContext context)
     {
         _mastodon.SetDefaults(context);
 
-        var result = await _mastodon.Timeline.GetDirectAsync();
+        var result = await _mastodon.Timeline.GetDirectAsync(
+            sinceId: request.HasSinceId ? request.SinceId : null,
+            maxId: request.HasMaxId ? request.MaxId : null,
+            minId: request.HasMinId ? request.MinId : null,
+            limit: request.HasLimit ? request.Limit : null
+        );
+
         return result.ToGrpc();
     }
 #pragma warning restore CS0809
