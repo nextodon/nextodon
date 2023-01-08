@@ -28,7 +28,7 @@ public sealed class OAuthClient
         // List of requested OAuth scopes, separated by spaces (or by pluses, if using query parameters). Must be a subset of scopes declared during app registration. If not provided, defaults to read.
         optional string scope = 6;
      */
-    public async Task<Token?> ObtainTokenAsync(string grantType, string clientId, string clientSecret, string redirectUri, string? code = null, string? scope = null)
+    public async Task<Response<Token>> ObtainTokenAsync(string grantType, string clientId, string clientSecret, string redirectUri, string? code = null, string? scope = null)
     {
         var values = new Dictionary<string, string>
         {
@@ -48,11 +48,8 @@ public sealed class OAuthClient
             values["scope"] = scope;
         }
 
-        var form = new FormUrlEncodedContent(values);
+        var response = await _client.HttpClient.PostFromAsync<Token>("oauth/token", MastodonClient._options, values);
 
-        var response = await _client.HttpClient.PostAsync("oauth/token", form);
-        var token = await response.Content.ReadFromJsonAsync<Token>(MastodonClient._options);
-
-        return token;
+        return response;
     }
 }
