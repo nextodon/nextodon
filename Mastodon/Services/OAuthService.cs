@@ -17,6 +17,8 @@ public sealed class OAuthService : Mastodon.Grpc.OAuth.OAuthBase
 
     public override async Task<Token> ObtainToken(ObtainTokenRequest request, ServerCallContext context)
     {
+        _mastodon.SetDefaults(context);
+
         var result = await _mastodon.OAuth.ObtainTokenAsync(
            grantType: request.GrantType,
            clientId: request.ClientId,
@@ -25,7 +27,10 @@ public sealed class OAuthService : Mastodon.Grpc.OAuth.OAuthBase
            code: request.Code,
            scope: request.Scope);
 
+        result.RaiseExceptions();
 
-        return result!.ToGrpc();
+        await result.WriteHeadersTo(context);
+
+        return result.Data!.ToGrpc();
     }
 }

@@ -7,6 +7,7 @@ public sealed class MastodonClient
     public readonly HttpClient HttpClient;
 
     public readonly AccountClient Accounts;
+    public readonly BookmarkClient Bookmark;
     public readonly TimelineClient Timeline;
     public readonly InstanceClient Instance;
     public readonly ListClient Lists;
@@ -46,6 +47,7 @@ public sealed class MastodonClient
         OAuth = new OAuthClient(this);
         Lists = new ListClient(this);
         Search = new SearchClient(this);
+        Bookmark = new BookmarkClient(this);
     }
 
     private sealed class SnakeCaseNamingPolicy : JsonNamingPolicy
