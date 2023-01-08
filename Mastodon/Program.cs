@@ -1,5 +1,6 @@
 using Mastodon;
 using Mastodon.Client;
+using Mastodon.Grpc;
 using Mastodon.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http.Extensions;
@@ -54,10 +55,16 @@ builder.Services.AddCors(o =>
     o.AddDefaultPolicy(
     builder =>
     {
-        builder.WithOrigins("https://app.fordem.org")
-                            .AllowAnyHeader()
-                            .AllowAnyMethod();
+        builder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod();
     });
+
+    //o.AddDefaultPolicy(
+    //builder =>
+    //{
+    //    builder.WithOrigins("https://app.fordem.org")
+    //                        .AllowAnyHeader()
+    //                        .AllowAnyMethod();
+    //});
 });
 
 
@@ -102,6 +109,7 @@ app.UseGrpcWeb();
 
 app.MapGrpcService<AccountApiService>().EnableGrpcWeb();
 app.MapGrpcService<AppsService>().EnableGrpcWeb();
+app.MapGrpcService<BookmarkApiService>().EnableGrpcWeb();
 app.MapGrpcService<DirectoryService>().EnableGrpcWeb();
 app.MapGrpcService<InstanceService>().EnableGrpcWeb();
 app.MapGrpcService<OAuthService>().EnableGrpcWeb();
