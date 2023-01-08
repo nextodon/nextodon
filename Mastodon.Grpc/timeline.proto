@@ -3,12 +3,13 @@ syntax = "proto3";
 import "google/api/annotations.proto";
 import "google/protobuf/empty.proto";
 import "google/protobuf/wrappers.proto";
+import "common.proto";
 import "status.proto";
 
 option csharp_namespace = "Mastodon.Grpc";
 
 service Timeline {
-  rpc GetPublic (google.protobuf.Empty) returns (Statuses)
+  rpc GetPublic (GetPublicTimelineRequest) returns (Statuses)
   {
 	option (google.api.http) = {
       get: "/api/v1/timelines/public"
@@ -24,7 +25,7 @@ service Timeline {
     };
   }
 
-  rpc GetHome (google.protobuf.Empty) returns (Statuses)
+  rpc GetHome (DefaultPaginationParameters) returns (Statuses)
   {
 	option (google.api.http) = {
       get: "/api/v1/timelines/home"
@@ -40,7 +41,7 @@ service Timeline {
     };
   }
 
-  rpc GetDirect (google.protobuf.Empty) returns (Statuses)
+  rpc GetDirect (DefaultPaginationParameters) returns (Statuses)
   {
     option deprecated = true;
 	option (google.api.http) = {
@@ -48,4 +49,28 @@ service Timeline {
       response_body: "data"
     };
   }
+}
+
+message GetPublicTimelineRequest 
+{
+    // Show only local statuses? Defaults to false.
+    bool local = 1;
+
+    // Show only remote statuses? Defaults to false.
+    bool remote = 2;
+
+    // Show only statuses with media attached? Defaults to false.
+    bool only_media = 3;
+
+    // Internal parameter. Use HTTP Link header for pagination.
+    optional string max_id = 4;
+
+    // Internal parameter. Use HTTP Link header for pagination.
+    optional string since_id = 5;
+    
+    // Internal parameter. Use HTTP Link header for pagination.
+    optional string min_id = 6;
+    
+    // Maximum number of results to return. Defaults to 40 accounts. Max 80 accounts.
+    optional uint32 limit = 7;
 }

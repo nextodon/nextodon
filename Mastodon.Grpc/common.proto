@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+option csharp_namespace = "Mastodon.Grpc";
+
+message DefaultPaginationParameters
+{
+    // Internal parameter. Use HTTP Link header for pagination.
+    optional string max_id = 4;
+
+    // Internal parameter. Use HTTP Link header for pagination.
+    optional string since_id = 5;
+    
+    // Internal parameter. Use HTTP Link header for pagination.
+    optional string min_id = 6;
+    
+    // Maximum number of results to return. Defaults to 40 accounts. Max 80 accounts.
+    optional uint32 limit = 7;
+}

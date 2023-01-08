@@ -12,17 +12,38 @@ public sealed class TimelineClient
     /// <summary>
     /// View public statuses.
     /// </summary>
-    public Task<Response<List<Status>>> GetPublicAsync()
+    public Task<Response<List<Status>>> GetPublicAsync(bool local, bool remote, bool onlyMedia, string? maxId = null, string? sinceId = null, string? minId = null, uint? limit = null)
     {
-        return _client.HttpClient.GetFromJsonWithHeadersAsync<List<Status>>("api/v1/timelines/public", MastodonClient._options);
+        var q = new QueryBuilder();
+
+        q.Add("local", local);
+        q.Add("remote", remote);
+        q.Add("only_media", onlyMedia);
+        q.Add("max_id", maxId);
+        q.Add("since_id", sinceId);
+        q.Add("min_id", minId);
+        q.Add("limit", limit);
+
+        var url = q.GetUrl("api/v1/timelines/public");
+
+        return _client.HttpClient.GetFromJsonWithHeadersAsync<List<Status>>(url, MastodonClient._options);
     }
 
     /// <summary>
     /// View statuses from followed users.
     /// </summary>
-    public Task<List<Status>?> GetHomeAsync()
+    public Task<List<Status>?> GetHomeAsync(string? maxId = null, string? sinceId = null, string? minId = null, uint? limit = null)
     {
-        return _client.HttpClient.GetFromJsonAsync<List<Status>>("api/v1/timelines/home", MastodonClient._options);
+        var q = new QueryBuilder();
+
+        q.Add("max_id", maxId);
+        q.Add("since_id", sinceId);
+        q.Add("min_id", minId);
+        q.Add("limit", limit);
+
+        var url = q.GetUrl("api/v1/timelines/home");
+
+        return _client.HttpClient.GetFromJsonAsync<List<Status>>(url, MastodonClient._options);
     }
 
     /// <summary>
@@ -38,18 +59,36 @@ public sealed class TimelineClient
     /// View statuses in the given list timeline.
     /// </summary>
     /// <param name="listId">Local ID of the List in the database.</param>
-    public Task<List<Status>?> GetListAsync(string listId)
+    public Task<List<Status>?> GetListAsync(string listId, string? maxId = null, string? sinceId = null, string? minId = null, uint? limit = null)
     {
-        return _client.HttpClient.GetFromJsonAsync<List<Status>>($"api/v1/timelines/list/{listId}", MastodonClient._options);
+        var q = new QueryBuilder();
+
+        q.Add("max_id", maxId);
+        q.Add("since_id", sinceId);
+        q.Add("min_id", minId);
+        q.Add("limit", limit);
+
+        var url = q.GetUrl($"api/v1/timelines/list/{listId}");
+
+        return _client.HttpClient.GetFromJsonAsync<List<Status>>(url, MastodonClient._options);
     }
 
     /// <summary>
     /// View statuses with a “direct” privacy, from your account or in your notifications.
     /// </summary>
     [Obsolete]
-    public Task<List<Status>?> GetDirectAsync()
+    public Task<List<Status>?> GetDirectAsync(string? maxId = null, string? sinceId = null, string? minId = null, uint? limit = null)
     {
-        return _client.HttpClient.GetFromJsonAsync<List<Status>>("api/v1/timelines/direct", MastodonClient._options);
+        var q = new QueryBuilder();
+
+        q.Add("max_id", maxId);
+        q.Add("since_id", sinceId);
+        q.Add("min_id", minId);
+        q.Add("limit", limit);
+
+        var url = q.GetUrl("api/v1/timelines/direct");
+
+        return _client.HttpClient.GetFromJsonAsync<List<Status>>(url, MastodonClient._options);
     }
 
     /// <summary>
