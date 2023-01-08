@@ -18,6 +18,7 @@
 		<Protobuf Include="apps.proto" />
 		<Protobuf Include="bookmarkapi.proto" />
 		<Protobuf Include="card.proto" />
+		<Protobuf Include="common.proto" />
 		<Protobuf Include="context.proto" />
 		<Protobuf Include="directory.proto" />
 		<Protobuf Include="emoji.proto" />
