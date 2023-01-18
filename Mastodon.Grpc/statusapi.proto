@@ -3,13 +3,14 @@ syntax = "proto3";
 import "google/api/annotations.proto";
 import "google/protobuf/wrappers.proto";
 import "account.proto";
+import "common.proto";
 import "context.proto";
 import "status.proto";
 
 option csharp_namespace = "Mastodon.Grpc";
 
-service StatusApi {
-    
+service StatusApi
+{    
   rpc CreateStatus (CreateStatusRequest) returns (Status)
   {
 	option (google.api.http) = {
@@ -17,6 +18,7 @@ service StatusApi {
       body: "*"
     };
   }
+
   rpc GetStatus (google.protobuf.StringValue) returns (Status)
   {
 	option (google.api.http) = {
@@ -179,7 +181,11 @@ message CreateStatusRequest
     {
         uint32 expiresIn = 1 [json_name="expires_in"];
         bool hideTotals = 2 [json_name="hide_totals"];
-        bool multiple = 3;
-        repeated string options = 4;
+        oneof type {
+            bool multiple = 3;
+            PollKind kind = 4;
+        }
+        
+        repeated string options = 5;
     }
 }
