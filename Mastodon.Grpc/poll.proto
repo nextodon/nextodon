@@ -1,10 +1,9 @@
 syntax = "proto3";
 import "google/protobuf/timestamp.proto";
+import "common.proto";
 import "emoji.proto";
 
 option csharp_namespace = "Mastodon.Grpc";
-
-
 
 // Represents a poll attached to a status.
 message Poll
@@ -18,26 +17,29 @@ message Poll
     // Is the poll currently expired?
     bool expired = 3;
 
-    // Does the poll allow multiple-choice answers?
-    bool multiple = 4;
+    // What is the type of the poll?
+    oneof type {
+        bool multiple = 4;
+        PollKind kind = 5;
+    }
 
     // How many votes have been received.
-    uint32 votesCount = 5 [json_name="votes_count"];
+    uint32 votesCount = 6 [json_name="votes_count"];
 
     // How many unique accounts have voted on a multiple-choice poll.
-    optional uint32 votersCount = 6 [json_name="voters_count"];
+    optional uint32 votersCount = 7 [json_name="voters_count"];
 
     // Possible answers for the poll.
-    repeated Option options = 7;
+    repeated Option options = 8;
 
     // Custom emoji to be used for rendering poll options.
-    repeated CustomEmoji emojis = 8;
+    repeated CustomEmoji emojis = 9;
 
     // When called with a user token, has the authorized user voted?
-    optional bool voted = 9;
+    optional bool voted = 10;
 
     // When called with a user token, which options has the authorized user chosen? Contains an array of index values for options.
-    repeated uint32 ownVotes = 10 [json_name="own_votes"];
+    repeated uint32 ownVotes = 11 [json_name="own_votes"];
 
     message Option
     {
