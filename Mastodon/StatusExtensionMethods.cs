@@ -95,7 +95,7 @@ public static class StatusExtensionMethods
         {
             ExpiresIn = i.ExpiresIn,
             HideTotals = i.HideTotals,
-            Multiple = i.Multiple,
+            Multiple = i.TypeCase == Grpc.CreateStatusRequest.Types.Poll.TypeOneofCase.Multiple ? i.Multiple : i.Kind != Grpc.PollKind.Single,
             Options = i.Options.ToList(),
         };
     }
