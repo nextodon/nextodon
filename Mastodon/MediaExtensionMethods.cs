@@ -9,8 +9,9 @@ public static class MediaExtensionMethods
             Id = i.Id,
             Url = i.Url,
             Type = i.Type,
-            Meta = i.Meta.ToGrpc(),
+            Meta = i.Meta?.ToGrpc(),
         };
+
 
         if (i.PreviewUrl != null)
         {

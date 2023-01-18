@@ -38,7 +38,7 @@ public sealed partial class MediaAttachment
     /// <summary>
     /// Metadata returned by Paperclip.
     /// </summary>
-    public required Types.Meta Meta { get; set; }
+    public Types.Meta? Meta { get; set; }
 
     /// <summary>
     /// Alternate text that describes what is in the media attachment, to be used for the visually impaired or when media attachments do not load.
