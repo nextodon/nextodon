@@ -16,11 +16,3 @@ message DefaultPaginationParameters
     // Maximum number of results to return. Defaults to 40 accounts. Max 80 accounts.
     optional uint32 limit = 7;
 }
-
-enum PollKind
-{
-    single = 0;
-    multiple = 1;
-    weighted = 2;
-    priority = 3;
-}
