@@ -1,6 +1,5 @@
 syntax = "proto3";
 import "google/protobuf/timestamp.proto";
-import "common.proto";
 import "emoji.proto";
 
 option csharp_namespace = "Mastodon.Grpc";
@@ -49,4 +48,12 @@ message Poll
         // The total number of received votes for this option.
         optional uint32 votesCount = 2 [json_name="votes_count"];
     }
+}
+
+enum PollKind
+{
+    single = 0;
+    multiple = 1;
+    weighted = 2;
+    priority = 3;
 }

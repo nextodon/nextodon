@@ -6,7 +6,7 @@ public static class PollExtensionMethods
 {
     public static Grpc.Poll ToGrpc(this Mastodon.Models.Poll i)
     {
-        var v = new Poll
+        var v = new Grpc.Poll
         {
             Id = i.Id,
             Expired = i.Expired,
@@ -42,7 +42,7 @@ public static class PollExtensionMethods
 
     public static Grpc.Poll.Types.Option ToGrpc(this Mastodon.Models.Poll.Option i)
     {
-        var v = new Poll.Types.Option
+        var v = new Grpc.Poll.Types.Option
         {
             Title = i.Title,
         };

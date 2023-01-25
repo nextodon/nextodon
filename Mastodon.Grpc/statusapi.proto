@@ -3,8 +3,8 @@ syntax = "proto3";
 import "google/api/annotations.proto";
 import "google/protobuf/wrappers.proto";
 import "account.proto";
-import "common.proto";
 import "context.proto";
+import "poll.proto";
 import "status.proto";
 
 option csharp_namespace = "Mastodon.Grpc";
