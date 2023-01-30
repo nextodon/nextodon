@@ -9,19 +9,31 @@ public sealed class StatusApiService : Mastodon.Grpc.StatusApi.StatusApiBase
 {
     private readonly MastodonClient _mastodon;
     private readonly ILogger<StatusApiService> _logger;
+    private readonly Data.DataContext _db;
 
-    public StatusApiService(ILogger<StatusApiService> logger, MastodonClient mastodon)
+    public StatusApiService(ILogger<StatusApiService> logger, MastodonClient mastodon, DataContext db)
     {
         _logger = logger;
         _mastodon = mastodon;
+        _db = db;
     }
 
     public override async Task<Grpc.Status> CreateStatus(CreateStatusRequest request, ServerCallContext context)
     {
         _mastodon.SetDefaults(context);
 
+        var poll = request.Poll;
+
+        request.Poll = null;
         var result = await _mastodon.Statuses.CreateAsync(request.ToRest());
+
+        if (poll != null)
+        {
+            await _db.CreatePollAsync(result!.Id, poll.Kind.ToData(), poll.Options.ToList());
+        }
+
         return result!.ToGrpc();
+
     }
 
     public override async Task<Grpc.Status> GetStatus(StringValue request, ServerCallContext context)

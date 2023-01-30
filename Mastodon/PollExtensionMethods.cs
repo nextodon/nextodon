@@ -54,4 +54,17 @@ public static class PollExtensionMethods
 
         return v;
     }
+
+
+    public static Data.PollKind ToData(this Grpc.PollKind i)
+    {
+        return i switch
+        {
+            Grpc.PollKind.Priority => Data.PollKind.Priority,
+            Grpc.PollKind.Multiple => Data.PollKind.Multiple,
+            Grpc.PollKind.Single => Data.PollKind.Single,
+            Grpc.PollKind.Weighted => Data.PollKind.Weighted,
+            _ => throw new NotImplementedException(),
+        };
+    }
 }

@@ -43,34 +43,22 @@ public sealed class DataContext
         Poll = database.GetCollection<Poll>("poll");
     }
 
-    public async Task VoteAsync(string id, string userId)
+    public async Task VoteAsync(string statusId, string userId, List<VoteChoice> choices)
     {
-        var filter = Builders<Poll>.Filter.Eq(p => p.StatusId, id);
-        {
-            var update = Builders<Poll>.Update
-            .SetOnInsert(p => p.StatusId, id)
-            .SetOnInsert(p => p.Kind, PollKind.Weighted)
-            .SetOnInsert(p => p.Votes, new Dictionary<string, Vote>
-            {
-                [userId] = new Vote { UserId = userId, Choices = new List<VoteChoice> { } }
-            });
+        var filter = Builders<Poll>.Filter.Eq(p => p.StatusId, statusId);
 
-            var result = await Poll.UpdateOneAsync(filter, update, new UpdateOptions { IsUpsert = true });
-        }
-
-        {
-            var update = Builders<Poll>.Update.Set(p => p.Votes[userId], new Vote { UserId = userId, Choices = new List<VoteChoice> { } });
-            var result = await Poll.UpdateOneAsync(filter, update);
-        }
+        var update = Builders<Poll>.Update.Set(p => p.Votes[userId], new Vote { UserId = userId, Choices = choices });
+        var result = await Poll.UpdateOneAsync(filter, update);
     }
 
-    public Task CreatePollAsync(string statusId, PollKind kind)
+    public Task CreatePollAsync(string statusId, PollKind kind, List<string> options)
     {
         var poll = new Data.Poll
         {
             StatusId = statusId,
             Kind = kind,
             Votes = new Dictionary<string, Vote>(),
+            Options = options,
         };
 
         return Poll.InsertOneAsync(poll);
