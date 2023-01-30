@@ -13,6 +13,9 @@ public sealed class Poll
 
     [BsonRequired]
     public required Dictionary<string, Vote> Votes;
+
+    [BsonRequired]
+    public required List<string> Options;
 }
 
 [BsonIgnoreExtraElements]
