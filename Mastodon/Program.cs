@@ -222,10 +222,12 @@ app.MapPost("/oauth/authorize", async (context) =>
 app.MapGet("/oauth/authorize", async (context) =>
 {
     var url = context.Request.GetEncodedUrl();
-    var b = new UriBuilder(url);
-    b.Host = "mastodon.lol";
-    b.Scheme = "https";
-    b.Port = 443;
+    var b = new UriBuilder(url)
+    {
+        Host = "mastodon.lol",
+        Scheme = "https",
+        Port = 443
+    };
 
     var cookieContainer = new CookieContainer();
     using var handler = new HttpClientHandler { CookieContainer = cookieContainer };

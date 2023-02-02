@@ -5,7 +5,4 @@
 		<Nullable>enable</Nullable>
 		<LangVersion>11</LangVersion>
 	</PropertyGroup>
-	<ItemGroup>
-	  <PackageReference Include="Google.Protobuf" Version="3.21.12" />
-	</ItemGroup>
 </Project>

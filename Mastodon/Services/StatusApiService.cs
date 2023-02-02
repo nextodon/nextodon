@@ -25,14 +25,18 @@ public sealed class StatusApiService : Mastodon.Grpc.StatusApi.StatusApiBase
         var poll = request.Poll;
 
         request.Poll = null;
-        var result = await _mastodon.Statuses.CreateAsync(request.ToRest());
+        var result = (await _mastodon.Statuses.CreateAsync(request.ToRest()))!;
 
         if (poll != null)
         {
             await _db.CreatePollAsync(result!.Id, poll.Kind.ToData(), poll.Options.ToList());
         }
 
-        return result!.ToGrpc();
+        var ret = result.ToGrpc();
+
+        await ret.GetPolls(_db);
+
+        return ret;
 
     }
 
@@ -41,16 +45,24 @@ public sealed class StatusApiService : Mastodon.Grpc.StatusApi.StatusApiBase
         _mastodon.SetDefaults(context);
 
         var result = (await _mastodon.Statuses.GetByIdAsync(request.Value))!;
-        return result.ToGrpc();
+        var ret = result.ToGrpc();
+
+        await ret.GetPolls(_db);
+
+        return ret;
     }
 
     public override async Task<Grpc.Status> DeleteStatus(StringValue request, ServerCallContext context)
     {
         _mastodon.SetDefaults(context);
 
-        var result = await _mastodon.Statuses.DeleteByIdAsync(request.Value);
+        var result = (await _mastodon.Statuses.DeleteByIdAsync(request.Value))!;
 
-        return result!.ToGrpc();
+        var ret = result.ToGrpc();
+
+        await ret.GetPolls(_db);
+
+        return ret;
     }
 
     public override async Task<Accounts> GetRebloggedBy(GetRebloggedByRequest request, ServerCallContext context)
@@ -93,16 +105,24 @@ public sealed class StatusApiService : Mastodon.Grpc.StatusApi.StatusApiBase
     {
         _mastodon.SetDefaults(context);
 
-        var result = await _mastodon.Statuses.FavoriteAsync(request.Value);
-        return result!.ToGrpc();
+        var result = (await _mastodon.Statuses.FavoriteAsync(request.Value))!;
+        var ret = result.ToGrpc();
+
+        await ret.GetPolls(_db);
+
+        return ret;
     }
 
     public override async Task<Grpc.Status> Unfavourite(StringValue request, ServerCallContext context)
     {
         _mastodon.SetDefaults(context);
 
-        var result = await _mastodon.Statuses.UnfavoriteAsync(request.Value);
-        return result!.ToGrpc();
+        var result = (await _mastodon.Statuses.UnfavoriteAsync(request.Value))!;
+        var ret = result.ToGrpc();
+
+        await ret.GetPolls(_db);
+
+        return ret;
     }
 
     public override async Task<Grpc.Status> Bookmark(StringValue request, ServerCallContext context)
@@ -110,7 +130,11 @@ public sealed class StatusApiService : Mastodon.Grpc.StatusApi.StatusApiBase
         _mastodon.SetDefaults(context);
 
         var result = await _mastodon.Statuses.BookmarkAsync(request.Value);
-        return result!.ToGrpc();
+        var ret = result!.ToGrpc();
+
+        await ret.GetPolls(_db);
+
+        return ret;
     }
 
     public override async Task<Grpc.Status> Unbookmark(StringValue request, ServerCallContext context)
@@ -118,7 +142,11 @@ public sealed class StatusApiService : Mastodon.Grpc.StatusApi.StatusApiBase
         _mastodon.SetDefaults(context);
 
         var result = await _mastodon.Statuses.UnbookmarkAsync(request.Value);
-        return result!.ToGrpc();
+        var ret = result!.ToGrpc();
+
+        await ret.GetPolls(_db);
+
+        return ret;
     }
 
     public override async Task<Grpc.Status> Mute(StringValue request, ServerCallContext context)
@@ -126,7 +154,11 @@ public sealed class StatusApiService : Mastodon.Grpc.StatusApi.StatusApiBase
         _mastodon.SetDefaults(context);
 
         var result = await _mastodon.Statuses.MuteAsync(request.Value);
-        return result!.ToGrpc();
+        var ret = result!.ToGrpc();
+
+        await ret.GetPolls(_db);
+
+        return ret;
     }
 
     public override async Task<Grpc.Status> Unmute(StringValue request, ServerCallContext context)
@@ -134,7 +166,11 @@ public sealed class StatusApiService : Mastodon.Grpc.StatusApi.StatusApiBase
         _mastodon.SetDefaults(context);
 
         var result = await _mastodon.Statuses.UnmuteAsync(request.Value);
-        return result!.ToGrpc();
+        var ret = result!.ToGrpc();
+
+        await ret.GetPolls(_db);
+
+        return ret;
     }
 
     public override async Task<Grpc.Status> Pin(StringValue request, ServerCallContext context)
@@ -144,7 +180,11 @@ public sealed class StatusApiService : Mastodon.Grpc.StatusApi.StatusApiBase
         var result = await _mastodon.Statuses.PinAsync(request.Value);
         result.RaiseExceptions();
 
-        return result.Data!.ToGrpc();
+        var ret = result.Data!.ToGrpc();
+
+        await ret.GetPolls(_db);
+
+        return ret;
     }
 
     public override async Task<Grpc.Status> Unpin(StringValue request, ServerCallContext context)
@@ -152,7 +192,11 @@ public sealed class StatusApiService : Mastodon.Grpc.StatusApi.StatusApiBase
         _mastodon.SetDefaults(context);
 
         var result = await _mastodon.Statuses.UnpinAsync(request.Value);
-        return result!.ToGrpc();
+        var ret = result!.ToGrpc();
+
+        await ret.GetPolls(_db);
+
+        return ret;
     }
 
     public override async Task<Grpc.Status> Reblog(ReblogRequest request, ServerCallContext context)
@@ -165,7 +209,11 @@ public sealed class StatusApiService : Mastodon.Grpc.StatusApi.StatusApiBase
 
         await result.WriteHeadersTo(context);
 
-        return result.Data!.ToGrpc();
+        var ret = result.Data!.ToGrpc();
+
+        await ret.GetPolls(_db);
+
+        return ret;
     }
 
     public override async Task<Grpc.Status> Unreblog(StringValue request, ServerCallContext context)
@@ -175,6 +223,10 @@ public sealed class StatusApiService : Mastodon.Grpc.StatusApi.StatusApiBase
         var result = await _mastodon.Statuses.UnreblogAsync(request.Value);
         await result.WriteHeadersTo(context);
 
-        return result.Data!.ToGrpc();
+        var ret = result.Data!.ToGrpc();
+
+        await ret.GetPolls(_db);
+
+        return ret;
     }
 }

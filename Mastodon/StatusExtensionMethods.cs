@@ -4,6 +4,29 @@ namespace Mastodon;
 
 public static class StatusExtensionMethods
 {
+    public static async Task GetPolls(this Grpc.Status i, Data.DataContext db)
+    {
+        var poll = await db.Poll.FindByIdAsync(i.Id);
+
+        if (poll != null)
+        {
+
+        }
+    }
+
+    public static async Task GetPolls(this IEnumerable<Grpc.Status> i, Data.DataContext db)
+    {
+        foreach (var ii in i)
+        {
+            await ii.GetPolls(db);
+        }
+    }
+
+    public static Task GetPolls(this Grpc.Statuses i, Data.DataContext db)
+    {
+        return GetPolls(i.Data, db);
+    }
+
     public static Grpc.Statuses ToGrpc(this IEnumerable<Mastodon.Models.Status>? i)
     {
         var statuses = new Grpc.Statuses();
