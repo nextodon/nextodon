@@ -8,13 +8,13 @@ namespace Mastodon.Services;
 public sealed class TimelineService : Mastodon.Grpc.Timeline.TimelineBase
 {
     private readonly MastodonClient _mastodon;
-    //private readonly DataContext _db;
+    private readonly DataContext _db;
     private readonly ILogger<TimelineService> _logger;
-    public TimelineService(ILogger<TimelineService> logger, MastodonClient mastodon/*, DataContext db*/)
+    public TimelineService(ILogger<TimelineService> logger, MastodonClient mastodon, DataContext db)
     {
         _logger = logger;
         _mastodon = mastodon;
-        //_db = db;
+        _db = db;
     }
 
     public override async Task<Grpc.Statuses> GetPublic(GetPublicTimelineRequest request, ServerCallContext context)
@@ -33,7 +33,11 @@ public sealed class TimelineService : Mastodon.Grpc.Timeline.TimelineBase
 
         await result.WriteHeadersTo(context);
 
-        return result.Data.ToGrpc();
+        var ret = result.Data.ToGrpc();
+
+        await ret.GetPolls(_db);
+
+        return ret;
     }
 
     public override async Task<Statuses> GetByTag(StringValue request, ServerCallContext context)
@@ -41,7 +45,12 @@ public sealed class TimelineService : Mastodon.Grpc.Timeline.TimelineBase
         _mastodon.SetDefaults(context);
 
         var result = await _mastodon.Timeline.GetTagAsync(request.Value);
-        return result.ToGrpc();
+
+        var ret = result.ToGrpc();
+
+        await ret.GetPolls(_db);
+
+        return ret;
     }
 
     public override async Task<Statuses> GetHome(DefaultPaginationParameters request, ServerCallContext context)
@@ -55,7 +64,11 @@ public sealed class TimelineService : Mastodon.Grpc.Timeline.TimelineBase
             limit: request.HasLimit ? request.Limit : null
         );
 
-        return result.ToGrpc();
+        var ret = result.ToGrpc();
+
+        await ret.GetPolls(_db);
+
+        return ret;
     }
 
     public override async Task<Statuses> GetList(StringValue request, ServerCallContext context)
@@ -63,7 +76,11 @@ public sealed class TimelineService : Mastodon.Grpc.Timeline.TimelineBase
         _mastodon.SetDefaults(context);
 
         var result = await _mastodon.Timeline.GetListAsync(request.Value);
-        return result.ToGrpc();
+        var ret = result.ToGrpc();
+
+        await ret.GetPolls(_db);
+
+        return ret;
     }
 
 #pragma warning disable CS0809
@@ -79,7 +96,11 @@ public sealed class TimelineService : Mastodon.Grpc.Timeline.TimelineBase
             limit: request.HasLimit ? request.Limit : null
         );
 
-        return result.ToGrpc();
+        var ret = result.ToGrpc();
+
+        await ret.GetPolls(_db);
+
+        return ret;
     }
 #pragma warning restore CS0809
 }
