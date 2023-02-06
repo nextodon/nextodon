@@ -2,12 +2,7 @@
 
 [BsonIgnoreExtraElements]
 public sealed class Poll
-{
-    [BsonId]
-    [BsonRequired]
-    [BsonElement("_id")]
-    public required string StatusId;
-    
+{  
     [BsonRequired]
     public required PollKind Kind;
 
@@ -16,6 +11,12 @@ public sealed class Poll
 
     [BsonRequired]
     public required List<string> Options;
+
+    [BsonRequired]
+    public required uint ExpiresIn;
+    
+    [BsonRequired]
+    public required bool HideTotals;
 }
 
 [BsonIgnoreExtraElements]
