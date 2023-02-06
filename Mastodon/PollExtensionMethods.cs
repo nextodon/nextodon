@@ -67,4 +67,18 @@ public static class PollExtensionMethods
             _ => throw new NotImplementedException(),
         };
     }
+
+    public static Data.Poll ToData(this Grpc.CreateStatusRequest.Types.Poll i)
+    {
+        var v = new Data.Poll
+        {
+            Kind = i.Kind.ToData(),
+            Options = i.Options.ToList(),
+            Votes = new Dictionary<string, Vote> { },
+            ExpiresIn = i.ExpiresIn,
+            HideTotals = i.HideTotals,
+        };
+
+        return v;
+    }
 }

@@ -4,30 +4,21 @@ namespace Mastodon;
 
 public static class StatusExtensionMethods
 {
-    public static async Task GetPolls(this Grpc.Status i, Data.DataContext db)
-    {
-        var poll = await db.Poll.FindByIdAsync(i.Id);
-
-        if (poll != null)
-        {
-
-        }
-    }
-
-    public static async Task GetPolls(this IEnumerable<Grpc.Status> i, Data.DataContext db)
-    {
-        foreach (var ii in i)
-        {
-            await ii.GetPolls(db);
-        }
-    }
-
-    public static Task GetPolls(this Grpc.Statuses i, Data.DataContext db)
-    {
-        return GetPolls(i.Data, db);
-    }
-
     public static Grpc.Statuses ToGrpc(this IEnumerable<Mastodon.Models.Status>? i)
+    {
+        var statuses = new Grpc.Statuses();
+        if (i != null)
+        {
+            foreach (var r in i)
+            {
+                statuses.Data.Add(r.ToGrpc());
+            }
+        }
+
+        return statuses;
+    }
+
+    public static Grpc.Statuses ToGrpc(this IEnumerable<Mastodon.Data.Status>? i)
     {
         var statuses = new Grpc.Statuses();
         if (i != null)
@@ -100,27 +91,18 @@ public static class StatusExtensionMethods
         return v;
     }
 
-    public static Client.CreateStatus ToRest(this Grpc.CreateStatusRequest i)
+    public static Grpc.Status ToGrpc(this Mastodon.Data.Status i)
     {
-        return new Client.CreateStatus
+        var v = new Grpc.Status
         {
-            Status = i.Status,
-            Visibility = i.Visibility,
-            MediaIds = i.MediaIds.ToList(),
-            Sensitive = i.Sensitive,
-            Poll = i.Poll?.ToRest(),
+            Id = i.Id,
+            CreatedAt = Timestamp.FromDateTime(i.CreatedAt),
+            Content = i.Text,
+            Text = i.Text,
+            Visibility = "public",
         };
-    }
 
-    public static Client.CreateStatus.Types.Poll ToRest(this Grpc.CreateStatusRequest.Types.Poll i)
-    {
-        return new Client.CreateStatus.Types.Poll
-        {
-            ExpiresIn = i.ExpiresIn,
-            HideTotals = i.HideTotals,
-            Multiple = i.TypeCase == Grpc.CreateStatusRequest.Types.Poll.TypeOneofCase.Multiple ? i.Multiple : i.Kind != Grpc.PollKind.Single,
-            Options = i.Options.ToList(),
-        };
+        return v;
     }
 
     public static Grpc.Status ToGrpc(this Mastodon.Models.Status i)

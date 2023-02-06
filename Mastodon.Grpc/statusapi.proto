@@ -176,16 +176,16 @@ message CreateStatusRequest
     optional Poll poll = 3;
     bool sensitive = 4;
     string status = 5;
+    optional string inReplyToId = 6 [json_name="in_reply_to_id"];
+    optional string spoilerText = 7 [json_name="spoiler_text"];
+    optional string language = 8;
+
 
     message Poll
     {
         uint32 expiresIn = 1 [json_name="expires_in"];
         bool hideTotals = 2 [json_name="hide_totals"];
-        oneof type {
-            bool multiple = 3;
-            PollKind kind = 4;
-        }
-        
-        repeated string options = 5;
+        PollKind kind = 3;
+        repeated string options = 4;
     }
 }

@@ -2,6 +2,8 @@ using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
 using Mastodon.Client;
 using Mastodon.Grpc;
+using MongoDB.Driver;
+using MongoDB.Driver.Linq;
 
 namespace Mastodon.Services;
 
@@ -21,66 +23,89 @@ public sealed class StatusApiService : Mastodon.Grpc.StatusApi.StatusApiBase
     public override async Task<Grpc.Status> CreateStatus(CreateStatusRequest request, ServerCallContext context)
     {
         _mastodon.SetDefaults(context);
+        var account = await _mastodon.Accounts.VerifyCredentials();
+        account.RaiseExceptions();
 
-        var poll = request.Poll;
+        var userId = account.Data!.Id;
 
-        request.Poll = null;
-        var result = (await _mastodon.Statuses.CreateAsync(request.ToRest()))!;
-
-        if (poll != null)
+        var status = new Data.Status
         {
-            await _db.CreatePollAsync(result!.Id, poll.Kind.ToData(), poll.Options.ToList());
-        }
+            Text = request.Status,
+            CreatedAt = DateTime.UtcNow,
+            Visibility = Visibility.Public,
+            MediaIds = request.MediaIds?.ToList(),
+            Sensitive = request.Sensitive,
+            Poll = request.Poll?.ToData(),
+            UserId = userId,
+            Language = request.HasLanguage ? request.Language : null,
+            SpoilerText = request.HasSpoilerText ? request.SpoilerText : null,
+            InReplyToId = request.HasInReplyToId ? request.InReplyToId : null,
+        };
 
-        var ret = result.ToGrpc();
+        await _db.Status.InsertOneAsync(status);
 
-        await ret.GetPolls(_db);
+        var result = await _db.GetStatusById(context, _mastodon, status.Id, userId);
 
-        return ret;
-
+        return result;
     }
 
     public override async Task<Grpc.Status> GetStatus(StringValue request, ServerCallContext context)
     {
         _mastodon.SetDefaults(context);
+        var account = await _mastodon.Accounts.VerifyCredentials();
 
-        var result = (await _mastodon.Statuses.GetByIdAsync(request.Value))!;
-        var ret = result.ToGrpc();
+        var userId = account.Data?.Id;
 
-        await ret.GetPolls(_db);
+        var filter = Builders<Data.Status>.Filter.Eq(x => x.Id, request.Value);
+        var ret = await _db.GetStatusById(context, _mastodon, request.Value, userId);
 
         return ret;
     }
 
     public override async Task<Grpc.Status> DeleteStatus(StringValue request, ServerCallContext context)
     {
-        _mastodon.SetDefaults(context);
+        {
+            var filter = Builders<Data.Status>.Filter.Ne(x => x.Deleted, true) & Builders<Data.Status>.Filter.Eq(x => x.Id, request.Value);
+            var update = Builders<Data.Status>.Update.Set(x => x.Deleted, true);
 
-        var result = (await _mastodon.Statuses.DeleteByIdAsync(request.Value))!;
+            await _db.Status.UpdateOneAsync(filter, update);
+        }
 
-        var ret = result.ToGrpc();
+        {
+            var filter = Builders<Data.Status>.Filter.Eq(x => x.Id, request.Value);
+            var ret = await _db.Status.FindByIdAsync(request.Value);
 
-        await ret.GetPolls(_db);
-
-        return ret;
+            return ret!.ToGrpc();
+        }
     }
 
     public override async Task<Accounts> GetRebloggedBy(GetRebloggedByRequest request, ServerCallContext context)
     {
         _mastodon.SetDefaults(context);
 
-        var result = await _mastodon.Statuses.GetRebloggedByAsync(request.StatusId,
-            maxId: request.HasMaxId ? request.MaxId : null,
-            sinceId: request.HasSinceId ? request.SinceId : null,
-            minId: request.HasMinId ? request.MinId : null,
-            limit: request.HasLimit ? request.Limit : null);
+        IMongoQueryable<string> q = from x in _db.Status.AsQueryable()
+                                    where x.ReblogedFromId == request.StatusId
+                                    select x.UserId;
 
-        return result!.ToGrpc();
+        var accountIds = await q.ToListAsync();
+        var dist = accountIds.Distinct();
+
+        var result = new List<Models.Account>();
+
+        foreach (var accountId in accountIds)
+        {
+            var account = await _mastodon.Accounts.GetByIdAsync(accountId);
+            result.Add(account.Data!);
+        }
+
+        return result.ToGrpc();
     }
 
     public override async Task<Accounts> GetFavouritedBy(GetFavouritedByRequest request, ServerCallContext context)
     {
         _mastodon.SetDefaults(context);
+        var account = await _mastodon.Accounts.VerifyCredentials();
+        account.RaiseExceptions();
 
         var result = await _mastodon.Statuses.GetFavouritedByAsync(request.StatusId,
             maxId: request.HasMaxId ? request.MaxId : null,
@@ -96,137 +121,300 @@ public sealed class StatusApiService : Mastodon.Grpc.StatusApi.StatusApiBase
     public override async Task<Grpc.Context> GetContext(StringValue request, ServerCallContext context)
     {
         _mastodon.SetDefaults(context);
+        var me = await _mastodon.Accounts.VerifyCredentials();
+        var userId = me.Data?.Id;
 
-        var result = await _mastodon.Statuses.GetContextAsync(request.Value);
-        return result!.ToGrpc();
+        var ctx = new Grpc.Context();
+
+        var theStatus = await _db.Status.FindByIdAsync(request.Value);
+
+        if (!string.IsNullOrEmpty(theStatus!.InReplyToId))
+        {
+            IMongoQueryable<string> q = from x in _db.Status.AsQueryable()
+                                        where x.Id == theStatus.InReplyToId
+                                        select x.Id;
+
+            var ancestorsIds = await q.ToListAsync();
+
+            foreach (var statusId in ancestorsIds)
+            {
+                var status = await _db.GetStatusById(context, _mastodon, statusId, userId);
+                ctx.Ancestors.Add(status);
+            }
+        }
+        {
+            IMongoQueryable<string> q = from x in _db.Status.AsQueryable()
+                                        where x.InReplyToId == request.Value
+                                        select x.Id;
+
+            var descendantIds = await q.ToListAsync();
+
+            foreach (var statusId in descendantIds)
+            {
+                var status = await _db.GetStatusById(context, _mastodon, statusId, userId);
+                ctx.Descendants.Add(status);
+            }
+        }
+
+        return ctx;
     }
 
     public override async Task<Grpc.Status> Favourite(StringValue request, ServerCallContext context)
     {
         _mastodon.SetDefaults(context);
 
-        var result = (await _mastodon.Statuses.FavoriteAsync(request.Value))!;
-        var ret = result.ToGrpc();
+        var account = await _mastodon.Accounts.VerifyCredentials();
+        account.RaiseExceptions();
+        var userId = account.Data!.Id;
+        {
+            var filter1 = Builders<Data.Status_Account>.Filter.Eq(x => x.StatusId, request.Value);
+            var filter2 = Builders<Data.Status_Account>.Filter.Eq(x => x.AccountId, userId);
+            var filter = filter1 & filter2;
+            var update = Builders<Data.Status_Account>.Update
+                .SetOnInsert(x => x.StatusId, request.Value)
+                .SetOnInsert(x => x.AccountId, userId)
+                .SetOnInsert(x => x.Mute, false)
+                .SetOnInsert(x => x.Pin, false)
+                .SetOnInsert(x => x.Bookmark, false)
+                .Set(x => x.Favorite, true);
 
-        await ret.GetPolls(_db);
+            await _db.StatusAccount.UpdateOneAsync(filter, update, new UpdateOptions { IsUpsert = true });
 
-        return ret;
+
+            var result = await _db.GetStatusById(context, _mastodon, request.Value, userId);
+            return result;
+        }
     }
 
     public override async Task<Grpc.Status> Unfavourite(StringValue request, ServerCallContext context)
     {
         _mastodon.SetDefaults(context);
 
-        var result = (await _mastodon.Statuses.UnfavoriteAsync(request.Value))!;
-        var ret = result.ToGrpc();
+        var account = await _mastodon.Accounts.VerifyCredentials();
+        account.RaiseExceptions();
+        var userId = account.Data!.Id;
 
-        await ret.GetPolls(_db);
+        var filter1 = Builders<Data.Status_Account>.Filter.Eq(x => x.StatusId, request.Value);
+        var filter2 = Builders<Data.Status_Account>.Filter.Eq(x => x.AccountId, userId);
+        var filter = filter1 & filter2;
+        var update = Builders<Data.Status_Account>.Update
+            .SetOnInsert(x => x.StatusId, request.Value)
+            .SetOnInsert(x => x.AccountId, userId)
+            .SetOnInsert(x => x.Mute, false)
+            .SetOnInsert(x => x.Pin, false)
+            .SetOnInsert(x => x.Bookmark, false)
+            .Set(x => x.Favorite, false);
 
-        return ret;
+        await _db.StatusAccount.UpdateOneAsync(filter, update, new UpdateOptions { IsUpsert = true });
+
+        var result = await _db.GetStatusById(context, _mastodon, request.Value, userId);
+        return result;
     }
 
     public override async Task<Grpc.Status> Bookmark(StringValue request, ServerCallContext context)
     {
         _mastodon.SetDefaults(context);
 
-        var result = await _mastodon.Statuses.BookmarkAsync(request.Value);
-        var ret = result!.ToGrpc();
+        var account = await _mastodon.Accounts.VerifyCredentials();
+        account.RaiseExceptions();
+        var userId = account.Data!.Id;
 
-        await ret.GetPolls(_db);
+        var filter1 = Builders<Data.Status_Account>.Filter.Eq(x => x.StatusId, request.Value);
+        var filter2 = Builders<Data.Status_Account>.Filter.Eq(x => x.AccountId, userId);
+        var filter = filter1 & filter2;
+        var update = Builders<Data.Status_Account>.Update
+            .SetOnInsert(x => x.StatusId, request.Value)
+            .SetOnInsert(x => x.AccountId, userId)
+            .SetOnInsert(x => x.Mute, false)
+            .SetOnInsert(x => x.Pin, false)
+            .SetOnInsert(x => x.Favorite, false)
+            .Set(x => x.Bookmark, true);
 
-        return ret;
+        await _db.StatusAccount.UpdateOneAsync(filter, update, new UpdateOptions { IsUpsert = true });
+
+        var result = await _db.GetStatusById(context, _mastodon, request.Value, userId);
+        return result;
     }
 
     public override async Task<Grpc.Status> Unbookmark(StringValue request, ServerCallContext context)
     {
         _mastodon.SetDefaults(context);
 
-        var result = await _mastodon.Statuses.UnbookmarkAsync(request.Value);
-        var ret = result!.ToGrpc();
+        var account = await _mastodon.Accounts.VerifyCredentials();
+        account.RaiseExceptions();
+        var userId = account.Data!.Id;
 
-        await ret.GetPolls(_db);
+        var filter1 = Builders<Data.Status_Account>.Filter.Eq(x => x.StatusId, request.Value);
+        var filter2 = Builders<Data.Status_Account>.Filter.Eq(x => x.AccountId, userId);
+        var filter = filter1 & filter2;
+        var update = Builders<Data.Status_Account>.Update
+            .SetOnInsert(x => x.StatusId, request.Value)
+            .SetOnInsert(x => x.AccountId, userId)
+            .SetOnInsert(x => x.Mute, false)
+            .SetOnInsert(x => x.Pin, false)
+            .SetOnInsert(x => x.Favorite, false)
+            .Set(x => x.Bookmark, false);
 
-        return ret;
+        await _db.StatusAccount.UpdateOneAsync(filter, update, new UpdateOptions { IsUpsert = true });
+
+        var result = await _db.GetStatusById(context, _mastodon, request.Value, userId);
+        return result;
     }
 
     public override async Task<Grpc.Status> Mute(StringValue request, ServerCallContext context)
     {
         _mastodon.SetDefaults(context);
 
-        var result = await _mastodon.Statuses.MuteAsync(request.Value);
-        var ret = result!.ToGrpc();
+        var account = await _mastodon.Accounts.VerifyCredentials();
+        account.RaiseExceptions();
+        var userId = account.Data!.Id;
 
-        await ret.GetPolls(_db);
+        var filter1 = Builders<Data.Status_Account>.Filter.Eq(x => x.StatusId, request.Value);
+        var filter2 = Builders<Data.Status_Account>.Filter.Eq(x => x.AccountId, userId);
+        var filter = filter1 & filter2;
+        var update = Builders<Data.Status_Account>.Update
+            .SetOnInsert(x => x.StatusId, request.Value)
+            .SetOnInsert(x => x.AccountId, userId)
+            .SetOnInsert(x => x.Pin, false)
+            .SetOnInsert(x => x.Bookmark, false)
+            .SetOnInsert(x => x.Favorite, false)
+            .Set(x => x.Mute, true);
 
-        return ret;
+        await _db.StatusAccount.UpdateOneAsync(filter, update, new UpdateOptions { IsUpsert = true });
+
+        var result = await _db.GetStatusById(context, _mastodon, request.Value, userId);
+        return result;
     }
 
     public override async Task<Grpc.Status> Unmute(StringValue request, ServerCallContext context)
     {
         _mastodon.SetDefaults(context);
 
-        var result = await _mastodon.Statuses.UnmuteAsync(request.Value);
-        var ret = result!.ToGrpc();
+        var account = await _mastodon.Accounts.VerifyCredentials();
+        account.RaiseExceptions();
+        var userId = account.Data!.Id;
 
-        await ret.GetPolls(_db);
+        var filter1 = Builders<Data.Status_Account>.Filter.Eq(x => x.StatusId, request.Value);
+        var filter2 = Builders<Data.Status_Account>.Filter.Eq(x => x.AccountId, userId);
+        var filter = filter1 & filter2;
+        var update = Builders<Data.Status_Account>.Update
+            .SetOnInsert(x => x.StatusId, request.Value)
+            .SetOnInsert(x => x.AccountId, userId)
+            .SetOnInsert(x => x.Pin, false)
+            .SetOnInsert(x => x.Bookmark, false)
+            .SetOnInsert(x => x.Favorite, false)
+            .Set(x => x.Mute, false);
 
-        return ret;
+        await _db.StatusAccount.UpdateOneAsync(filter, update, new UpdateOptions { IsUpsert = true });
+
+        var result = await _db.GetStatusById(context, _mastodon, request.Value, userId);
+        return result;
     }
 
     public override async Task<Grpc.Status> Pin(StringValue request, ServerCallContext context)
     {
         _mastodon.SetDefaults(context);
 
-        var result = await _mastodon.Statuses.PinAsync(request.Value);
-        result.RaiseExceptions();
+        var account = await _mastodon.Accounts.VerifyCredentials();
+        account.RaiseExceptions();
+        var userId = account.Data!.Id;
 
-        var ret = result.Data!.ToGrpc();
+        var filter1 = Builders<Data.Status_Account>.Filter.Eq(x => x.StatusId, request.Value);
+        var filter2 = Builders<Data.Status_Account>.Filter.Eq(x => x.AccountId, userId);
+        var filter = filter1 & filter2;
+        var update = Builders<Data.Status_Account>.Update
+            .SetOnInsert(x => x.StatusId, request.Value)
+            .SetOnInsert(x => x.AccountId, userId)
+            .SetOnInsert(x => x.Mute, false)
+            .SetOnInsert(x => x.Bookmark, false)
+            .SetOnInsert(x => x.Favorite, false)
+            .Set(x => x.Pin, true);
 
-        await ret.GetPolls(_db);
+        await _db.StatusAccount.UpdateOneAsync(filter, update, new UpdateOptions { IsUpsert = true });
 
-        return ret;
+        var result = await _db.GetStatusById(context, _mastodon, request.Value, userId);
+        return result;
     }
 
     public override async Task<Grpc.Status> Unpin(StringValue request, ServerCallContext context)
     {
         _mastodon.SetDefaults(context);
 
-        var result = await _mastodon.Statuses.UnpinAsync(request.Value);
-        var ret = result!.ToGrpc();
+        var account = await _mastodon.Accounts.VerifyCredentials();
+        account.RaiseExceptions();
+        var userId = account.Data!.Id;
 
-        await ret.GetPolls(_db);
+        var filter1 = Builders<Data.Status_Account>.Filter.Eq(x => x.StatusId, request.Value);
+        var filter2 = Builders<Data.Status_Account>.Filter.Eq(x => x.AccountId, userId);
+        var filter = filter1 & filter2;
+        var update = Builders<Data.Status_Account>.Update
+            .SetOnInsert(x => x.StatusId, request.Value)
+            .SetOnInsert(x => x.AccountId, userId)
+            .SetOnInsert(x => x.Mute, false)
+            .SetOnInsert(x => x.Bookmark, false)
+            .SetOnInsert(x => x.Favorite, false)
+            .Set(x => x.Pin, false);
 
-        return ret;
+        await _db.StatusAccount.UpdateOneAsync(filter, update, new UpdateOptions { IsUpsert = true });
+
+        // Return.
+        var result = await _db.GetStatusById(context, _mastodon, request.Value, userId);
+        return result;
     }
 
     public override async Task<Grpc.Status> Reblog(ReblogRequest request, ServerCallContext context)
     {
         _mastodon.SetDefaults(context);
 
-        var result = await _mastodon.Statuses.ReblogAsync(request.StatusId, visibility: request.HasVisibility ? request.Visibility : null);
+        var me = await _mastodon.Accounts.VerifyCredentials();
+        me.RaiseExceptions();
+        var userId = me.Data!.Id;
+        var oldStatus = await _db.Status.FindByIdAsync(request.StatusId);
 
-        result.RaiseExceptions();
+        if (oldStatus == null)
+        {
+            throw new RpcException(new global::Grpc.Core.Status(StatusCode.NotFound, string.Empty));
+        }
 
-        await result.WriteHeadersTo(context);
+        var status = new Data.Status
+        {
+            Text = oldStatus.Text,
+            CreatedAt = DateTime.UtcNow,
+            Visibility = Visibility.Public,
+            MediaIds = oldStatus.MediaIds,
+            Sensitive = oldStatus.Sensitive,
+            Poll = oldStatus.Poll,
+            UserId = userId,
+            ReblogedFromId = oldStatus.ReblogedFromId ?? request.StatusId,
+            Language = oldStatus.Language,
+            SpoilerText = oldStatus.SpoilerText,
+            InReplyToId = null, //TODO: oldStatus.InReplyToId,
+        };
 
-        var ret = result.Data!.ToGrpc();
+        await _db.Status.InsertOneAsync(status);
 
-        await ret.GetPolls(_db);
-
-        return ret;
+        // Return.
+        var result = await _db.GetStatusById(context, _mastodon, status.Id, userId);
+        return result;
     }
 
     public override async Task<Grpc.Status> Unreblog(StringValue request, ServerCallContext context)
     {
         _mastodon.SetDefaults(context);
 
-        var result = await _mastodon.Statuses.UnreblogAsync(request.Value);
-        await result.WriteHeadersTo(context);
+        var account = await _mastodon.Accounts.VerifyCredentials();
+        account.RaiseExceptions();
+        var userId = account.Data!.Id;
 
-        var ret = result.Data!.ToGrpc();
 
-        await ret.GetPolls(_db);
+        // Update.
+        var filter = Builders<Data.Status>.Filter.Ne(x => x.Deleted, true) & Builders<Data.Status>.Filter.Eq(x => x.Id, request.Value);
+        var update = Builders<Data.Status>.Update.Set(x => x.Deleted, true);
 
-        return ret;
+        await _db.Status.UpdateOneAsync(filter, update);
+
+        // Return.
+        var result = await _db.GetStatusById(context, _mastodon, request.Value, userId);
+        return result;
     }
 }

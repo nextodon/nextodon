@@ -8,7 +8,8 @@ namespace Mastodon.Data;
 public sealed class DataContext
 {
     internal readonly IMongoDatabase database;
-    public readonly IMongoCollection<Poll> Poll;
+    public readonly IMongoCollection<Status> Status;
+    public readonly IMongoCollection<Status_Account> StatusAccount;
 
     private static bool inited = false;
 
@@ -40,27 +41,15 @@ public sealed class DataContext
         var client = new MongoClient(settings.Value.ConnectionString);
         database = client.GetDatabase(settings.Value.Database);
 
-        Poll = database.GetCollection<Poll>("poll");
+        Status = database.GetCollection<Status>("status");
+        StatusAccount = database.GetCollection<Status_Account>("status_account");
     }
 
-    public async Task VoteAsync(string statusId, string userId, List<VoteChoice> choices)
-    {
-        var filter = Builders<Poll>.Filter.Eq(p => p.StatusId, statusId);
+    //public async Task VoteAsync(string statusId, string userId, List<VoteChoice> choices)
+    //{
+    //    var filter = Builders<Poll>.Filter.Eq(p => p.StatusId, statusId);
 
-        var update = Builders<Poll>.Update.Set(p => p.Votes[userId], new Vote { UserId = userId, Choices = choices });
-        var result = await Poll.UpdateOneAsync(filter, update);
-    }
-
-    public Task CreatePollAsync(string statusId, PollKind kind, List<string> options)
-    {
-        var poll = new Data.Poll
-        {
-            StatusId = statusId,
-            Kind = kind,
-            Votes = new Dictionary<string, Vote>(),
-            Options = options,
-        };
-
-        return Poll.InsertOneAsync(poll);
-    }
+    //    var update = Builders<Poll>.Update.Set(p => p.Votes[userId], new Vote { UserId = userId, Choices = choices });
+    //    var result = await Poll.UpdateOneAsync(filter, update);
+    //}
 }

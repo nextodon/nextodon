@@ -2,6 +2,8 @@ using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
 using Mastodon.Client;
 using Mastodon.Grpc;
+using MongoDB.Driver;
+using MongoDB.Driver.Linq;
 
 namespace Mastodon.Services;
 
@@ -20,6 +22,39 @@ public sealed class TimelineService : Mastodon.Grpc.Timeline.TimelineBase
     public override async Task<Grpc.Statuses> GetPublic(GetPublicTimelineRequest request, ServerCallContext context)
     {
         _mastodon.SetDefaults(context);
+        var me = await _mastodon.Accounts.VerifyCredentials();
+
+        var local = request.Local;
+        var remote = request.Remote;
+        var onlyMedia = request.OnlyMedia;
+        var sinceId = request.HasSinceId ? request.SinceId : null;
+        var maxId = request.HasMaxId ? request.MaxId : null;
+        var minId = request.HasMinId ? request.MinId : null;
+
+        if (local)
+        {
+            var limit = request.HasLimit ? request.Limit : 40;
+            var filter = Builders<Data.Status>.Filter.Ne(x => x.Deleted, true);
+
+            var sort = Builders<Data.Status>.Sort.Descending(x => x.CreatedAt);
+
+            if (!string.IsNullOrWhiteSpace(maxId))
+            {
+                filter &= Builders<Data.Status>.Filter.Lt(x => x.Id, maxId);
+            }
+
+            var cursor = await _db.Status.FindAsync(filter, new FindOptions<Data.Status, Data.Status> { Limit = (int)limit, Sort = sort });
+            var statuses = await cursor.ToListAsync();
+
+            var v = new Grpc.Statuses();
+            foreach (var status in statuses)
+            {
+                var s = await _db.GetStatusById(context, _mastodon, status.Id, me?.Data?.Id);
+                v.Data.Add(s);
+            }
+
+            return v;
+        }
 
         var result = await _mastodon.Timeline.GetPublicAsync(
             local: request.Local,
@@ -35,8 +70,6 @@ public sealed class TimelineService : Mastodon.Grpc.Timeline.TimelineBase
 
         var ret = result.Data.ToGrpc();
 
-        await ret.GetPolls(_db);
-
         return ret;
     }
 
@@ -47,8 +80,6 @@ public sealed class TimelineService : Mastodon.Grpc.Timeline.TimelineBase
         var result = await _mastodon.Timeline.GetTagAsync(request.Value);
 
         var ret = result.ToGrpc();
-
-        await ret.GetPolls(_db);
 
         return ret;
     }
@@ -66,8 +97,6 @@ public sealed class TimelineService : Mastodon.Grpc.Timeline.TimelineBase
 
         var ret = result.ToGrpc();
 
-        await ret.GetPolls(_db);
-
         return ret;
     }
 
@@ -77,8 +106,6 @@ public sealed class TimelineService : Mastodon.Grpc.Timeline.TimelineBase
 
         var result = await _mastodon.Timeline.GetListAsync(request.Value);
         var ret = result.ToGrpc();
-
-        await ret.GetPolls(_db);
 
         return ret;
     }
@@ -97,8 +124,6 @@ public sealed class TimelineService : Mastodon.Grpc.Timeline.TimelineBase
         );
 
         var ret = result.ToGrpc();
-
-        await ret.GetPolls(_db);
 
         return ret;
     }
