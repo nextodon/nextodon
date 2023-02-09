@@ -109,6 +109,7 @@ app.UseGrpcWeb();
 
 app.MapGrpcService<AccountApiService>().EnableGrpcWeb();
 app.MapGrpcService<AppsService>().EnableGrpcWeb();
+app.MapGrpcService<AuthenticationService>().EnableGrpcWeb();
 app.MapGrpcService<BookmarkApiService>().EnableGrpcWeb();
 app.MapGrpcService<DirectoryService>().EnableGrpcWeb();
 app.MapGrpcService<InstanceService>().EnableGrpcWeb();
