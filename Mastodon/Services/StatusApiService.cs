@@ -23,20 +23,20 @@ public sealed class StatusApiService : Mastodon.Grpc.StatusApi.StatusApiBase
     public override async Task<Grpc.Status> CreateStatus(CreateStatusRequest request, ServerCallContext context)
     {
         _mastodon.SetDefaults(context);
-        var account = await _mastodon.Accounts.VerifyCredentials();
-        account.RaiseExceptions();
+        var me = await _mastodon.Accounts.VerifyCredentials();
+        me.RaiseExceptions();
 
-        var userId = account.Data!.Id;
+        var myId = me.Data!.Id;
 
         var status = new Data.Status
         {
+            UserId = myId,
             Text = request.Status,
             CreatedAt = DateTime.UtcNow,
             Visibility = Visibility.Public,
             MediaIds = request.MediaIds?.ToList(),
             Sensitive = request.Sensitive,
             Poll = request.Poll?.ToData(),
-            UserId = userId,
             Language = request.HasLanguage ? request.Language : null,
             SpoilerText = request.HasSpoilerText ? request.SpoilerText : null,
             InReplyToId = request.HasInReplyToId ? request.InReplyToId : null,
@@ -44,7 +44,7 @@ public sealed class StatusApiService : Mastodon.Grpc.StatusApi.StatusApiBase
 
         await _db.Status.InsertOneAsync(status);
 
-        var result = await _db.GetStatusById(context, _mastodon, status.Id, userId);
+        var result = await _db.GetStatusById(context, _mastodon, status.Id, myId);
 
         return result;
     }
