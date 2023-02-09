@@ -11,16 +11,20 @@ namespace Mastodon.Services;
 [Authorize]
 public sealed class AuthenticationService : Authentication.AuthenticationBase
 {
+    private readonly IConfiguration _config;
     private readonly ILogger<AuthenticationService> _logger;
 
-    public AuthenticationService(ILogger<AuthenticationService> logger)
+    public AuthenticationService(ILogger<AuthenticationService> logger, IConfiguration config)
     {
         _logger = logger;
+        _config = config;
     }
 
     [AllowAnonymous]
     public override Task<JsonWebToken> SignIn(SignInRequest request, ServerCallContext context)
     {
+        var jwtOptions = _config.GetSection("JwtSettings").Get<JwtOptions>()!;
+
         var publicKeyBytes = request.PublicKey.ToArray();
         var signatureBytes = request.DigitalSignature.ToArray();
         var messageBytes = Cryptography.HashHelpers.SHA256(publicKeyBytes);
@@ -37,7 +41,8 @@ public sealed class AuthenticationService : Authentication.AuthenticationBase
 
         var tokenHandler = new JwtSecurityTokenHandler();
 
-        var jwtkey = Encoding.UTF8.GetBytes("0102030405060708");
+        var key = jwtOptions.SecretKey;
+        var jwtkey = Encoding.UTF8.GetBytes(key);
 
         var expires = DateTime.UtcNow.AddYears(1);
 
