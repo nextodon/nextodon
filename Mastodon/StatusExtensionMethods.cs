@@ -100,7 +100,23 @@ public static class StatusExtensionMethods
             Content = i.Text,
             Text = i.Text,
             Visibility = "public",
+            Sensitive = i.Sensitive,
         };
+
+        if (i.SpoilerText != null)
+        {
+            v.SpoilerText = i.SpoilerText;
+        }
+
+        if (i.Language != null)
+        {
+            v.Language = i.Language;
+        }
+
+        if (i.InReplyToId != null)
+        {
+            v.InReplyToId = i.InReplyToId;
+        }
 
         return v;
     }
