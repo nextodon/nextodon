@@ -1,12 +1,6 @@
-using Google.Protobuf.WellKnownTypes;
-using Grpc.Core;
-using Mastodon.Client;
-using Mastodon.Grpc;
-using MongoDB.Driver;
-using MongoDB.Driver.Linq;
-
 namespace Mastodon.Services;
 
+[Authorize]
 public sealed class StatusApiService : Mastodon.Grpc.StatusApi.StatusApiBase
 {
     private readonly MastodonClient _mastodon;
@@ -20,35 +14,7 @@ public sealed class StatusApiService : Mastodon.Grpc.StatusApi.StatusApiBase
         _db = db;
     }
 
-    public override async Task<Grpc.Status> CreateStatus(CreateStatusRequest request, ServerCallContext context)
-    {
-        _mastodon.SetDefaults(context);
-        var me = await _mastodon.Accounts.VerifyCredentials();
-        me.RaiseExceptions();
-
-        var myId = me.Data!.Id;
-
-        var status = new Data.Status
-        {
-            UserId = myId,
-            Text = request.Status,
-            CreatedAt = DateTime.UtcNow,
-            Visibility = Visibility.Public,
-            MediaIds = request.MediaIds?.ToList(),
-            Sensitive = request.Sensitive,
-            Poll = request.Poll?.ToData(),
-            Language = request.HasLanguage ? request.Language : null,
-            SpoilerText = request.HasSpoilerText ? request.SpoilerText : null,
-            InReplyToId = request.HasInReplyToId ? request.InReplyToId : null,
-        };
-
-        await _db.Status.InsertOneAsync(status);
-
-        var result = await _db.GetStatusById(context, _mastodon, status.Id, myId);
-
-        return result;
-    }
-
+    [AllowAnonymous]
     public override async Task<Grpc.Status> GetStatus(StringValue request, ServerCallContext context)
     {
         _mastodon.SetDefaults(context);
@@ -62,23 +28,7 @@ public sealed class StatusApiService : Mastodon.Grpc.StatusApi.StatusApiBase
         return ret;
     }
 
-    public override async Task<Grpc.Status> DeleteStatus(StringValue request, ServerCallContext context)
-    {
-        {
-            var filter = Builders<Data.Status>.Filter.Ne(x => x.Deleted, true) & Builders<Data.Status>.Filter.Eq(x => x.Id, request.Value);
-            var update = Builders<Data.Status>.Update.Set(x => x.Deleted, true);
-
-            await _db.Status.UpdateOneAsync(filter, update);
-        }
-
-        {
-            var filter = Builders<Data.Status>.Filter.Eq(x => x.Id, request.Value);
-            var ret = await _db.Status.FindByIdAsync(request.Value);
-
-            return ret!.ToGrpc();
-        }
-    }
-
+    [AllowAnonymous]
     public override async Task<Accounts> GetRebloggedBy(GetRebloggedByRequest request, ServerCallContext context)
     {
         _mastodon.SetDefaults(context);
@@ -101,6 +51,7 @@ public sealed class StatusApiService : Mastodon.Grpc.StatusApi.StatusApiBase
         return result.ToGrpc();
     }
 
+    [AllowAnonymous]
     public override async Task<Accounts> GetFavouritedBy(GetFavouritedByRequest request, ServerCallContext context)
     {
         _mastodon.SetDefaults(context);
@@ -118,6 +69,7 @@ public sealed class StatusApiService : Mastodon.Grpc.StatusApi.StatusApiBase
         return result.Data.ToGrpc();
     }
 
+    [AllowAnonymous]
     public override async Task<Grpc.Context> GetContext(StringValue request, ServerCallContext context)
     {
         _mastodon.SetDefaults(context);
@@ -157,6 +109,48 @@ public sealed class StatusApiService : Mastodon.Grpc.StatusApi.StatusApiBase
         }
 
         return ctx;
+    }
+
+    public override async Task<Grpc.Status> CreateStatus(CreateStatusRequest request, ServerCallContext context)
+    {
+        var myId = "0474C50B4763F7A33EA353F6EB15AFD9081B94776AF9CE5186244C60547578D5DB3D13FBB53D19186091D7C8CD2DF8C0DCD31C458DA99E1C4BB06709DE4D82AE50".ToUpper();
+
+        var status = new Data.Status
+        {
+            UserId = myId,
+            Text = request.Status,
+            CreatedAt = DateTime.UtcNow,
+            Visibility = Visibility.Public,
+            MediaIds = request.MediaIds?.ToList(),
+            Sensitive = request.Sensitive,
+            Poll = request.Poll?.ToData(),
+            Language = request.HasLanguage ? request.Language : null,
+            SpoilerText = request.HasSpoilerText ? request.SpoilerText : null,
+            InReplyToId = request.HasInReplyToId ? request.InReplyToId : null,
+        };
+
+        await _db.Status.InsertOneAsync(status);
+
+        var result = await _db.GetStatusById(context, _mastodon, status.Id, myId);
+
+        return result;
+    }
+  
+    public override async Task<Grpc.Status> DeleteStatus(StringValue request, ServerCallContext context)
+    {
+        {
+            var filter = Builders<Data.Status>.Filter.Ne(x => x.Deleted, true) & Builders<Data.Status>.Filter.Eq(x => x.Id, request.Value);
+            var update = Builders<Data.Status>.Update.Set(x => x.Deleted, true);
+
+            await _db.Status.UpdateOneAsync(filter, update);
+        }
+
+        {
+            var filter = Builders<Data.Status>.Filter.Eq(x => x.Id, request.Value);
+            var ret = await _db.Status.FindByIdAsync(request.Value);
+
+            return ret!.ToGrpc();
+        }
     }
 
     public override async Task<Grpc.Status> Favourite(StringValue request, ServerCallContext context)
