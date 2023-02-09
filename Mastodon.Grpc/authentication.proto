@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+import "google/protobuf/empty.proto";
+
+option csharp_namespace = "Mastodon.Grpc";
+
+service Authentication {
+  rpc SignIn (SignInRequest) returns (JsonWebToken);
+}
+
+message JsonWebToken {
+  string value = 1;
+}
+
+message SignInRequest {
+	bytes publicKey = 1;
+	bytes digitalSignature = 2;
+}

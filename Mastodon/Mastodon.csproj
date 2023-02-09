@@ -12,11 +12,15 @@
 		<PackageReference Include="Grpc.AspNetCore.Web" Version="2.51.0" />
 		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="7.0.2" />
 	</ItemGroup>
+	
+	<ItemGroup>
+		<PackageReference Include="Portable.BouncyCastle" Version="1.9.0" />
+	</ItemGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\Mastodon.Client\Mastodon.Client.csproj" />
-	  <ProjectReference Include="..\Mastodon.Data\Mastodon.Data.csproj" />
-	  <ProjectReference Include="..\Mastodon.Grpc\Mastodon.Grpc.csproj" />
+		<ProjectReference Include="..\Mastodon.Client\Mastodon.Client.csproj" />
+		<ProjectReference Include="..\Mastodon.Data\Mastodon.Data.csproj" />
+		<ProjectReference Include="..\Mastodon.Grpc\Mastodon.Grpc.csproj" />
 	</ItemGroup>
 
 </Project>

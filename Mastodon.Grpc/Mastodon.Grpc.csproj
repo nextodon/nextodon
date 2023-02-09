@@ -16,6 +16,7 @@
 		<Protobuf Include="activity.proto" />
 		<Protobuf Include="application.proto" />
 		<Protobuf Include="apps.proto" />
+		<Protobuf Include="authentication.proto" />
 		<Protobuf Include="bookmarkapi.proto" />
 		<Protobuf Include="card.proto" />
 		<Protobuf Include="common.proto" />
