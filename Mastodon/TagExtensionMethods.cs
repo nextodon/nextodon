@@ -21,7 +21,7 @@ public static class TagExtensionMethods
 
     public static Grpc.Tag ToGrpc(this Mastodon.Models.Tag i)
     {
-        var v = new Tag
+        var v = new Grpc.Tag
         {
             Name = i.Name,
             Url = WebFingerHelper.FixUrl(i.Url),

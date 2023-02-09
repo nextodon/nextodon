@@ -1,12 +1,7 @@
-using Google.Protobuf.WellKnownTypes;
-using Grpc.Core;
-using Mastodon.Client;
-using Mastodon.Grpc;
-using MongoDB.Driver;
-using MongoDB.Driver.Linq;
-
 namespace Mastodon.Services;
 
+[Authorize]
+[AllowAnonymous]
 public sealed class TimelineService : Mastodon.Grpc.Timeline.TimelineBase
 {
     private readonly MastodonClient _mastodon;
@@ -21,6 +16,8 @@ public sealed class TimelineService : Mastodon.Grpc.Timeline.TimelineBase
 
     public override async Task<Grpc.Statuses> GetPublic(GetPublicTimelineRequest request, ServerCallContext context)
     {
+        var user = context.GetHttpContext().User.Identity;
+
         _mastodon.SetDefaults(context);
         var me = await _mastodon.Accounts.VerifyCredentials();
 
