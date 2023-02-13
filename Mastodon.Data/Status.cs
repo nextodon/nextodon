@@ -9,6 +9,7 @@ public sealed class Status
     [BsonRequired]
     public string Id = default!;
 
+    [BsonRepresentation(BsonType.ObjectId)]
     [BsonRequired]
     public required string UserId;
     
