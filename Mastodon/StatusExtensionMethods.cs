@@ -99,7 +99,7 @@ public static class StatusExtensionMethods
             CreatedAt = Timestamp.FromDateTime(i.CreatedAt),
             Content = i.Text,
             Text = i.Text,
-            Visibility = "public",
+            Visibility = Grpc.Visibility.Public,
             Sensitive = i.Sensitive,
         };
 
@@ -123,6 +123,8 @@ public static class StatusExtensionMethods
 
     public static Grpc.Status ToGrpc(this Mastodon.Models.Status i)
     {
+        var isPublic = string.Equals(i.Visibility, "public", StringComparison.OrdinalIgnoreCase);
+
         var v = new Grpc.Status
         {
             Account = i.Account.ToGrpc(),
@@ -130,7 +132,7 @@ public static class StatusExtensionMethods
             Bookmarked = i.Bookmarked,
             CreatedAt = Timestamp.FromDateTime(i.CreatedAt),
             Uri = WebFingerHelper.FixUrl(i.Uri),
-            Visibility = i.Visibility,
+            Visibility = isPublic ? Grpc.Visibility.Public : Grpc.Visibility.Private,
             SpoilerText = i.SpoilerText,
             Favourited = i.Favourited,
             FavouritesCount = i.FavouritesCount,

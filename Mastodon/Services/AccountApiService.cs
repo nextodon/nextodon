@@ -49,7 +49,7 @@ public sealed class AccountApiService : Mastodon.Grpc.AccountApi.AccountApiBase
     /// <br />
     /// Quickly lookup a username to see if it is available, skipping WebFinger resolution.
     /// </summary>
-    public override async Task<Account> Lookup(LookupRequest request, ServerCallContext context)
+    public override async Task<Grpc.Account> Lookup(LookupRequest request, ServerCallContext context)
     {
         _mastodon.SetDefaults(context);
 
@@ -78,7 +78,7 @@ public sealed class AccountApiService : Mastodon.Grpc.AccountApi.AccountApiBase
         return result.Data!.ToGrpc();
     }
 
-    public override async Task<Account> VerifyCredentials(Empty request, ServerCallContext context)
+    public override async Task<Grpc.Account> VerifyCredentials(Empty request, ServerCallContext context)
     {
         _mastodon.SetDefaults(context);
 

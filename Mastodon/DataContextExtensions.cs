@@ -15,14 +15,14 @@ public static class DataContextExtensions
             throw new RpcException(new global::Grpc.Core.Status(StatusCode.NotFound, string.Empty));
         }
 
-        var owner = await mastodon.Accounts.GetByIdAsync(status.UserId);
-        owner.RaiseExceptions();
+        var owner = await db.User.FindByIdAsync(status.UserId);
 
         var result = status.ToGrpc();
-        result.Account = owner.Data!.ToGrpc();
+        var account = owner!.ToGrpc();
+        result.Account = account;
 
-        result.Uri = context.GetUrlPath($"users/{owner.Data!.Username}/statuses/{status.Id}");
-        result.Url = context.GetUrlPath($"@{owner.Data!.Username}/{status.Id}");
+        result.Uri = context.GetUrlPath($"users/{account.Username}/statuses/{status.Id}");
+        result.Url = context.GetUrlPath($"@{account.Username}/{status.Id}");
 
         if (!string.IsNullOrWhiteSpace(status.ReblogedFromId))
         {
@@ -41,8 +41,26 @@ public static class DataContextExtensions
                 result.MediaAttachments.Add(media.Data!.ToGrpc());
             }
         }
-
         result.Poll = null;
+
+        if (status.Poll != null)
+        {
+            result.Poll = new Grpc.Poll
+            {
+                Id = status.Id,
+                Kind = Grpc.PollKind.Priority,
+                Expired = false,
+                ExpiresAt = Timestamp.FromDateTime(DateTime.UtcNow.AddDays(1)),
+                VotersCount = 10000,
+                VotesCount = 10000,
+                Voted = true,
+            };
+
+            foreach (var option in status.Poll.Options)
+            {
+                result.Poll.Options.Add(new Grpc.Poll.Types.Option { Title = option, VotesCount = 100, });
+            }
+        }
 
         {
             var filter1 = Builders<Data.Status>.Filter.Ne(x => x.Deleted, true);
