@@ -29,7 +29,7 @@ message Status
     string content = 5;
     
     // Visibility of this status.
-    string visibility = 6;
+    Visibility visibility = 6;
     
     // Is this status marked as sensitive content.
     bool sensitive = 7;
@@ -135,4 +135,19 @@ message Status
 message Statuses
 {
     repeated Status data = 1;
+}
+
+enum Visibility
+{
+    // Visible to everyone, shown in public timelines.
+    public = 0;
+
+    // Visible to public, but not included in public timelines.
+    unlisted = 1;
+
+    // Visible to followers only, and to any mentioned users.
+    private = 2;
+
+    // Visible only to mentioned users.
+    direct = 3;
 }

@@ -165,13 +165,13 @@ message GetFavouritedByRequest
 message ReblogRequest
 {
     string statusId = 1;
-    optional string visibility = 2;
+    optional Visibility visibility = 2;
 }
 
 
 message CreateStatusRequest
 {
-    string visibility = 1;
+    Visibility visibility = 1;
     repeated string mediaIds = 2 [json_name="media_ids"];
     optional Poll poll = 3;
     bool sensitive = 4;

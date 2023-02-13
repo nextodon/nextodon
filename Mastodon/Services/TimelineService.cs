@@ -16,10 +16,7 @@ public sealed class TimelineService : Mastodon.Grpc.Timeline.TimelineBase
 
     public override async Task<Grpc.Statuses> GetPublic(GetPublicTimelineRequest request, ServerCallContext context)
     {
-        var user = context.GetHttpContext().User.Identity;
-
-        _mastodon.SetDefaults(context);
-        var me = await _mastodon.Accounts.VerifyCredentials();
+        var userId = context.GetUserId(false);
 
         var local = request.Local;
         var remote = request.Remote;
@@ -46,12 +43,14 @@ public sealed class TimelineService : Mastodon.Grpc.Timeline.TimelineBase
             var v = new Grpc.Statuses();
             foreach (var status in statuses)
             {
-                var s = await _db.GetStatusById(context, _mastodon, status.Id, me?.Data?.Id);
+                var s = await _db.GetStatusById(context, _mastodon, status.Id, userId);
                 v.Data.Add(s);
             }
 
             return v;
         }
+
+        _mastodon.SetDefaults(context);
 
         var result = await _mastodon.Timeline.GetPublicAsync(
             local: request.Local,

@@ -113,14 +113,14 @@ public sealed class StatusApiService : Mastodon.Grpc.StatusApi.StatusApiBase
 
     public override async Task<Grpc.Status> CreateStatus(CreateStatusRequest request, ServerCallContext context)
     {
-        var myId = "0474C50B4763F7A33EA353F6EB15AFD9081B94776AF9CE5186244C60547578D5DB3D13FBB53D19186091D7C8CD2DF8C0DCD31C458DA99E1C4BB06709DE4D82AE50".ToUpper();
+        var userId = context.GetUserId(true);
 
         var status = new Data.Status
         {
-            UserId = myId,
+            UserId = userId!,
             Text = request.Status,
             CreatedAt = DateTime.UtcNow,
-            Visibility = Visibility.Public,
+            Visibility = Data.Visibility.Public,
             MediaIds = request.MediaIds?.ToList(),
             Sensitive = request.Sensitive,
             Poll = request.Poll?.ToData(),
@@ -131,7 +131,7 @@ public sealed class StatusApiService : Mastodon.Grpc.StatusApi.StatusApiBase
 
         await _db.Status.InsertOneAsync(status);
 
-        var result = await _db.GetStatusById(context, _mastodon, status.Id, myId);
+        var result = await _db.GetStatusById(context, _mastodon, status.Id, userId);
 
         return result;
     }
@@ -358,6 +358,7 @@ public sealed class StatusApiService : Mastodon.Grpc.StatusApi.StatusApiBase
 
     public override async Task<Grpc.Status> Reblog(ReblogRequest request, ServerCallContext context)
     {
+
         _mastodon.SetDefaults(context);
 
         var me = await _mastodon.Accounts.VerifyCredentials();
@@ -374,7 +375,7 @@ public sealed class StatusApiService : Mastodon.Grpc.StatusApi.StatusApiBase
         {
             Text = oldStatus.Text,
             CreatedAt = DateTime.UtcNow,
-            Visibility = Visibility.Public,
+            Visibility = Mastodon.Data.Visibility.Public,
             MediaIds = oldStatus.MediaIds,
             Sensitive = oldStatus.Sensitive,
             Poll = oldStatus.Poll,
