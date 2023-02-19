@@ -6,6 +6,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using MongoDB.Driver;
+using Mastodon.Cryptography;
 
 namespace Mastodon.Services;
 
@@ -29,11 +30,10 @@ public sealed class AuthenticationService : Authentication.AuthenticationBase
         var jwtOptions = _config.GetSection("JwtSettings").Get<JwtOptions>()!;
 
         var publicKeyBytes = request.PublicKey.ToArray();
+        var publicKey = new Mastodon.Cryptography.PublicKey(publicKeyBytes);
+
         var signatureBytes = request.DigitalSignature.ToArray();
         var messageBytes = Cryptography.HashHelpers.SHA256(publicKeyBytes);
-
-        var publicKeyHex = Cryptography.HashHelpers.ByteArrayToHexString(publicKeyBytes);
-        var publicKey = new Mastodon.Cryptography.PublicKey(publicKeyBytes);
 
         var valid = Cryptography.Secp256K1.VerifySignature(publicKey, messageBytes, signatureBytes);
 
@@ -44,7 +44,7 @@ public sealed class AuthenticationService : Authentication.AuthenticationBase
 
         var id = publicKey.CreateAddress();
 
-        var account = await _db.Account.FindOrCreateAsync(id, publicKeyHex);
+        var account = await _db.Account.FindOrCreateAsync(id);
         var accountId = account.Id;
         var tokenHandler = new JwtSecurityTokenHandler();
 

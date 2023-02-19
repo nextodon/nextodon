@@ -7,9 +7,6 @@ public sealed class Account
     public required string Id;
 
     [BsonRequired]
-    public required string PublicKey;
-
-    [BsonRequired]
     public string? Username;
 
     [BsonRequired]

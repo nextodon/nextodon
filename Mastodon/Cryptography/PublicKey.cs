@@ -20,7 +20,7 @@ public sealed class PublicKey
     {
         var input = Value[1..];
         var address = Cryptography.HashHelpers.Keccak(input.ToArray());
-        var w = address.Skip(address.Length - 20).ToArray();
+        var w = address[^20..];
 
         var h = HashHelpers.ByteArrayToHexString(w).ToUpper();
         return h;

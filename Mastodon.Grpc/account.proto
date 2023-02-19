@@ -87,9 +87,6 @@ message Account
     // The role assigned to the currently authorized user.
     optional Role role = 26;
 
-    // The public key.
-    optional string publicKey = 27;
-
     // Additional metadata attached to a profile as name-value pairs.
     message Field
     {

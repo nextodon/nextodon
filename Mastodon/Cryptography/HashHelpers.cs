@@ -24,6 +24,7 @@ public static class HashHelpers
 
         return result;
     }
+
     public static byte[] Keccak(byte[] input)
     {
         var digest = new KeccakDigest(256);
@@ -71,23 +72,21 @@ public static class HashHelpers
 
     public static string ByteArrayToHexString(byte[] bytes)
     {
-        var result = new StringBuilder(bytes.Length * 2);
-        const string HexAlphabet = "0123456789ABCDEF";
-
-        foreach (byte b in bytes)
-        {
-            result.Append(HexAlphabet[(int)(b >> 4)]);
-            result.Append(HexAlphabet[(int)(b & 0xF)]);
-        }
-
-        return result.ToString();
+        Span<byte> span = bytes;
+        return ByteArrayToHexString(span);
     }
+
     public static string ByteArrayToHexString(ReadOnlyMemory<byte> bytes)
+    {
+        return ByteArrayToHexString(bytes.Span);
+    }
+
+    public static string ByteArrayToHexString(ReadOnlySpan<byte> bytes)
     {
         var result = new StringBuilder(bytes.Length * 2);
         const string HexAlphabet = "0123456789ABCDEF";
 
-        foreach (byte b in bytes.Span)
+        foreach (byte b in bytes)
         {
             result.Append(HexAlphabet[(int)(b >> 4)]);
             result.Append(HexAlphabet[(int)(b & 0xF)]);
