@@ -11,8 +11,14 @@ public sealed class Account
     [BsonRequired]
     public required string PublicKey;
 
-    //[BsonRequired]
+    [BsonRequired]
     public string? Username;
+
+    [BsonRequired]
+    public string? DisplayName;
+
+    [BsonRequired]
+    public bool? Discoverable;
 
     [BsonRequired]
     public required DateTime CreatedAt;
@@ -20,4 +26,19 @@ public sealed class Account
 
     [BsonRequired]
     public required DateTime LoggedInAt;
+    
+    [BsonRequired]
+    public required List<Field> Fields;
+
+    public sealed class Field
+    {
+        [BsonRequired]
+        public required string Name;
+
+        [BsonRequired]
+        public required string Value;
+
+        [BsonRequired]
+        public DateTime? VerifiedAt;
+    }
 }
