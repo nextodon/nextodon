@@ -42,17 +42,8 @@ public sealed class AuthenticationService : Authentication.AuthenticationBase
             throw new RpcException(new global::Grpc.Core.Status(StatusCode.InvalidArgument, string.Empty));
         }
 
-        var now = DateTime.UtcNow;
-        var filter = Builders<Data.Account>.Filter.Eq(x => x.PublicKey, publicKeyHex);
-        var update = Builders<Data.Account>.Update
-            .SetOnInsert(x => x.PublicKey, publicKeyHex)
-            .SetOnInsert(x => x.CreatedAt, now)
-            .Set(x => x.LoggedInAt, now);
-
-
-        var result = await _db.Account.FindOneAndUpdateAsync(filter, update, new FindOneAndUpdateOptions<Data.Account, Data.Account> { IsUpsert = true });
-
-        var userId = result.Id;
+        var account = await _db.Account.FindOrCreateAsync(publicKeyHex);
+        var accountId = account.Id;
         var tokenHandler = new JwtSecurityTokenHandler();
 
         var key = jwtOptions.SecretKey;
@@ -62,8 +53,8 @@ public sealed class AuthenticationService : Authentication.AuthenticationBase
 
         var tokenDescriptor = new SecurityTokenDescriptor
         {
-            Subject = new ClaimsIdentity(new Claim[] { new Claim(JwtRegisteredClaimNames.UniqueName, userId) }),
-            Claims = new Dictionary<string, object> { [JwtRegisteredClaimNames.UniqueName] = userId },
+            Subject = new ClaimsIdentity(new Claim[] { new Claim(JwtRegisteredClaimNames.UniqueName, accountId) }),
+            Claims = new Dictionary<string, object> { [JwtRegisteredClaimNames.UniqueName] = accountId },
             Expires = expires,
             SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(jwtkey), SecurityAlgorithms.HmacSha256Signature)
         };

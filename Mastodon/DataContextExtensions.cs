@@ -17,7 +17,7 @@ public static class DataContextExtensions
 
         var owner = await db.Account.FindByIdAsync(status.UserId);
 
-        var result = status.ToGrpc();
+        var result = status.ToGrpc(owner!);
         var account = owner!.ToGrpc();
         result.Account = account;
 

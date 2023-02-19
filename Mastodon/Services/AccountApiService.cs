@@ -102,7 +102,7 @@ public sealed class AccountApiService : Mastodon.Grpc.AccountApi.AccountApiBase
 
         var account = await _db.Account.FindByIdAsync(request.AccountId);
 
-        return statuses.ToGrpc(account);
+        return statuses.ToGrpc(account!);
     }
 
     public override async Task<FeaturedTags> GetFeaturedTags(StringValue request, ServerCallContext context)
