@@ -1,3 +1,5 @@
+using MongoDB.Driver;
+
 namespace Mastodon.Services;
 
 public sealed class AccountApiService : Mastodon.Grpc.AccountApi.AccountApiBase
@@ -79,24 +81,26 @@ public sealed class AccountApiService : Mastodon.Grpc.AccountApi.AccountApiBase
 
     public override async Task<Statuses> GetStatuses(GetStatusesRequest request, ServerCallContext context)
     {
-        _mastodon.SetDefaults(context);
+        var limit = request.HasLimit ? request.Limit : 40;
+        limit = Math.Min(limit, 80);
 
-        var result = await _mastodon.Accounts.GetStatusesByIdAsync(request.AccountId,
-            sinceId: request.HasSinceId ? request.SinceId : null,
-            maxId: request.HasMaxId ? request.MaxId : null,
-            minId: request.HasMinId ? request.MinId : null,
-            limit: request.HasLimit ? request.Limit : null,
-            onlyMedia: request.HasOnlyMedia ? request.OnlyMedia : null,
-           excludeReplies: request.HasExcludeReplies ? request.ExcludeReplies : null,
-           excludeReblogs: request.HasExcludeReblogs ? request.ExcludeReblogs : null,
-           pinned: request.HasPinned ? request.Pinned : null,
-           tagged: request.HasTagged ? request.Tagged : null);
+        var filters = new List<FilterDefinition<Data.Status>>
+        {
+            Builders<Data.Status>.Filter.Eq(x => x.UserId, request.AccountId)
+        };
 
-        result.RaiseExceptions();
+        if (request.HasSinceId)
+        {
 
-        await result.WriteHeadersTo(context);
+        }
 
-        return result.Data!.ToGrpc();
+        var options = new FindOptions<Data.Status, Data.Status> { Limit = (int)limit };
+
+        var filter = Builders<Data.Status>.Filter.And(filters);
+        var cursor = await _db.Status.FindAsync(filter, options);
+        var statuses = await cursor.ToListAsync();
+
+        return statuses.ToGrpc();
     }
 
     public override async Task<FeaturedTags> GetFeaturedTags(StringValue request, ServerCallContext context)
