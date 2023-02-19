@@ -18,7 +18,7 @@ public static class StatusExtensionMethods
         return statuses;
     }
 
-    public static Grpc.Statuses ToGrpc(this IEnumerable<Mastodon.Data.Status>? i, Data.Account? account = null)
+    public static Grpc.Statuses ToGrpc(this IEnumerable<Mastodon.Data.Status>? i, Data.Account account)
     {
         var statuses = new Grpc.Statuses();
         if (i != null)
@@ -91,7 +91,7 @@ public static class StatusExtensionMethods
         return v;
     }
 
-    public static Grpc.Status ToGrpc(this Mastodon.Data.Status i, Data.Account? account = null)
+    public static Grpc.Status ToGrpc(this Data.Status i, Data.Account account)
     {
         var v = new Grpc.Status
         {

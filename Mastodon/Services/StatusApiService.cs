@@ -135,9 +135,11 @@ public sealed class StatusApiService : Mastodon.Grpc.StatusApi.StatusApiBase
 
         return result;
     }
-  
+
     public override async Task<Grpc.Status> DeleteStatus(StringValue request, ServerCallContext context)
     {
+        var account = await context.GetUser(_db, true);
+
         {
             var filter = Builders<Data.Status>.Filter.Ne(x => x.Deleted, true) & Builders<Data.Status>.Filter.Eq(x => x.Id, request.Value);
             var update = Builders<Data.Status>.Update.Set(x => x.Deleted, true);
@@ -149,7 +151,7 @@ public sealed class StatusApiService : Mastodon.Grpc.StatusApi.StatusApiBase
             var filter = Builders<Data.Status>.Filter.Eq(x => x.Id, request.Value);
             var ret = await _db.Status.FindByIdAsync(request.Value);
 
-            return ret!.ToGrpc();
+            return ret!.ToGrpc(account!);
         }
     }
 

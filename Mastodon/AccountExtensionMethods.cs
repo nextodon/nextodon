@@ -96,6 +96,7 @@ public static class AccountExtensionMethods
             //Moved = i.Moved?.ToGrpc(),
             CreatedAt = i.CreatedAt.ToGrpc(),
             LastStatusAt = i.CreatedAt.ToGrpc(),//TODO
+            PublicKey = i.PublicKey,
         };
 
         if (i.Discoverable != null)
@@ -160,7 +161,7 @@ public static class AccountExtensionMethods
 
         return v;
     }
-    
+
     public static Grpc.Account.Types.Field ToGrpc(this Mastodon.Data.Account.Field i)
     {
         var v = new Grpc.Account.Types.Field
