@@ -15,7 +15,7 @@ public static class DataContextExtensions
             throw new RpcException(new global::Grpc.Core.Status(StatusCode.NotFound, string.Empty));
         }
 
-        var owner = await db.User.FindByIdAsync(status.UserId);
+        var owner = await db.Account.FindByIdAsync(status.UserId);
 
         var result = status.ToGrpc();
         var account = owner!.ToGrpc();

@@ -50,7 +50,7 @@ public sealed class AuthenticationService : Authentication.AuthenticationBase
             .Set(x => x.LoggedInAt, now);
 
 
-        var result = await _db.User.FindOneAndUpdateAsync(filter, update, new FindOneAndUpdateOptions<Data.Account, Data.Account> { IsUpsert = true });
+        var result = await _db.Account.FindOneAndUpdateAsync(filter, update, new FindOneAndUpdateOptions<Data.Account, Data.Account> { IsUpsert = true });
 
         var userId = result.Id;
         var tokenHandler = new JwtSecurityTokenHandler();

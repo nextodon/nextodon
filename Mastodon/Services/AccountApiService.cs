@@ -1,19 +1,16 @@
-using Google.Protobuf.WellKnownTypes;
-using Grpc.Core;
-using Mastodon.Client;
-using Mastodon.Grpc;
-
 namespace Mastodon.Services;
 
 public sealed class AccountApiService : Mastodon.Grpc.AccountApi.AccountApiBase
 {
     private readonly MastodonClient _mastodon;
     private readonly ILogger<AccountApiService> _logger;
+    private readonly Data.DataContext _db;
 
-    public AccountApiService(ILogger<AccountApiService> logger, MastodonClient mastodon)
+    public AccountApiService(ILogger<AccountApiService> logger, MastodonClient mastodon, DataContext db)
     {
         _logger = logger;
         _mastodon = mastodon;
+        _db = db;
     }
 
     public override async Task<Token> Register(RegisterRequest request, ServerCallContext context)
@@ -34,14 +31,9 @@ public sealed class AccountApiService : Mastodon.Grpc.AccountApi.AccountApiBase
 
     public override async Task<Grpc.Account> GetById(StringValue request, ServerCallContext context)
     {
-        _mastodon.SetDefaults(context);
+        var account = await _db.Account.FindByIdAsync(request.Value);
 
-        var result = await _mastodon.Accounts.GetByIdAsync(request.Value);
-        result.RaiseExceptions();
-
-        await result.WriteHeadersTo(context);
-
-        return result.Data!.ToGrpc();
+        return account == null ? throw new RpcException(new global::Grpc.Core.Status(StatusCode.NotFound, string.Empty)) : account.ToGrpc();
     }
 
     /// <summary>
@@ -78,20 +70,11 @@ public sealed class AccountApiService : Mastodon.Grpc.AccountApi.AccountApiBase
         return result.Data!.ToGrpc();
     }
 
+    [Authorize]
     public override async Task<Grpc.Account> VerifyCredentials(Empty request, ServerCallContext context)
     {
-        _mastodon.SetDefaults(context);
-
-        var result = await _mastodon.Accounts.VerifyCredentials();
-
-        if (!result.IsSuccessStatusCode)
-        {
-            throw new RpcException(new global::Grpc.Core.Status(StatusCode.Internal, result.StatusCode.ToString()));
-        }
-
-        await result.WriteHeadersTo(context);
-
-        return result.Data!.ToGrpc();
+        var account = await context.GetUser(_db, true);
+        return account == null ? throw new RpcException(new global::Grpc.Core.Status(StatusCode.NotFound, string.Empty)) : account.ToGrpc();
     }
 
     public override async Task<Statuses> GetStatuses(GetStatusesRequest request, ServerCallContext context)
@@ -162,7 +145,7 @@ public sealed class AccountApiService : Mastodon.Grpc.AccountApi.AccountApiBase
         return result.Data!.ToGrpc();
     }
 
-    public override async Task<Relationship> RemoveFromFollowers(StringValue request, ServerCallContext context)
+    public override async Task<Grpc.Relationship> RemoveFromFollowers(StringValue request, ServerCallContext context)
     {
         _mastodon.SetDefaults(context);
 

@@ -22,7 +22,7 @@ public static class ExtensionMethods
         var userId = GetUserId(context, throwIfNotFound);
 
         var filter = Builders<Data.Account>.Filter.Eq(u => u.Id, userId);
-        var cursor = await db.User.FindAsync(filter);
+        var cursor = await db.Account.FindAsync(filter);
 
         var user = await cursor.FirstOrDefaultAsync();
 
