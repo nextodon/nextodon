@@ -8,7 +8,7 @@ namespace Mastodon.Data;
 public sealed class DataContext
 {
     internal readonly IMongoDatabase database;
-    public readonly IMongoCollection<Account> User;
+    public readonly IMongoCollection<Account> Account;
     public readonly IMongoCollection<Status> Status;
     public readonly IMongoCollection<Status_Account> StatusAccount;
 
@@ -42,14 +42,14 @@ public sealed class DataContext
         var client = new MongoClient(settings.Value.ConnectionString);
         database = client.GetDatabase(settings.Value.Database);
 
-        User = database.GetCollection<Account>("account");
+        Account = database.GetCollection<Account>("account");
         Status = database.GetCollection<Status>("status");
         StatusAccount = database.GetCollection<Status_Account>("status_account");
 
         try
         {
             var definition = Builders<Account>.IndexKeys.Ascending(x => x.PublicKey);
-            User.Indexes.CreateOne(new CreateIndexModel<Account>(definition, new CreateIndexOptions { Unique = true }));
+            Account.Indexes.CreateOne(new CreateIndexModel<Account>(definition, new CreateIndexOptions { Unique = true }));
         }
         catch { }
     }

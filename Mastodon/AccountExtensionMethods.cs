@@ -86,7 +86,7 @@ public static class AccountExtensionMethods
             Locked = false,
             Note = i.PublicKey,
             Url = WebFingerHelper.FixUrl("https://img.freepik.com/premium-photo/soccer-ball-colourful-background-mixed-media_641298-12866.jpg?w=1380"),
-            Username = i.Id,
+            Username = i.Username ?? i.Id,
             Bot = false,
             Group = false,
             Limited = false,
@@ -175,7 +175,7 @@ public static class AccountExtensionMethods
 
     public static Grpc.Relationship ToGrpc(this Mastodon.Models.Relationship i)
     {
-        var v = new Relationship
+        var v = new Grpc.Relationship
         {
             BlockedBy = i.BlockedBy,
             Blocking = i.Blocking,
@@ -205,7 +205,7 @@ public static class AccountExtensionMethods
     {
         var v = new FeaturedTags();
 
-        if(i != null)
+        if (i != null)
         {
             v.Data.AddRange(i.Select(x => x.ToGrpc()));
         }

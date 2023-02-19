@@ -1,6 +1,6 @@
 ﻿namespace Mastodon.Data;
 
-public sealed class Account
+public sealed class Relationship
 {
     [BsonElement("_id")]
     [BsonId(IdGenerator = typeof(StringObjectIdGenerator))]
@@ -8,16 +8,14 @@ public sealed class Account
     [BsonRequired]
     public string Id = default!;
 
+    [BsonRepresentation(BsonType.ObjectId)]
     [BsonRequired]
-    public required string PublicKey;
-
-    //[BsonRequired]
-    public string? Username;
-
+    public required string From; 
+    
+    [BsonRepresentation(BsonType.ObjectId)]
     [BsonRequired]
-    public required DateTime CreatedAt;
-
+    public required string To;
 
     [BsonRequired]
-    public required DateTime LoggedInAt;
+    public string? Note;
 }
