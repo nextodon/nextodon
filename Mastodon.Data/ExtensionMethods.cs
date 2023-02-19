@@ -13,4 +13,14 @@ public static class ExtensionMethods
 
         return ret;
     }
+
+    public static async Task<Account?> FindByIdAsync(this IMongoCollection<Account> collection, string id)
+    {        var filter = Builders<Account>.Filter.Eq(x => x.Id, id);
+
+        var cursor = await collection.FindAsync(filter);
+
+        var ret = await cursor.FirstOrDefaultAsync();
+
+        return ret;
+    }
 }
