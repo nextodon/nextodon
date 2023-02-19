@@ -42,7 +42,7 @@ public sealed class AuthenticationService : Authentication.AuthenticationBase
             throw new RpcException(new global::Grpc.Core.Status(StatusCode.InvalidArgument, string.Empty));
         }
 
-        var id = publicKey.CreateAddress();
+        var id = publicKey.ToString();
 
         var account = await _db.Account.FindOrCreateAsync(id);
         var accountId = account.Id;
