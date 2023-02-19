@@ -84,7 +84,7 @@ public static class AccountExtensionMethods
             Header = "https://img.freepik.com/premium-photo/soccer-ball-colourful-background-mixed-media_641298-12866.jpg?w=1380",
             HeaderStatic = "https://img.freepik.com/premium-photo/soccer-ball-colourful-background-mixed-media_641298-12866.jpg?w=1380",
             Locked = false,
-            Note = i.PublicKey,
+            Note = i.Id,
             Url = WebFingerHelper.FixUrl("https://img.freepik.com/premium-photo/soccer-ball-colourful-background-mixed-media_641298-12866.jpg?w=1380"),
             Username = i.Username ?? i.Id,
             Bot = false,
@@ -96,7 +96,6 @@ public static class AccountExtensionMethods
             //Moved = i.Moved?.ToGrpc(),
             CreatedAt = i.CreatedAt.ToGrpc(),
             LastStatusAt = i.CreatedAt.ToGrpc(),//TODO
-            PublicKey = i.PublicKey,
         };
 
         if (i.Discoverable != null)

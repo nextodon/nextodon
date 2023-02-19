@@ -2,16 +2,14 @@
 
 public static class AuthenticationHelpers
 {
-    public static async Task<Account> FindOrCreateAsync(this IMongoCollection<Account> account, string id, string publicKeyHex)
+    public static async Task<Account> FindOrCreateAsync(this IMongoCollection<Account> account, string id)
     {
-        publicKeyHex = publicKeyHex.ToUpper();
         id = id.ToUpper();
 
         var now = DateTime.UtcNow;
         var filter = Builders<Data.Account>.Filter.Eq(x => x.Id, id);
         var update = Builders<Data.Account>.Update
-            .SetOnInsert(x => x.Id, id)
-            .SetOnInsert(x => x.PublicKey, publicKeyHex)
+            //.SetOnInsert(x => x.Id, id)
             .SetOnInsert(x => x.CreatedAt, now)
             .SetOnInsert(x => x.Username, null)
             .SetOnInsert(x => x.DisplayName, null)
@@ -20,7 +18,7 @@ public static class AuthenticationHelpers
             .Set(x => x.LoggedInAt, now);
 
 
-        var result = await account.FindOneAndUpdateAsync(filter, update, new FindOneAndUpdateOptions<Data.Account, Data.Account> { IsUpsert = true });
+        var result = await account.FindOneAndUpdateAsync(filter, update, new FindOneAndUpdateOptions<Data.Account, Data.Account> { IsUpsert = true, ReturnDocument = ReturnDocument.After });
 
         return result;
     }

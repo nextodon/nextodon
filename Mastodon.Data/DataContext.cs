@@ -45,13 +45,6 @@ public sealed class DataContext
         Account = database.GetCollection<Account>("account");
         Status = database.GetCollection<Status>("status");
         StatusAccount = database.GetCollection<Status_Account>("status_account");
-
-        try
-        {
-            var definition = Builders<Account>.IndexKeys.Ascending(x => x.PublicKey);
-            Account.Indexes.CreateOne(new CreateIndexModel<Account>(definition, new CreateIndexOptions { Unique = true }));
-        }
-        catch { }
     }
 
     //public async Task VoteAsync(string statusId, string userId, List<VoteChoice> choices)
