@@ -86,7 +86,7 @@ public sealed class AccountApiService : Mastodon.Grpc.AccountApi.AccountApiBase
 
         var filters = new List<FilterDefinition<Data.Status>>
         {
-            Builders<Data.Status>.Filter.Eq(x => x.UserId, request.AccountId)
+            Builders<Data.Status>.Filter.Eq(x => x.AccountId, request.AccountId)
         };
 
         if (request.HasSinceId)

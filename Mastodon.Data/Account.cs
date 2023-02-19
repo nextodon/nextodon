@@ -3,10 +3,8 @@
 public sealed class Account
 {
     [BsonElement("_id")]
-    [BsonId(IdGenerator = typeof(StringObjectIdGenerator))]
-    [BsonRepresentation(BsonType.ObjectId)]
     [BsonRequired]
-    public string Id = default!;
+    public required string Id;
 
     [BsonRequired]
     public required string PublicKey;

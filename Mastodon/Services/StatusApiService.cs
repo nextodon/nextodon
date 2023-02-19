@@ -35,7 +35,7 @@ public sealed class StatusApiService : Mastodon.Grpc.StatusApi.StatusApiBase
 
         IMongoQueryable<string> q = from x in _db.Status.AsQueryable()
                                     where x.ReblogedFromId == request.StatusId
-                                    select x.UserId;
+                                    select x.AccountId;
 
         var accountIds = await q.ToListAsync();
         var dist = accountIds.Distinct();
@@ -117,7 +117,7 @@ public sealed class StatusApiService : Mastodon.Grpc.StatusApi.StatusApiBase
 
         var status = new Data.Status
         {
-            UserId = userId!,
+            AccountId = userId!,
             Text = request.Status,
             CreatedAt = DateTime.UtcNow,
             Visibility = Data.Visibility.Public,
@@ -381,7 +381,7 @@ public sealed class StatusApiService : Mastodon.Grpc.StatusApi.StatusApiBase
             MediaIds = oldStatus.MediaIds,
             Sensitive = oldStatus.Sensitive,
             Poll = oldStatus.Poll,
-            UserId = userId,
+            AccountId = userId,
             ReblogedFromId = oldStatus.ReblogedFromId ?? request.StatusId,
             Language = oldStatus.Language,
             SpoilerText = oldStatus.SpoilerText,
