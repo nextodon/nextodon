@@ -15,7 +15,7 @@ public static class DataContextExtensions
             throw new RpcException(new global::Grpc.Core.Status(StatusCode.NotFound, string.Empty));
         }
 
-        var owner = await db.Account.FindByIdAsync(status.UserId);
+        var owner = await db.Account.FindByIdAsync(status.AccountId);
 
         var result = status.ToGrpc(owner!);
         var account = owner!.ToGrpc();
@@ -72,7 +72,7 @@ public static class DataContextExtensions
         {
             var filter1 = Builders<Data.Status>.Filter.Ne(x => x.Deleted, true);
             var filter2 = Builders<Data.Status>.Filter.Eq(x => x.ReblogedFromId, status.Id);
-            var filter3 = Builders<Data.Status>.Filter.Eq(x => x.UserId, meId);
+            var filter3 = Builders<Data.Status>.Filter.Eq(x => x.AccountId, meId);
             result.Reblogged = (await db.Status.CountDocumentsAsync(filter1 & filter2 & filter3)) > 0;
         }
 

@@ -35,14 +35,16 @@ public sealed class AuthenticationService : Authentication.AuthenticationBase
         var publicKeyHex = Cryptography.HashHelpers.ByteArrayToHexString(publicKeyBytes);
         var publicKey = new Mastodon.Cryptography.PublicKey(publicKeyBytes);
 
-        var valid = Mastodon.Cryptography.Secp256K1.VerifySignature(publicKey, messageBytes, signatureBytes);
+        var valid = Cryptography.Secp256K1.VerifySignature(publicKey, messageBytes, signatureBytes);
 
         if (!valid)
         {
             throw new RpcException(new global::Grpc.Core.Status(StatusCode.InvalidArgument, string.Empty));
         }
 
-        var account = await _db.Account.FindOrCreateAsync(publicKeyHex);
+        var id = publicKey.CreateAddress();
+
+        var account = await _db.Account.FindOrCreateAsync(id, publicKeyHex);
         var accountId = account.Id;
         var tokenHandler = new JwtSecurityTokenHandler();
 

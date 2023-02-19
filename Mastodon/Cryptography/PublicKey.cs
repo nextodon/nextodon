@@ -1,4 +1,7 @@
-﻿namespace Mastodon.Cryptography;
+﻿using Org.BouncyCastle.Utilities.Encoders;
+using System.Security.Cryptography.X509Certificates;
+
+namespace Mastodon.Cryptography;
 
 public sealed class PublicKey
 {
@@ -11,6 +14,16 @@ public sealed class PublicKey
     public PublicKey(byte[] value)
     {
         Value = value;
+    }
+
+    public string CreateAddress()
+    {
+        var input = Value[1..];
+        var address = Cryptography.HashHelpers.Keccak(input.ToArray());
+        var w = address.Skip(address.Length - 20).ToArray();
+
+        var h = HashHelpers.ByteArrayToHexString(w).ToUpper();
+        return h;
     }
 
     public override string ToString()

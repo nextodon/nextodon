@@ -14,7 +14,6 @@ public sealed class Status_Account
     public required string StatusId;
 
     [BsonRequired]
-    [BsonRepresentation(BsonType.ObjectId)]
     public required string AccountId;
 
     [BsonRequired]
