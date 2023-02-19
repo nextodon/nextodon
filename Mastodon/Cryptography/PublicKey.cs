@@ -16,15 +16,15 @@ public sealed class PublicKey
         Value = value;
     }
 
-    public string CreateAddress()
-    {
-        var input = Value[1..];
-        var address = Cryptography.HashHelpers.Keccak(input.ToArray());
-        var w = address[^20..];
+    //public string CreateAddress()
+    //{
+    //    var input = Value[1..];
+    //    var address = Cryptography.HashHelpers.Keccak(input.ToArray());
+    //    var w = address[^20..];
 
-        var h = HashHelpers.ByteArrayToHexString(w).ToUpper();
-        return h;
-    }
+    //    var h = HashHelpers.ByteArrayToHexString(w).ToUpper();
+    //    return h;
+    //}
 
     public override string ToString()
     {
