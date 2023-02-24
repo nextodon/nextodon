@@ -5,13 +5,21 @@ namespace Mastodon;
 
 public static class AccountExtensionMethods
 {
-    public static Grpc.Accounts ToGrpc(this IEnumerable<Mastodon.Models.Account>? i)
-    {
+    public static Grpc.Accounts ToGrpc(this IEnumerable<Mastodon.Models.Account>? i) {
         var accounts = new Grpc.Accounts();
-        if (i != null)
-        {
-            foreach (var r in i)
-            {
+        if (i != null) {
+            foreach (var r in i) {
+                accounts.Data.Add(r.ToGrpc());
+            }
+        }
+
+        return accounts;
+    }
+
+    public static Grpc.Accounts ToGrpc(this IEnumerable<Mastodon.Data.Account>? i) {
+        var accounts = new Grpc.Accounts();
+        if (i != null) {
+            foreach (var r in i) {
                 accounts.Data.Add(r.ToGrpc());
             }
         }

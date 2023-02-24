@@ -1,20 +1,15 @@
 ﻿namespace Mastodon.Data;
 
-public sealed class Relationship {
+public sealed class Media {
     [BsonElement("_id")]
     [BsonId(IdGenerator = typeof(StringObjectIdGenerator))]
     [BsonRepresentation(BsonType.ObjectId)]
     [BsonRequired]
     public string Id = default!;
 
-    [BsonRepresentation(BsonType.ObjectId)]
     [BsonRequired]
-    public required string From;
-
-    [BsonRepresentation(BsonType.ObjectId)]
-    [BsonRequired]
-    public required string To;
+    public required string AccountId;
 
     [BsonRequired]
-    public string? Note;
+    public required byte[] Content;
 }

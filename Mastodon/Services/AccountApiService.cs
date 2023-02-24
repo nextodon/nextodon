@@ -75,7 +75,7 @@ public sealed class AccountApiService : Mastodon.Grpc.AccountApi.AccountApiBase
     [Authorize]
     public override async Task<Grpc.Account> VerifyCredentials(Empty request, ServerCallContext context)
     {
-        var account = await context.GetUser(_db, true);
+        var account = await context.GetAccount(_db, true);
         return account == null ? throw new RpcException(new global::Grpc.Core.Status(StatusCode.NotFound, string.Empty)) : account.ToGrpc();
     }
 

@@ -5,24 +5,21 @@ using MongoDB.Driver;
 
 namespace Mastodon.Data;
 
-public sealed class DataContext
-{
+public sealed class DataContext {
     internal readonly IMongoDatabase database;
     public readonly IMongoCollection<Account> Account;
     public readonly IMongoCollection<Status> Status;
+    public readonly IMongoCollection<Media> Media;
     public readonly IMongoCollection<Status_Account> StatusAccount;
 
     private static bool inited = false;
 
-    static DataContext()
-    {
+    static DataContext() {
         RegisterConventions();
     }
 
-    public static void RegisterConventions()
-    {
-        if (inited)
-        {
+    public static void RegisterConventions() {
+        if (inited) {
             return;
         }
 
@@ -37,13 +34,14 @@ public sealed class DataContext
         inited = true;
     }
 
-    public DataContext(IOptions<MongoDbSettings> settings)
-    {
+    public DataContext(IOptions<MongoDbSettings> settings) {
         var client = new MongoClient(settings.Value.ConnectionString);
         database = client.GetDatabase(settings.Value.Database);
 
         Account = database.GetCollection<Account>("account");
         Status = database.GetCollection<Status>("status");
+        Media = database.GetCollection<Media>("media");
+
         StatusAccount = database.GetCollection<Status_Account>("status_account");
     }
 
