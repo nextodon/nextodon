@@ -1,26 +1,26 @@
 ﻿namespace Mastodon;
 
 public static class ListExtensionMethods {
-    public static Grpc.List ToGrpc(this Mastodon.Models.List i) {
-        var v = new List {
-            Id = i.Id,
-            Title = i.Title,
-        };
+    //public static Grpc.List ToGrpc(this Mastodon.Models.List i) {
+    //    var v = new List {
+    //        Id = i.Id,
+    //        Title = i.Title,
+    //    };
 
-        if (i.RepliesPolicy != null) {
-            v.RepliesPolicy = i.RepliesPolicy;
-        }
+    //    if (i.RepliesPolicy != null) {
+    //        v.RepliesPolicy = i.RepliesPolicy;
+    //    }
 
-        return v;
-    }
+    //    return v;
+    //}
 
-    public static Grpc.Lists ToGrpc(this IEnumerable<Mastodon.Models.List>? i) {
-        var v = new Lists();
+    //public static Grpc.Lists ToGrpc(this IEnumerable<Mastodon.Models.List>? i) {
+    //    var v = new Lists();
 
-        if (i != null) {
-            v.Data.AddRange(i.Select(x => x.ToGrpc()));
-        }
+    //    if (i != null) {
+    //        v.Data.AddRange(i.Select(x => x.ToGrpc()));
+    //    }
 
-        return v;
-    }
+    //    return v;
+    //}
 }

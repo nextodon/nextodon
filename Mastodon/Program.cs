@@ -59,9 +59,6 @@ builder.Services.AddCors(o => {
     //});
 });
 
-
-builder.Services.AddScoped((s) => new Mastodon.Client.MastodonClient(new Uri("https://mastodon.lol")));
-
 var app = builder.Build();
 
 app.Use((context, next) => {
@@ -247,7 +244,7 @@ app.MapPost("/api/v1/media", async (HttpContext context, DataContext db) => {
 
         await db.Media.InsertOneAsync(media);
 
-        var mediaAttachment = new Mastodon.Models.MediaAttachment {
+        var mediaAttachment = new {
             Id = media.Id,
             Type = "image",
             Url = $"https://m.com/{media.Id}",
@@ -277,7 +274,7 @@ app.MapPost("/api/v2/media", async (HttpContext context, DataContext db) => {
 
         await db.Media.InsertOneAsync(media);
 
-        var mediaAttachment = new Mastodon.Models.MediaAttachment {
+        var mediaAttachment = new {
             Id = media.Id,
             Type = "image",
             Url = $"https://m.com/{media.Id}",

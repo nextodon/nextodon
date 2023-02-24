@@ -1,7 +1,7 @@
 ﻿namespace Mastodon;
 
 public static class DataContextExtensions {
-    public static async Task<Grpc.Status> GetStatusById(this DataContext db, ServerCallContext context, MastodonClient mastodon, string id, string? meId) {
+    public static async Task<Grpc.Status> GetStatusById(this DataContext db, ServerCallContext context, string id, string? meId) {
         var status = await db.Status.FindByIdAsync(id);
         if (status == null) {
             throw new RpcException(new global::Grpc.Core.Status(StatusCode.NotFound, string.Empty));
@@ -17,17 +17,16 @@ public static class DataContextExtensions {
         result.Url = context.GetUrlPath($"@{account.Username}/{status.Id}");
 
         if (!string.IsNullOrWhiteSpace(status.ReblogedFromId)) {
-            result.Reblog = await db.GetStatusById(context, mastodon, status.ReblogedFromId, meId);
+            result.Reblog = await db.GetStatusById(context, status.ReblogedFromId, meId);
         }
 
         var mediaIds = status.MediaIds;
 
         if (mediaIds != null) {
             foreach (var mediaId in mediaIds) {
-                var media = await mastodon.Media.GetMediaAsync(mediaId);
-                media.RaiseExceptions();
+                var media = await db.Media.FindByIdAsync(mediaId);
 
-                result.MediaAttachments.Add(media.Data!.ToGrpc());
+                result.MediaAttachments.Add(media.ToGrpc());
             }
         }
         result.Poll = null;
