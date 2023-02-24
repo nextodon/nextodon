@@ -2,13 +2,13 @@ namespace Mastodon.Services;
 
 [Authorize]
 public sealed class StatusApiService : Mastodon.Grpc.StatusApi.StatusApiBase {
-    private readonly MastodonClient _mastodon;
+    
     private readonly ILogger<StatusApiService> _logger;
     private readonly Data.DataContext _db;
 
-    public StatusApiService(ILogger<StatusApiService> logger, MastodonClient mastodon, DataContext db) {
+    public StatusApiService(ILogger<StatusApiService> logger, DataContext db) {
         _logger = logger;
-        _mastodon = mastodon;
+        
         _db = db;
     }
 
@@ -18,7 +18,7 @@ public sealed class StatusApiService : Mastodon.Grpc.StatusApi.StatusApiBase {
         var statusId = request.Value;
 
         var filter = Builders<Data.Status>.Filter.Eq(x => x.Id, statusId);
-        var ret = await _db.GetStatusById(context, _mastodon, statusId, accountId);
+        var ret = await _db.GetStatusById(context, statusId, accountId);
 
         return ret;
     }
@@ -46,19 +46,11 @@ public sealed class StatusApiService : Mastodon.Grpc.StatusApi.StatusApiBase {
     }
 
     [AllowAnonymous]
-    public override async Task<Accounts> GetFavouritedBy(GetFavouritedByRequest request, ServerCallContext context) {
-        //var accountId = context.GetUserId(false);
+    public override Task<Accounts> GetFavouritedBy(GetFavouritedByRequest request, ServerCallContext context) {
+        var accountId = context.GetAccountId(false);
         var statusId = request.StatusId;
 
-        var result = await _mastodon.Statuses.GetFavouritedByAsync(statusId,
-            maxId: request.HasMaxId ? request.MaxId : null,
-            sinceId: request.HasSinceId ? request.SinceId : null,
-            minId: request.HasMinId ? request.MinId : null,
-            limit: request.HasLimit ? request.Limit : null);
-
-        await result.WriteHeadersTo(context);
-
-        return result.Data.ToGrpc();
+        return base.GetFavouritedBy(request, context);
     }
 
     [AllowAnonymous]
@@ -77,7 +69,7 @@ public sealed class StatusApiService : Mastodon.Grpc.StatusApi.StatusApiBase {
             var ancestorsIds = await q.ToListAsync();
 
             foreach (var statusId in ancestorsIds) {
-                var status = await _db.GetStatusById(context, _mastodon, statusId, accountId);
+                var status = await _db.GetStatusById(context, statusId, accountId);
                 ctx.Ancestors.Add(status);
             }
         }
@@ -89,7 +81,7 @@ public sealed class StatusApiService : Mastodon.Grpc.StatusApi.StatusApiBase {
             var descendantIds = await q.ToListAsync();
 
             foreach (var statusId in descendantIds) {
-                var status = await _db.GetStatusById(context, _mastodon, statusId, accountId);
+                var status = await _db.GetStatusById(context, statusId, accountId);
                 ctx.Descendants.Add(status);
             }
         }
@@ -115,7 +107,7 @@ public sealed class StatusApiService : Mastodon.Grpc.StatusApi.StatusApiBase {
 
         await _db.Status.InsertOneAsync(status);
 
-        var result = await _db.GetStatusById(context, _mastodon, status.Id, accountId);
+        var result = await _db.GetStatusById(context, status.Id, accountId);
 
         return result;
     }
@@ -149,7 +141,7 @@ public sealed class StatusApiService : Mastodon.Grpc.StatusApi.StatusApiBase {
 
         await _db.StatusAccount.UpdateOneAsync(filter, update, new UpdateOptions { IsUpsert = true });
 
-        var result = await _db.GetStatusById(context, _mastodon, request.Value, accountId);
+        var result = await _db.GetStatusById(context, request.Value, accountId);
         return result;
 
     }
@@ -171,7 +163,7 @@ public sealed class StatusApiService : Mastodon.Grpc.StatusApi.StatusApiBase {
 
         await _db.StatusAccount.UpdateOneAsync(filter, update, new UpdateOptions { IsUpsert = true });
 
-        var result = await _db.GetStatusById(context, _mastodon, request.Value, accountId);
+        var result = await _db.GetStatusById(context, request.Value, accountId);
         return result;
     }
 
@@ -192,7 +184,7 @@ public sealed class StatusApiService : Mastodon.Grpc.StatusApi.StatusApiBase {
 
         await _db.StatusAccount.UpdateOneAsync(filter, update, new UpdateOptions { IsUpsert = true });
 
-        var result = await _db.GetStatusById(context, _mastodon, request.Value, accountId);
+        var result = await _db.GetStatusById(context, request.Value, accountId);
         return result;
     }
 
@@ -213,7 +205,7 @@ public sealed class StatusApiService : Mastodon.Grpc.StatusApi.StatusApiBase {
 
         await _db.StatusAccount.UpdateOneAsync(filter, update, new UpdateOptions { IsUpsert = true });
 
-        var result = await _db.GetStatusById(context, _mastodon, request.Value, accountId);
+        var result = await _db.GetStatusById(context, request.Value, accountId);
         return result;
     }
 
@@ -234,7 +226,7 @@ public sealed class StatusApiService : Mastodon.Grpc.StatusApi.StatusApiBase {
 
         await _db.StatusAccount.UpdateOneAsync(filter, update, new UpdateOptions { IsUpsert = true });
 
-        var result = await _db.GetStatusById(context, _mastodon, request.Value, accountId);
+        var result = await _db.GetStatusById(context, request.Value, accountId);
         return result;
     }
 
@@ -255,7 +247,7 @@ public sealed class StatusApiService : Mastodon.Grpc.StatusApi.StatusApiBase {
 
         await _db.StatusAccount.UpdateOneAsync(filter, update, new UpdateOptions { IsUpsert = true });
 
-        var result = await _db.GetStatusById(context, _mastodon, request.Value, accountId);
+        var result = await _db.GetStatusById(context, request.Value, accountId);
         return result;
     }
 
@@ -276,7 +268,7 @@ public sealed class StatusApiService : Mastodon.Grpc.StatusApi.StatusApiBase {
 
         await _db.StatusAccount.UpdateOneAsync(filter, update, new UpdateOptions { IsUpsert = true });
 
-        var result = await _db.GetStatusById(context, _mastodon, request.Value, accountId);
+        var result = await _db.GetStatusById(context, request.Value, accountId);
         return result;
     }
 
@@ -298,7 +290,7 @@ public sealed class StatusApiService : Mastodon.Grpc.StatusApi.StatusApiBase {
         await _db.StatusAccount.UpdateOneAsync(filter, update, new UpdateOptions { IsUpsert = true });
 
         // Return.
-        var result = await _db.GetStatusById(context, _mastodon, request.Value, accountId);
+        var result = await _db.GetStatusById(context, request.Value, accountId);
         return result;
     }
 
@@ -330,7 +322,7 @@ public sealed class StatusApiService : Mastodon.Grpc.StatusApi.StatusApiBase {
         await _db.Status.InsertOneAsync(status);
 
         // Return.
-        var result = await _db.GetStatusById(context, _mastodon, status.Id, accountId);
+        var result = await _db.GetStatusById(context, status.Id, accountId);
         return result;
     }
 
@@ -346,7 +338,7 @@ public sealed class StatusApiService : Mastodon.Grpc.StatusApi.StatusApiBase {
         await _db.Status.UpdateOneAsync(filter, update);
 
         // Return.
-        var result = await _db.GetStatusById(context, _mastodon, request.Value, accountId);
+        var result = await _db.GetStatusById(context, request.Value, accountId);
         return result;
     }
 }

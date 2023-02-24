@@ -1,29 +1,18 @@
 namespace Mastodon.Services;
 
 public sealed class AccountApiService : Mastodon.Grpc.AccountApi.AccountApiBase {
-    private readonly MastodonClient _mastodon;
+
     private readonly ILogger<AccountApiService> _logger;
     private readonly Data.DataContext _db;
 
-    public AccountApiService(ILogger<AccountApiService> logger, MastodonClient mastodon, DataContext db) {
+    public AccountApiService(ILogger<AccountApiService> logger, DataContext db) {
         _logger = logger;
-        _mastodon = mastodon;
+
         _db = db;
     }
 
-    public override async Task<Token> Register(RegisterRequest request, ServerCallContext context) {
-        _mastodon.SetDefaults(context);
-
-        var result = await _mastodon.Accounts.Register(
-            request.Username, request.Email,
-            request.Password, request.Agreement, request.Locale,
-            request.HasReason ? request.Reason : null);
-
-        result.RaiseExceptions();
-
-        await result.WriteHeadersTo(context);
-
-        return result.Data!.ToGrpc();
+    public override Task<Token> Register(RegisterRequest request, ServerCallContext context) {
+        return base.Register(request, context);
     }
 
     public override async Task<Grpc.Account> GetById(StringValue request, ServerCallContext context) {
@@ -37,31 +26,12 @@ public sealed class AccountApiService : Mastodon.Grpc.AccountApi.AccountApiBase 
     /// <br />
     /// Quickly lookup a username to see if it is available, skipping WebFinger resolution.
     /// </summary>
-    public override async Task<Grpc.Account> Lookup(LookupRequest request, ServerCallContext context) {
-        _mastodon.SetDefaults(context);
-
-        var result = await _mastodon.Accounts.LookupAsync(request.Acct);
-        result.RaiseExceptions();
-
-        await result.WriteHeadersTo(context);
-
-        return result.Data!.ToGrpc();
+    public override Task<Grpc.Account> Lookup(LookupRequest request, ServerCallContext context) {
+        return base.Lookup(request, context);
     }
 
-    public override async Task<Accounts> Search(AccountSearchRequest request, ServerCallContext context) {
-        _mastodon.SetDefaults(context);
-
-        var result = await _mastodon.Accounts.SearchAsync(request.Q,
-            request.HasLimit ? request.Limit : null,
-            request.HasOffset ? request.Offset : null,
-            request.HasResolve ? request.Resolve : null,
-            request.HasFollowing ? request.Following : null);
-
-        result.RaiseExceptions();
-
-        await result.WriteHeadersTo(context);
-
-        return result.Data!.ToGrpc();
+    public override Task<Accounts> Search(AccountSearchRequest request, ServerCallContext context) {
+        return base.Search(request, context);
     }
 
     [Authorize]
@@ -94,148 +64,66 @@ public sealed class AccountApiService : Mastodon.Grpc.AccountApi.AccountApiBase 
         return statuses.ToGrpc(account!);
     }
 
-    public override async Task<FeaturedTags> GetFeaturedTags(StringValue request, ServerCallContext context) {
-        _mastodon.SetDefaults(context);
-
-        var result = await _mastodon.Accounts.GetFeaturedTagsAsync(request.Value);
-
-        result.RaiseExceptions();
-
-        await result.WriteHeadersTo(context);
-
-        return result.Data!.ToGrpc();
+    public override Task<FeaturedTags> GetFeaturedTags(StringValue request, ServerCallContext context) {
+        return base.GetFeaturedTags(request, context);
     }
 
-    public override async Task<Accounts> GetFollowers(GetFollowersRequest request, ServerCallContext context) {
-        _mastodon.SetDefaults(context);
-
-        var result = await _mastodon.Accounts.GetFollowersAsync(request.AccountId,
-            sinceId: request.HasSinceId ? request.SinceId : null,
-            maxId: request.HasMaxId ? request.MaxId : null,
-            minId: request.HasMinId ? request.MinId : null,
-            limit: request.HasLimit ? request.Limit : null);
-        result.RaiseExceptions();
-
-        await result.WriteHeadersTo(context);
-
-        return result.Data!.ToGrpc();
+    public override Task<Accounts> GetFollowers(GetFollowersRequest request, ServerCallContext context) {
+        return base.GetFollowers(request, context);
     }
 
-    public override async Task<Accounts> GetFollowing(GetFollowingRequest request, ServerCallContext context) {
-        _mastodon.SetDefaults(context);
-
-        var result = await _mastodon.Accounts.GetFollowingAsync(request.AccountId,
-            sinceId: request.HasSinceId ? request.SinceId : null,
-            maxId: request.HasMaxId ? request.MaxId : null,
-            minId: request.HasMinId ? request.MinId : null,
-            limit: request.HasLimit ? request.Limit : null);
-
-        result.RaiseExceptions();
-
-        await result.WriteHeadersTo(context);
-
-        return result.Data!.ToGrpc();
+    public override Task<Accounts> GetFollowing(GetFollowingRequest request, ServerCallContext context) {
+        return base.GetFollowing(request, context);
     }
 
-    public override async Task<Grpc.Relationship> RemoveFromFollowers(StringValue request, ServerCallContext context) {
-        _mastodon.SetDefaults(context);
-
-        var result = await _mastodon.Accounts.RemoveFromFollowersAsync(request.Value);
-
-        result.RaiseExceptions();
-
-        await result.WriteHeadersTo(context);
-
-        return result.Data!.ToGrpc();
+    public override Task<Grpc.Relationship> RemoveFromFollowers(StringValue request, ServerCallContext context) {
+        return base.RemoveFromFollowers(request, context);
     }
 
-    public override async Task<Relationships> GetRelationships(GetRelationshipsRequest request, ServerCallContext context) {
-        _mastodon.SetDefaults(context);
-
-        var result = await _mastodon.Accounts.GetRelationshipsAsync(request.Ids);
-
-        result.RaiseExceptions();
-
-        await result.WriteHeadersTo(context);
-
-        return result.Data!.ToGrpc();
+    public override Task<Relationships> GetRelationships(GetRelationshipsRequest request, ServerCallContext context) {
+        return base.GetRelationships(request, context);
     }
 
-    public override async Task<Lists> GetLists(StringValue request, ServerCallContext context) {
-        _mastodon.SetDefaults(context);
-
-        var result = await _mastodon.Accounts.GetListsAsync(request.Value);
-
-        result.RaiseExceptions();
-
-        await result.WriteHeadersTo(context);
-
-        return result.Data!.ToGrpc();
+    public override Task<Lists> GetLists(StringValue request, ServerCallContext context) {
+        return base.GetLists(request, context);
     }
 
-    public override async Task<Grpc.Relationship> Follow(StringValue request, ServerCallContext context) {
-        _mastodon.SetDefaults(context);
-
-        var result = await _mastodon.Accounts.FollowAsync(request.Value);
-        return result!.ToGrpc();
+    public override Task<Grpc.Relationship> Follow(StringValue request, ServerCallContext context) {
+        return base.Follow(request, context);
     }
 
-    public override async Task<Grpc.Relationship> Unfollow(StringValue request, ServerCallContext context) {
-        _mastodon.SetDefaults(context);
-
-        var result = await _mastodon.Accounts.UnfollowAsync(request.Value);
-        return result!.ToGrpc();
+    public override Task<Grpc.Relationship> Unfollow(StringValue request, ServerCallContext context) {
+        return base.Unfollow(request, context);
     }
 
-    public override async Task<Grpc.Relationship> Block(StringValue request, ServerCallContext context) {
-        _mastodon.SetDefaults(context);
-
-        var result = await _mastodon.Accounts.BlockAsync(request.Value);
-        return result!.ToGrpc();
+    public override Task<Grpc.Relationship> Block(StringValue request, ServerCallContext context) {
+        return base.Block(request, context);
     }
 
-    public override async Task<Grpc.Relationship> Unblock(StringValue request, ServerCallContext context) {
-        _mastodon.SetDefaults(context);
-
-        var result = await _mastodon.Accounts.UnblockAsync(request.Value);
-        return result!.ToGrpc();
+    public override Task<Grpc.Relationship> Unblock(StringValue request, ServerCallContext context) {
+        return base.Unblock(request, context);
     }
 
-    public override async Task<Grpc.Relationship> Mute(StringValue request, ServerCallContext context) {
-        _mastodon.SetDefaults(context);
-
-        var result = await _mastodon.Accounts.MuteAsync(request.Value);
-        return result!.ToGrpc();
+    public override Task<Grpc.Relationship> Mute(StringValue request, ServerCallContext context) {
+        return base.Mute(request, context);
     }
 
-    public override async Task<Grpc.Relationship> Unmute(StringValue request, ServerCallContext context) {
-        _mastodon.SetDefaults(context);
-
-        var result = await _mastodon.Accounts.UnmuteAsync(request.Value);
-        return result!.ToGrpc();
+    public override Task<Grpc.Relationship> Unmute(StringValue request, ServerCallContext context) {
+        return base.Unmute(request, context);
     }
 
-    public override async Task<Grpc.Relationship> Pin(StringValue request, ServerCallContext context) {
-        _mastodon.SetDefaults(context);
-
-        var result = await _mastodon.Accounts.PinAsync(request.Value);
-        return result!.ToGrpc();
+    public override Task<Grpc.Relationship> Pin(StringValue request, ServerCallContext context) {
+        return base.Pin(request, context);
     }
 
-    public override async Task<Grpc.Relationship> Unpin(StringValue request, ServerCallContext context) {
-        _mastodon.SetDefaults(context);
-
-        var result = await _mastodon.Accounts.UnpinAsync(request.Value);
-        return result!.ToGrpc();
+    public override Task<Grpc.Relationship> Unpin(StringValue request, ServerCallContext context) {
+        return base.Unpin(request, context);
     }
 
     /// <summary>
     /// Sets a private note on a user.
     /// </summary>
-    public override async Task<Grpc.Relationship> Note(NoteRequest request, ServerCallContext context) {
-        _mastodon.SetDefaults(context);
-
-        var result = await _mastodon.Accounts.NoteAsync(request.AccountId, request.HasComment ? request.Comment : null);
-        return result!.ToGrpc();
+    public override Task<Grpc.Relationship> Note(NoteRequest request, ServerCallContext context) {
+        return base.Note(request, context);
     }
 }

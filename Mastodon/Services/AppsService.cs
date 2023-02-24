@@ -1,32 +1,20 @@
 ﻿namespace Mastodon.Services;
 
 public sealed class AppsService : Mastodon.Grpc.Apps.AppsBase {
-    private readonly MastodonClient _mastodon;
+
     private readonly ILogger<AppsService> _logger;
-    public AppsService(ILogger<AppsService> logger, MastodonClient mastodon) {
+    private readonly Data.DataContext _db;
+
+    public AppsService(ILogger<AppsService> logger, Data.DataContext db) {
         _logger = logger;
-        _mastodon = mastodon;
+        _db = db;
     }
 
-    public override async Task<Application> CreateApplication(CreateApplicationRequest request, ServerCallContext context) {
-        var result = await _mastodon.Apps.CreateApplication(
-            clientName: request.ClientName,
-            redirectUris: request.RedirectUris,
-            scopes: request.HasScopes ? request.Scopes : null,
-            website: request.HasWebsite ? request.Website : null
-            );
-
-        return result!.ToGrpc();
+    public override Task<Application> CreateApplication(CreateApplicationRequest request, ServerCallContext context) {
+        return base.CreateApplication(request, context);
     }
 
-    public override async Task<Application> VerifyCredentials(Empty request, ServerCallContext context) {
-        _mastodon.SetDefaults(context);
-
-        var result = await _mastodon.Apps.VerifyCredentials();
-        result.RaiseExceptions();
-
-        await result.WriteHeadersTo(context);
-
-        return result.Data!.ToGrpc();
+    public override Task<Application> VerifyCredentials(Empty request, ServerCallContext context) {
+        return base.VerifyCredentials(request, context);
     }
 }

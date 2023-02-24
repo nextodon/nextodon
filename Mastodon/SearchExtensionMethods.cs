@@ -1,23 +1,23 @@
 ﻿namespace Mastodon;
 
 public static class SearchExtensionMethods {
-    public static Grpc.SearchResults ToGrpc(this IEnumerable<Mastodon.Models.Search>? i) {
-        var v = new Grpc.SearchResults();
+    //public static Grpc.SearchResults ToGrpc(this IEnumerable<Mastodon.Models.Search>? i) {
+    //    var v = new Grpc.SearchResults();
 
-        if (i != null) {
-            v.Data.AddRange(i.Select(x => x.ToGrpc()));
-        }
+    //    if (i != null) {
+    //        v.Data.AddRange(i.Select(x => x.ToGrpc()));
+    //    }
 
-        return v;
-    }
+    //    return v;
+    //}
 
-    public static Grpc.SearchResult ToGrpc(this Mastodon.Models.Search i) {
-        var v = new Grpc.SearchResult();
+    //public static Grpc.SearchResult ToGrpc(this Mastodon.Models.Search i) {
+    //    var v = new Grpc.SearchResult();
 
-        v.Accounts.AddRange(i.Accounts.Select(x => x.ToGrpc()));
-        v.Statuses.AddRange(i.Statuses.Select(x => x.ToGrpc()));
-        v.Hashtags.AddRange(i.Hashtags.Select(x => x.ToGrpc()));
+    //    v.Accounts.AddRange(i.Accounts.Select(x => x.ToGrpc()));
+    //    v.Statuses.AddRange(i.Statuses.Select(x => x.ToGrpc()));
+    //    v.Hashtags.AddRange(i.Hashtags.Select(x => x.ToGrpc()));
 
-        return v;
-    }
+    //    return v;
+    //}
 }
