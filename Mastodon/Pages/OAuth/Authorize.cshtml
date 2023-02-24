@@ -1,0 +1,23 @@
+﻿@page
+@addTagHelper*, Microsoft.AspNetCore.Mvc.TagHelpers
+@model Mastodon.Pages.AuthorizeModel
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Authorize</title>
+</head>
+<body style="margin: 0">
+    <form method="post">
+        <div>
+            <textarea name="mnemonic" title="Mnemonic" rows="5" style="width: 100%"></textarea>
+        </div>
+        <br />
+        <div>
+            <button type="submit" asp-page-handler="Submit">Submit</button>
+        </div>
+    </form>
+</body>
+</html>

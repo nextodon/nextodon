@@ -13,6 +13,8 @@ var config = builder.Configuration;
 
 builder.Services.Configure<Mastodon.Data.MongoDbSettings>(builder.Configuration.GetSection("MongoDb"));
 
+builder.Services.AddRazorPages();
+
 builder.Services.AddGrpc().AddJsonTranscoding(options => {
     options.JsonSettings.WriteIndented = true;
     options.JsonSettings.IgnoreDefaultValues = false;
@@ -153,79 +155,6 @@ app.MapPost("/auth/sign_in", async (context) => {
     }
 });
 
-app.MapPost("/oauth/authorize", async (context) => {
-    var q = context.Request;
-
-    var url = context.Request.GetEncodedUrl();
-    var b = new UriBuilder(url);
-    b.Host = "mastodon.lol";
-    b.Scheme = "https";
-    b.Port = 443;
-
-    var cookieContainer = new CookieContainer();
-    using var handler = new HttpClientHandler { CookieContainer = cookieContainer };
-
-    var client = new HttpClient(handler);
-
-    var cookie = string.Join(";", q.Cookies.Select(x => $"{x.Key}={x.Value}"));
-    try {
-        client.DefaultRequestHeaders.UserAgent.TryParseAdd(context.Request.Headers.UserAgent.FirstOrDefault());
-        client.DefaultRequestHeaders.TryAddWithoutValidation("Cookie", cookie);
-
-        var formData = await context.Request.ReadFormAsync();
-        var formDictionary = formData.ToDictionary(x => x.Key, x => x.Value.FirstOrDefault());
-
-        var form = new FormUrlEncodedContent(formDictionary);
-        form.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(context.Request.ContentType ?? "");
-
-        var response = await client.PostAsync(b.ToString(), form);
-        var content = await response.Content.ReadAsStringAsync();
-        var utf8 = Encoding.UTF8.GetBytes(content);
-
-        context.Response.StatusCode = (int)response.StatusCode;
-        context.Response.Headers.Location = new Microsoft.Extensions.Primitives.StringValues(response.Headers.Location?.ToString());
-
-        var d = context.Response.Cookies;
-        foreach (var ck in cookieContainer.GetAllCookies().ToList()) {
-            d.Append(ck.Name, ck.Value);
-        }
-
-        await context.Response.BodyWriter.WriteAsync(utf8);
-    }
-    catch (Exception) {
-        //
-    }
-});
-
-app.MapGet("/oauth/authorize", async (context) => {
-    var url = context.Request.GetEncodedUrl();
-    var b = new UriBuilder(url) {
-        Host = "mastodon.lol",
-        Scheme = "https",
-        Port = 443
-    };
-
-    var cookieContainer = new CookieContainer();
-    using var handler = new HttpClientHandler { CookieContainer = cookieContainer };
-
-    var client = new HttpClient(handler);
-
-    try {
-        client.DefaultRequestHeaders.UserAgent.TryParseAdd(context.Request.Headers.UserAgent.FirstOrDefault());
-        var content = await client.GetStringAsync(b.ToString());
-        var utf8 = Encoding.UTF8.GetBytes(content);
-
-        var d = context.Response.Cookies;
-        foreach (var cookie in cookieContainer.GetAllCookies().ToList()) {
-            d.Append(cookie.Name, cookie.Value);
-        }
-
-        await context.Response.BodyWriter.WriteAsync(utf8);
-    }
-    catch (Exception) {
-        //
-    }
-});
 
 app.MapPost("/api/v1/media", async (HttpContext context, DataContext db) => {
     var accountId = context.GetAccountId(true);
@@ -285,6 +214,8 @@ app.MapPost("/api/v2/media", async (HttpContext context, DataContext db) => {
         break;
     }
 });
+
+app.MapRazorPages();
 
 app.MapFallback(async context => {
     var logger = ((IApplicationBuilder)app).ApplicationServices.GetService<ILogger<Program>>();

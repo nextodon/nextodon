@@ -11,6 +11,14 @@ public sealed class OAuthService : Mastodon.Grpc.OAuth.OAuthBase {
     }
 
     public override Task<Token> ObtainToken(ObtainTokenRequest request, ServerCallContext context) {
-        return base.ObtainToken(request, context);
+
+        var i = new Token {
+            TokenType = request.GrantType,
+            AccessToken = "0",
+            CreatedAt = (uint)(DateTime.UtcNow - DateTime.UnixEpoch).TotalSeconds,
+            Scope = request.Scope,
+        };
+
+        return Task.FromResult(i);
     }
 }
