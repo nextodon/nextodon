@@ -16,7 +16,7 @@ public sealed class TimelineService : Mastodon.Grpc.Timeline.TimelineBase
 
     public override async Task<Grpc.Statuses> GetPublic(GetPublicTimelineRequest request, ServerCallContext context)
     {
-        var userId = context.GetUserId(false);
+        var userId = context.GetAccountId(false);
 
         var local = request.Local;
         var remote = request.Remote;
