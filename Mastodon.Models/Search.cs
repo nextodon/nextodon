@@ -3,13 +3,11 @@
 /// <summary>
 /// Represents the results of a search.
 /// </summary>
-public sealed partial class Search
-{
+public sealed partial class Search {
     /// <summary>
     /// Accounts which match the given query.
     /// </summary>
-    public required List<Account> Accounts
-    {
+    public required List<Account> Accounts {
         get;
         set;
     }
@@ -17,8 +15,7 @@ public sealed partial class Search
     /// <summary>
     /// Statuses which match the given query.
     /// </summary>
-    public required List<Status> Statuses
-    {
+    public required List<Status> Statuses {
         get;
         set;
     }
@@ -26,8 +23,7 @@ public sealed partial class Search
     /// <summary>
     /// Hashtags which match the given query.
     /// </summary>
-    public required List<Tag> Hashtags
-    {
+    public required List<Tag> Hashtags {
         get;
         set;
     }

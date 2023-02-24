@@ -1,16 +1,10 @@
-﻿using Google.Protobuf.WellKnownTypes;
+﻿namespace Mastodon;
 
-namespace Mastodon;
-
-public static class StatusExtensionMethods
-{
-    public static Grpc.Statuses ToGrpc(this IEnumerable<Mastodon.Models.Status>? i)
-    {
+public static class StatusExtensionMethods {
+    public static Grpc.Statuses ToGrpc(this IEnumerable<Mastodon.Models.Status>? i) {
         var statuses = new Grpc.Statuses();
-        if (i != null)
-        {
-            foreach (var r in i)
-            {
+        if (i != null) {
+            foreach (var r in i) {
                 statuses.Data.Add(r.ToGrpc());
             }
         }
@@ -18,13 +12,10 @@ public static class StatusExtensionMethods
         return statuses;
     }
 
-    public static Grpc.Statuses ToGrpc(this IEnumerable<Mastodon.Data.Status>? i, Data.Account account)
-    {
+    public static Grpc.Statuses ToGrpc(this IEnumerable<Mastodon.Data.Status>? i, Data.Account account) {
         var statuses = new Grpc.Statuses();
-        if (i != null)
-        {
-            foreach (var r in i)
-            {
+        if (i != null) {
+            foreach (var r in i) {
                 statuses.Data.Add(r.ToGrpc(account));
             }
         }
@@ -32,10 +23,8 @@ public static class StatusExtensionMethods
         return statuses;
     }
 
-    public static Grpc.Status.Types.Mention ToGrpc(this Mastodon.Models.Status.Mention i)
-    {
-        var v = new Grpc.Status.Types.Mention
-        {
+    public static Grpc.Status.Types.Mention ToGrpc(this Mastodon.Models.Status.Mention i) {
+        var v = new Grpc.Status.Types.Mention {
             Acct = WebFingerHelper.FixAcct(i.Acct),
             Id = i.Id,
             Url = WebFingerHelper.FixUrl(i.Url),
@@ -45,25 +34,20 @@ public static class StatusExtensionMethods
         return v;
     }
 
-    public static Grpc.Status.Types.Application ToGrpc(this Mastodon.Models.Status.ApplicationHash i)
-    {
-        var v = new Grpc.Status.Types.Application
-        {
+    public static Grpc.Status.Types.Application ToGrpc(this Mastodon.Models.Status.ApplicationHash i) {
+        var v = new Grpc.Status.Types.Application {
             Name = i.Name,
         };
 
-        if (i.Website != null)
-        {
+        if (i.Website != null) {
             v.Website = i.Website;
         }
 
         return v;
     }
 
-    public static Grpc.PreviewCard ToGrpc(this Mastodon.Models.PreviewCard i)
-    {
-        var v = new Grpc.PreviewCard
-        {
+    public static Grpc.PreviewCard ToGrpc(this Mastodon.Models.PreviewCard i) {
+        var v = new Grpc.PreviewCard {
             Url = WebFingerHelper.FixUrl(i.Url),
             AuthorName = i.AuthorName,
             AuthorUrl = WebFingerHelper.FixUrl(i.AuthorUrl),
@@ -78,23 +62,19 @@ public static class StatusExtensionMethods
             Width = i.Width,
         };
 
-        if (i.Image != null)
-        {
+        if (i.Image != null) {
             v.Image = i.Image;
         }
 
-        if (i.Blurhash != null)
-        {
+        if (i.Blurhash != null) {
             v.Blurhash = i.Blurhash;
         }
 
         return v;
     }
 
-    public static Grpc.Status ToGrpc(this Data.Status i, Data.Account account)
-    {
-        var v = new Grpc.Status
-        {
+    public static Grpc.Status ToGrpc(this Data.Status i, Data.Account account) {
+        var v = new Grpc.Status {
             Id = i.Id,
             CreatedAt = Timestamp.FromDateTime(i.CreatedAt),
             Content = i.Text,
@@ -103,35 +83,29 @@ public static class StatusExtensionMethods
             Sensitive = i.Sensitive,
         };
 
-        if (i.SpoilerText != null)
-        {
+        if (i.SpoilerText != null) {
             v.SpoilerText = i.SpoilerText;
         }
 
-        if (i.Language != null)
-        {
+        if (i.Language != null) {
             v.Language = i.Language;
         }
 
-        if (i.InReplyToId != null)
-        {
+        if (i.InReplyToId != null) {
             v.InReplyToId = i.InReplyToId;
         }
 
-        if (account != null)
-        {
+        if (account != null) {
             v.Account = account.ToGrpc();
         }
 
         return v;
     }
 
-    public static Grpc.Status ToGrpc(this Mastodon.Models.Status i)
-    {
+    public static Grpc.Status ToGrpc(this Mastodon.Models.Status i) {
         var isPublic = string.Equals(i.Visibility, "public", StringComparison.OrdinalIgnoreCase);
 
-        var v = new Grpc.Status
-        {
+        var v = new Grpc.Status {
             Account = i.Account.ToGrpc(),
             Id = i.Id,
             Bookmarked = i.Bookmarked,
@@ -153,33 +127,27 @@ public static class StatusExtensionMethods
             Card = i.Card?.ToGrpc(),
         };
 
-        if (i.Content != null)
-        {
+        if (i.Content != null) {
             v.Content = i.Content;
         }
 
-        if (i.Url != null)
-        {
+        if (i.Url != null) {
             v.Url = WebFingerHelper.FixUrl(i.Url);
         }
 
-        if (i.InReplyToAccountId != null)
-        {
+        if (i.InReplyToAccountId != null) {
             v.InReplyToAccountId = i.InReplyToAccountId;
         }
 
-        if (i.InReplyToId != null)
-        {
+        if (i.InReplyToId != null) {
             v.InReplyToId = i.InReplyToId;
         }
 
-        if (i.Language != null)
-        {
+        if (i.Language != null) {
             v.Language = i.Language;
         }
 
-        if (i.Text != null)
-        {
+        if (i.Text != null) {
             v.Text = i.Text;
         }
 
@@ -191,8 +159,7 @@ public static class StatusExtensionMethods
         return v;
     }
 
-    public static Grpc.Context ToGrpc(this Mastodon.Models.Context i)
-    {
+    public static Grpc.Context ToGrpc(this Mastodon.Models.Context i) {
         var v = new Grpc.Context();
 
         v.Ancestors.AddRange(i.Ancestors.Select(x => x.ToGrpc()));

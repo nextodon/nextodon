@@ -1,10 +1,6 @@
-﻿using Google.Protobuf.WellKnownTypes;
-using Mastodon.Grpc;
+﻿namespace Mastodon;
 
-namespace Mastodon;
-
-public static class AccountExtensionMethods
-{
+public static class AccountExtensionMethods {
     public static Grpc.Accounts ToGrpc(this IEnumerable<Mastodon.Models.Account>? i) {
         var accounts = new Grpc.Accounts();
         if (i != null) {
@@ -27,10 +23,8 @@ public static class AccountExtensionMethods
         return accounts;
     }
 
-    public static Grpc.Account ToGrpc(this Mastodon.Models.Account i)
-    {
-        var v = new Grpc.Account
-        {
+    public static Grpc.Account ToGrpc(this Mastodon.Models.Account i) {
+        var v = new Grpc.Account {
             Id = i.Id,
             Acct = WebFingerHelper.FixAcct(i.Acct),
             Avatar = i.Avatar,
@@ -53,23 +47,19 @@ public static class AccountExtensionMethods
             LastStatusAt = i.LastStatusAt?.ToGrpc(),
         };
 
-        if (i.Discoverable != null)
-        {
+        if (i.Discoverable != null) {
             v.Discoverable = i.Discoverable.Value;
         }
 
-        if (i.FollowersCount != null)
-        {
+        if (i.FollowersCount != null) {
             v.FollowersCount = i.FollowersCount.Value;
         }
 
-        if (i.FollowingCount != null)
-        {
+        if (i.FollowingCount != null) {
             v.FollowingCount = i.FollowingCount.Value;
         }
 
-        if (i.StatusesCount != null)
-        {
+        if (i.StatusesCount != null) {
             v.StatusesCount = i.StatusesCount.Value;
         }
 
@@ -80,10 +70,8 @@ public static class AccountExtensionMethods
         return v;
     }
 
-    public static Grpc.Account ToGrpc(this Mastodon.Data.Account i)
-    {
-        var v = new Grpc.Account
-        {
+    public static Grpc.Account ToGrpc(this Mastodon.Data.Account i) {
+        var v = new Grpc.Account {
             Id = i.Id,
             Acct = WebFingerHelper.FixAcct(i.Id),
             Avatar = "https://img.freepik.com/premium-photo/soccer-ball-colourful-background-mixed-media_641298-12866.jpg?w=1380",
@@ -106,8 +94,7 @@ public static class AccountExtensionMethods
             LastStatusAt = i.CreatedAt.ToGrpc(),//TODO
         };
 
-        if (i.Discoverable != null)
-        {
+        if (i.Discoverable != null) {
             v.Discoverable = i.Discoverable.Value;
         }
 
@@ -133,18 +120,15 @@ public static class AccountExtensionMethods
         return v;
     }
 
-    public static Grpc.Account.Types.Source ToGrpc(this Mastodon.Models.Account.SourceHash i)
-    {
-        var v = new Grpc.Account.Types.Source
-        {
+    public static Grpc.Account.Types.Source ToGrpc(this Mastodon.Models.Account.SourceHash i) {
+        var v = new Grpc.Account.Types.Source {
             FollowRequestsCount = i.FollowRequestsCount,
             Note = i.Note,
             Privacy = i.Privacy,
             Sensitive = i.Sensitive,
         };
 
-        if (i.Language != null)
-        {
+        if (i.Language != null) {
             v.Language = i.Language;
         }
 
@@ -153,54 +137,44 @@ public static class AccountExtensionMethods
         return v;
     }
 
-    public static Grpc.Account.Types.Field ToGrpc(this Mastodon.Models.Account.FieldHash i)
-    {
-        var v = new Grpc.Account.Types.Field
-        {
+    public static Grpc.Account.Types.Field ToGrpc(this Mastodon.Models.Account.FieldHash i) {
+        var v = new Grpc.Account.Types.Field {
             Name = i.Name,
             Value = i.Value,
         };
 
-        if (i.VerifiedAt != null)
-        {
+        if (i.VerifiedAt != null) {
             v.VerifiedAt = Timestamp.FromDateTime(i.VerifiedAt.Value.ToUniversalTime());
         }
 
         return v;
     }
 
-    public static Grpc.Account.Types.Field ToGrpc(this Mastodon.Data.Account.Field i)
-    {
-        var v = new Grpc.Account.Types.Field
-        {
+    public static Grpc.Account.Types.Field ToGrpc(this Mastodon.Data.Account.Field i) {
+        var v = new Grpc.Account.Types.Field {
             Name = i.Name,
             Value = i.Value,
         };
 
-        if (i.VerifiedAt != null)
-        {
+        if (i.VerifiedAt != null) {
             v.VerifiedAt = Timestamp.FromDateTime(i.VerifiedAt.Value.ToUniversalTime());
         }
 
         return v;
     }
 
-    public static Grpc.Relationships ToGrpc(this IEnumerable<Mastodon.Models.Relationship>? i)
-    {
+    public static Grpc.Relationships ToGrpc(this IEnumerable<Mastodon.Models.Relationship>? i) {
         var v = new Grpc.Relationships();
 
-        if (i != null)
-        {
+        if (i != null) {
             v.Data.AddRange(i.Select(x => x.ToGrpc()));
         }
 
         return v;
     }
 
-    public static Grpc.Relationship ToGrpc(this Mastodon.Models.Relationship i)
-    {
-        var v = new Grpc.Relationship
-        {
+    public static Grpc.Relationship ToGrpc(this Mastodon.Models.Relationship i) {
+        var v = new Grpc.Relationship {
             BlockedBy = i.BlockedBy,
             Blocking = i.Blocking,
             DomainBlocking = i.DomainBlocking,
@@ -217,38 +191,32 @@ public static class AccountExtensionMethods
 
         v.Languages.AddRange(i.Languages);
 
-        if (i.Note != null)
-        {
+        if (i.Note != null) {
             v.Note = i.Note;
         }
 
         return v;
     }
 
-    public static Grpc.FeaturedTags ToGrpc(this IEnumerable<Mastodon.Models.FeaturedTag>? i)
-    {
+    public static Grpc.FeaturedTags ToGrpc(this IEnumerable<Mastodon.Models.FeaturedTag>? i) {
         var v = new FeaturedTags();
 
-        if (i != null)
-        {
+        if (i != null) {
             v.Data.AddRange(i.Select(x => x.ToGrpc()));
         }
 
         return v;
     }
 
-    public static Grpc.FeaturedTag ToGrpc(this Mastodon.Models.FeaturedTag i)
-    {
-        var v = new FeaturedTag
-        {
+    public static Grpc.FeaturedTag ToGrpc(this Mastodon.Models.FeaturedTag i) {
+        var v = new FeaturedTag {
             Id = i.Id,
             Name = i.Name,
             StatusesCount = i.StatusesCount,
             Url = i.Url,
         };
 
-        if (i.LastStatusAt != null)
-        {
+        if (i.LastStatusAt != null) {
             v.LastStatusAt = i.LastStatusAt.Value.ToGrpc();
         }
 

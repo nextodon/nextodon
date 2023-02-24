@@ -3,8 +3,7 @@
 /// <summary>
 /// Represents a hashtag that is featured on a profile.
 /// </summary>
-public sealed partial class FeaturedTag
-{
+public sealed partial class FeaturedTag {
     /// <summary>
     /// The internal ID of the featured tag in the database.
     /// </summary>

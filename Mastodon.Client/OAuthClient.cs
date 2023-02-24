@@ -1,11 +1,9 @@
 ﻿namespace Mastodon.Client;
 
-public sealed class OAuthClient
-{
+public sealed class OAuthClient {
     private readonly MastodonClient _client;
 
-    internal OAuthClient(MastodonClient client)
-    {
+    internal OAuthClient(MastodonClient client) {
         _client = client;
     }
 
@@ -28,23 +26,19 @@ public sealed class OAuthClient
         // List of requested OAuth scopes, separated by spaces (or by pluses, if using query parameters). Must be a subset of scopes declared during app registration. If not provided, defaults to read.
         optional string scope = 6;
      */
-    public async Task<Response<Token>> ObtainTokenAsync(string grantType, string clientId, string clientSecret, string redirectUri, string? code = null, string? scope = null)
-    {
-        var values = new Dictionary<string, string>
-        {
+    public async Task<Response<Token>> ObtainTokenAsync(string grantType, string clientId, string clientSecret, string redirectUri, string? code = null, string? scope = null) {
+        var values = new Dictionary<string, string> {
             ["grant_type"] = grantType,
             ["client_id"] = clientId,
             ["client_secret"] = clientSecret,
             ["redirect_uri"] = redirectUri,
         };
 
-        if (!string.IsNullOrEmpty(code))
-        {
+        if (!string.IsNullOrEmpty(code)) {
             values["code"] = code;
         }
 
-        if (!string.IsNullOrEmpty(scope))
-        {
+        if (!string.IsNullOrEmpty(scope)) {
             values["scope"] = scope;
         }
 

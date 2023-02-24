@@ -1,11 +1,9 @@
 ﻿namespace Mastodon.Client;
 
-public sealed class SearchClient
-{
+public sealed class SearchClient {
     private readonly MastodonClient _client;
 
-    internal SearchClient(MastodonClient client)
-    {
+    internal SearchClient(MastodonClient client) {
         _client = client;
     }
 
@@ -23,8 +21,7 @@ public sealed class SearchClient
     /// <param name="minId">Return results immediately newer than this ID.</param>
     /// <param name="limit">Maximum number of results to return, per type. Defaults to 20 results per category. Max 40 results per category.</param>
     /// <param name="offset">Skip the first n results.</param>
-    public Task<Response<Search>> Search(string q, string? type = null, bool? resolve = null, bool? following = null, string? accountId = null, bool? excludeUnreviewed = null, string? maxId = null, string? minId = null, uint? limit = null, uint? offset = null)
-    {
+    public Task<Response<Search>> Search(string q, string? type = null, bool? resolve = null, bool? following = null, string? accountId = null, bool? excludeUnreviewed = null, string? maxId = null, string? minId = null, uint? limit = null, uint? offset = null) {
         var qb = new QueryBuilder();
 
         qb.Add("q", q);

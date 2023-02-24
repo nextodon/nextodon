@@ -2,8 +2,7 @@
 
 namespace Mastodon.Models;
 
-public sealed partial class Instance
-{
+public sealed partial class Instance {
     /// <summary>
     /// The domain name of the instance.
     /// </summary>
@@ -67,8 +66,7 @@ public sealed partial class Instance
     /// <summary>
     /// Usage data for this instance.
     /// </summary>
-    public sealed partial class UsageHash
-    {
+    public sealed partial class UsageHash {
         /// <summary>
         /// Usage data related to users on this instance.
         /// </summary>
@@ -78,8 +76,7 @@ public sealed partial class Instance
         /// <summary>
         /// Usage data related to users on this instance.
         /// </summary>
-        public sealed partial class UsersHash
-        {
+        public sealed partial class UsersHash {
             /// <summary>
             /// The number of active users in the past 4 weeks.
             /// </summary>
@@ -90,8 +87,7 @@ public sealed partial class Instance
     /// <summary>
     /// An image used to represent this instance.
     /// </summary>
-    public sealed partial class ThumbnailHash
-    {
+    public sealed partial class ThumbnailHash {
         /// <summary>
         /// The URL for the thumbnail image.
         /// </summary>
@@ -107,8 +103,7 @@ public sealed partial class Instance
         /// </summary>
         public VersionsHash? Versions { get; set; }
 
-        public sealed partial class VersionsHash
-        {
+        public sealed partial class VersionsHash {
             /// <summary>
             /// The URL for the thumbnail image at 1x resolution.
             /// </summary>
@@ -126,8 +121,7 @@ public sealed partial class Instance
     /// <summary>
     /// Hints related to contacting a representative of the website.
     /// </summary>
-    public sealed partial class ContactHash
-    {
+    public sealed partial class ContactHash {
         /// <summary>
         /// An email address that can be messaged regarding inquiries or issues.
         /// </summary>
@@ -142,8 +136,7 @@ public sealed partial class Instance
     /// <summary>
     /// Configured values and limits for this website.
     /// </summary>
-    public sealed partial class ConfigurationHash
-    {
+    public sealed partial class ConfigurationHash {
         /// <summary>
         /// URLs of interest for clients apps.
         /// </summary>
@@ -177,8 +170,7 @@ public sealed partial class Instance
         /// <summary>
         /// URLs of interest for clients apps.
         /// </summary>
-        public sealed partial class UrlsHash
-        {
+        public sealed partial class UrlsHash {
             /// <summary>
             /// The Websockets URL for connecting to the streaming API.
             /// </summary>
@@ -188,8 +180,7 @@ public sealed partial class Instance
         /// <summary>
         /// Limits related to accounts.
         /// </summary>
-        public sealed partial class AccountsHash
-        {
+        public sealed partial class AccountsHash {
             /// <summary>
             /// The maximum number of featured tags allowed for each account.
             /// </summary>
@@ -199,8 +190,7 @@ public sealed partial class Instance
         /// <summary>
         /// Limits related to authoring statuses.
         /// </summary>
-        public sealed partial class StatusesHash
-        {
+        public sealed partial class StatusesHash {
             /// <summary>
             /// The maximum number of allowed characters per status.
             /// </summary>
@@ -220,8 +210,7 @@ public sealed partial class Instance
         /// <summary>
         /// Hints for which attachments will be accepted.
         /// </summary>
-        public sealed partial class MediaAttachmentsHash
-        {
+        public sealed partial class MediaAttachmentsHash {
             /// <summary>
             /// Contains MIME types that can be uploaded.
             /// </summary>
@@ -256,8 +245,7 @@ public sealed partial class Instance
         /// <summary>
         /// Limits related to polls.
         /// </summary>
-        public sealed partial class PollsHash
-        {
+        public sealed partial class PollsHash {
             /// <summary>
             /// Each poll is allowed to have up to this many options.
             /// </summary>
@@ -282,8 +270,7 @@ public sealed partial class Instance
         /// <summary>
         /// Hints related to translation.
         /// </summary>
-        public sealed partial class TranslationHash
-        {
+        public sealed partial class TranslationHash {
             /// <summary>
             /// Whether the Translations API is available on this instance.
             /// </summary>
@@ -294,8 +281,7 @@ public sealed partial class Instance
     /// <summary>
     /// Information about registering for this website.
     /// </summary>
-    public sealed partial class RegistrationsHash
-    {
+    public sealed partial class RegistrationsHash {
         /// <summary>
         /// Whether registrations are enabled.
         /// </summary>

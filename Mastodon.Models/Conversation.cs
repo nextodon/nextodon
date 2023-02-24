@@ -3,8 +3,7 @@
 /// <summary>
 /// Represents a conversation with "direct message" visibility.
 /// </summary>
-public sealed partial class Conversation
-{
+public sealed partial class Conversation {
     /// <summary>
     /// The ID of the conversation in the database.
     /// </summary>

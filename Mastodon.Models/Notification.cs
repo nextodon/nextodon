@@ -3,8 +3,7 @@
 /// <summary>
 /// Represents a notification of an event relevant to the user.
 /// </summary>
-public sealed partial class Notification
-{
+public sealed partial class Notification {
     /// <summary>
     /// The id of the notification in the database.
     /// </summary>

@@ -3,8 +3,7 @@
 /// <summary>
 /// Instance activity over the last 3 months, binned weekly.
 /// </summary>
-public sealed class Activity
-{
+public sealed class Activity {
     /// <summary>
     /// Midnight at the first day of the week.
     /// </summary>

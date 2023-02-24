@@ -1,7 +1,6 @@
 ﻿namespace Mastodon.Models;
 
-public sealed partial class Application
-{
+public sealed partial class Application {
     public string? Id { get; set; }
 
     /// <summary>

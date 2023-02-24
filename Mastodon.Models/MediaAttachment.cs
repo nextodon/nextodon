@@ -3,8 +3,7 @@
 /// <summary>
 /// Represents a file or media attachment that can be added to a status.
 /// </summary>
-public sealed partial class MediaAttachment
-{
+public sealed partial class MediaAttachment {
     /// <summary>
     /// The ID of the attachment in the database.
     /// </summary>
@@ -56,14 +55,12 @@ public sealed partial class MediaAttachment
     [Obsolete]
     public string? TextUrl { get; set; }
 
-    public static class Types
-    {
+    public static class Types {
         /// <summary>
         /// May contain subtrees small and original, as well as various other top-level properties.
         /// More importantly, there may be another topl-level focus Hash object on images as of 2.3.0, with coordinates can be used for smart thumbnail cropping – see Focal points for cropped media thumbnails for more.
         /// </summary>
-        public sealed partial class Meta
-        {
+        public sealed partial class Meta {
             public string? Length { get; set; }
             public float? Duration { get; set; }
             public uint? Fps { get; set; }
@@ -77,10 +74,8 @@ public sealed partial class MediaAttachment
             public Types.Original? Original { get; set; }
             public Types.Small? Small { get; set; }
 
-            public static class Types
-            {
-                public sealed partial class Original
-                {
+            public static class Types {
+                public sealed partial class Original {
                     public uint Width { get; set; }
                     public uint Height { get; set; }
                     public string? FrameRate { get; set; }
@@ -88,8 +83,7 @@ public sealed partial class MediaAttachment
                     public uint? Bitrate { get; set; }
                 }
 
-                public sealed partial class Small
-                {
+                public sealed partial class Small {
                     public uint Width { get; set; }
                     public uint Height { get; set; }
                     public string? Size { get; set; }

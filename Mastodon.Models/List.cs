@@ -3,8 +3,7 @@
 /// <summary>
 /// Represents a list of some users that the authenticated user follows.
 /// </summary>
-public sealed partial class List
-{
+public sealed partial class List {
     /// <summary>
     /// The internal database ID of the list.
     /// </summary>

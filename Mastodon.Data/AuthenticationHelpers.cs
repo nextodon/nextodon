@@ -1,9 +1,7 @@
 ﻿namespace Mastodon.Data;
 
-public static class AuthenticationHelpers
-{
-    public static async Task<Account> FindOrCreateAsync(this IMongoCollection<Account> account, string id)
-    {
+public static class AuthenticationHelpers {
+    public static async Task<Account> FindOrCreateAsync(this IMongoCollection<Account> account, string id) {
         id = id.ToUpper();
 
         var now = DateTime.UtcNow;

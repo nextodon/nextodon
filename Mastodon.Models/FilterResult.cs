@@ -2,8 +2,7 @@
 /// <summary>
 /// Represents a filter whose keywords matched a given status.
 /// </summary>
-public sealed partial class FilterResult
-{
+public sealed partial class FilterResult {
     /// <summary>
     /// The filter that was matched.
     /// </summary>

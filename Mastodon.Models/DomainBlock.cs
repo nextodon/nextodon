@@ -3,8 +3,7 @@
 /// <summary>
 /// Represents a domain that is blocked by the instance.
 /// </summary>
-public sealed partial class DomainBlock
-{
+public sealed partial class DomainBlock {
     /// <summary>
     /// The domain which is blocked. This may be obfuscated or partially censored.
     /// </summary>

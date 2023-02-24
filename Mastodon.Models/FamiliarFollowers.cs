@@ -3,8 +3,7 @@
 /// <summary>
 /// Represents a subset of your follows who also follow some other user.
 /// </summary>
-public sealed partial class FamiliarFollowers
-{
+public sealed partial class FamiliarFollowers {
     /// <summary>
     /// The ID of the Account in the database.
     /// </summary>

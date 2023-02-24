@@ -1,11 +1,9 @@
 ﻿namespace Mastodon.Client;
 
-public sealed class AccountClient
-{
+public sealed class AccountClient {
     private readonly MastodonClient _client;
 
-    internal AccountClient(MastodonClient client)
-    {
+    internal AccountClient(MastodonClient client) {
         _client = client;
     }
 
@@ -22,10 +20,8 @@ public sealed class AccountClient
     /// <param name="locale">The language of the confirmation email that will be sent.</param>
     /// <param name="reason">If registrations require manual approval, this text will be reviewed by moderators.</param>
     /// <returns></returns>
-    public Task<Response<Token>> Register(string username, string email, string password, bool agreement, string locale, string? reason)
-    {
-        var form = new Dictionary<string, string>
-        {
+    public Task<Response<Token>> Register(string username, string email, string password, bool agreement, string locale, string? reason) {
+        var form = new Dictionary<string, string> {
             ["username"] = username,
             ["email"] = email,
             ["password"] = password,
@@ -33,8 +29,7 @@ public sealed class AccountClient
             ["locale"] = locale,
         };
 
-        if (!string.IsNullOrEmpty(reason))
-        {
+        if (!string.IsNullOrEmpty(reason)) {
             form["reason"] = reason;
         }
 
@@ -44,8 +39,7 @@ public sealed class AccountClient
     /// <summary>
     /// Obtain a list of all accounts that follow a given account, filtered for accounts you follow.
     /// </summary>
-    public Task<Response<Account>> GetByIdAsync(string id)
-    {
+    public Task<Response<Account>> GetByIdAsync(string id) {
         return _client.HttpClient.GetFromJsonWithHeadersAsync<Account>($"api/v1/accounts/{id}", MastodonClient._options);
     }
 
@@ -55,8 +49,7 @@ public sealed class AccountClient
     /// Quickly lookup a username to see if it is available, skipping WebFinger resolution.
     /// </summary>
     /// <param name="acct">The username or Webfinger address to lookup.</param>
-    public Task<Response<Account>> LookupAsync(string acct)
-    {
+    public Task<Response<Account>> LookupAsync(string acct) {
         var qb = new QueryBuilder();
         qb.Add("acct", acct);
 
@@ -74,8 +67,7 @@ public sealed class AccountClient
     /// <param name="resolve">Attempt WebFinger lookup. Defaults to false. Use this when q is an exact address.</param>
     /// <param name="following">Limit the search to users you are following. Defaults to false.</param>
     /// <returns></returns>
-    public Task<Response<List<Account>>> SearchAsync(string q, uint? limit = null, uint? offset = null, bool? resolve = null, bool? following = null)
-    {
+    public Task<Response<List<Account>>> SearchAsync(string q, uint? limit = null, uint? offset = null, bool? resolve = null, bool? following = null) {
         var qb = new QueryBuilder();
 
         qb.Add("q", q);
@@ -89,20 +81,17 @@ public sealed class AccountClient
         return _client.HttpClient.GetFromJsonWithHeadersAsync<List<Account>>(url, MastodonClient._options);
     }
 
-    public Task<Response<Account>> VerifyCredentials()
-    {
+    public Task<Response<Account>> VerifyCredentials() {
         return _client.HttpClient.GetFromJsonWithHeadersAsync<Account>($"api/v1/accounts/verify_credentials", MastodonClient._options);
     }
-    public async Task<Relationship?> FollowAsync(string id)
-    {
+    public async Task<Relationship?> FollowAsync(string id) {
         var response = await _client.HttpClient.PostAsync($"api/v1/accounts/{id}/follow", new StringContent(string.Empty));
         var result = await response.Content.ReadFromJsonAsync<Relationship>(MastodonClient._options);
 
         return result;
     }
 
-    public async Task<Relationship?> UnfollowAsync(string id)
-    {
+    public async Task<Relationship?> UnfollowAsync(string id) {
         var response = await _client.HttpClient.PostAsync($"api/v1/accounts/{id}/unfollow", new StringContent(string.Empty));
         var result = await response.Content.ReadFromJsonAsync<Relationship>(MastodonClient._options);
 
@@ -113,25 +102,21 @@ public sealed class AccountClient
     /// User lists that you have added this account to.
     /// </summary>
     /// <param name="id">The ID of the Account in the database.</param>
-    public Task<Response<List<List>>> ListsAsync(string id)
-    {
+    public Task<Response<List<List>>> ListsAsync(string id) {
         return _client.HttpClient.GetFromJsonWithHeadersAsync<List<List>>($"api/v1/accounts/{id}/lists", MastodonClient._options);
     }
 
-    public Task<Response<Relationship>> RemoveFromFollowersAsync(string id)
-    {
+    public Task<Response<Relationship>> RemoveFromFollowersAsync(string id) {
         return _client.HttpClient.PostFromAsync<Relationship>($"api/v1/accounts/{id}/remove_from_followers", MastodonClient._options);
     }
 
-    public Task<Response<List<FeaturedTag>>> GetFeaturedTagsAsync(string id)
-    {
+    public Task<Response<List<FeaturedTag>>> GetFeaturedTagsAsync(string id) {
         var url = $"api/v1/accounts/{id}/featured_tags";
 
         return _client.HttpClient.GetFromJsonWithHeadersAsync<List<FeaturedTag>>(url, MastodonClient._options);
     }
 
-    public Task<Response<List<Account>>> GetFollowersAsync(string id, string? maxId = null, string? sinceId = null, string? minId = null, uint? limit = null)
-    {
+    public Task<Response<List<Account>>> GetFollowersAsync(string id, string? maxId = null, string? sinceId = null, string? minId = null, uint? limit = null) {
         var q = new QueryBuilder();
 
         q.Add("max_id", maxId);
@@ -144,8 +129,7 @@ public sealed class AccountClient
         return _client.HttpClient.GetFromJsonWithHeadersAsync<List<Account>>(url, MastodonClient._options);
     }
 
-    public Task<Response<List<Account>>> GetFollowingAsync(string id, string? maxId = null, string? sinceId = null, string? minId = null, uint? limit = null)
-    {
+    public Task<Response<List<Account>>> GetFollowingAsync(string id, string? maxId = null, string? sinceId = null, string? minId = null, uint? limit = null) {
         var q = new QueryBuilder();
 
         q.Add("max_id", maxId);
@@ -158,17 +142,14 @@ public sealed class AccountClient
         return _client.HttpClient.GetFromJsonWithHeadersAsync<List<Account>>(url, MastodonClient._options);
     }
 
-    public Task<Response<List<List>>> GetListsAsync(string id)
-    {
+    public Task<Response<List<List>>> GetListsAsync(string id) {
         return _client.HttpClient.GetFromJsonWithHeadersAsync<List<List>>($"api/v1/accounts/{id}/lists", MastodonClient._options);
     }
 
-    public Task<Response<List<Relationship>>> GetRelationshipsAsync(IEnumerable<string> ids)
-    {
+    public Task<Response<List<Relationship>>> GetRelationshipsAsync(IEnumerable<string> ids) {
         var q = new QueryBuilder();
 
-        foreach (var id in ids)
-        {
+        foreach (var id in ids) {
             q.Add("id", id);
 
         }
@@ -178,48 +159,42 @@ public sealed class AccountClient
         return _client.HttpClient.GetFromJsonWithHeadersAsync<List<Relationship>>(url, MastodonClient._options);
     }
 
-    public async Task<Relationship?> BlockAsync(string id)
-    {
+    public async Task<Relationship?> BlockAsync(string id) {
         var response = await _client.HttpClient.PostAsync($"api/v1/accounts/{id}/block", new StringContent(string.Empty));
         var result = await response.Content.ReadFromJsonAsync<Relationship>(MastodonClient._options);
 
         return result;
     }
 
-    public async Task<Relationship?> UnblockAsync(string id)
-    {
+    public async Task<Relationship?> UnblockAsync(string id) {
         var response = await _client.HttpClient.PostAsync($"api/v1/accounts/{id}/unblock", new StringContent(string.Empty));
         var result = await response.Content.ReadFromJsonAsync<Relationship>(MastodonClient._options);
 
         return result;
     }
 
-    public async Task<Relationship?> MuteAsync(string id)
-    {
+    public async Task<Relationship?> MuteAsync(string id) {
         var response = await _client.HttpClient.PostAsync($"api/v1/accounts/{id}/mute", new StringContent(string.Empty));
         var result = await response.Content.ReadFromJsonAsync<Relationship>(MastodonClient._options);
 
         return result;
     }
 
-    public async Task<Relationship?> UnmuteAsync(string id)
-    {
+    public async Task<Relationship?> UnmuteAsync(string id) {
         var response = await _client.HttpClient.PostAsync($"api/v1/accounts/{id}/unmute", new StringContent(string.Empty));
         var result = await response.Content.ReadFromJsonAsync<Relationship>(MastodonClient._options);
 
         return result;
     }
 
-    public async Task<Relationship?> PinAsync(string id)
-    {
+    public async Task<Relationship?> PinAsync(string id) {
         var response = await _client.HttpClient.PostAsync($"api/v1/accounts/{id}/pin", new StringContent(string.Empty));
         var result = await response.Content.ReadFromJsonAsync<Relationship>(MastodonClient._options);
 
         return result;
     }
 
-    public async Task<Relationship?> UnpinAsync(string id)
-    {
+    public async Task<Relationship?> UnpinAsync(string id) {
         var response = await _client.HttpClient.PostAsync($"api/v1/accounts/{id}/unpin", new StringContent(string.Empty));
         var result = await response.Content.ReadFromJsonAsync<Relationship>(MastodonClient._options);
 
@@ -232,8 +207,7 @@ public sealed class AccountClient
     /// <param name="id">The ID of the Account in the database.</param>
     /// <param name="comment">The comment to be set on that user. Provide an empty string or leave out this parameter to clear the currently set note.</param>
     /// <returns></returns>
-    public async Task<Relationship?> NoteAsync(string id, string? comment)
-    {
+    public async Task<Relationship?> NoteAsync(string id, string? comment) {
         var form = new FormUrlEncodedContent(new Dictionary<string, string?> { ["comment"] = comment });
 
         var response = await _client.HttpClient.PostAsync($"api/v1/accounts/{id}/note", form);
@@ -260,8 +234,7 @@ public sealed class AccountClient
     public Task<Response<List<Status>>> GetStatusesByIdAsync(string id,
         string? maxId = null, string? sinceId = null, string? minId = null,
         uint? limit = null, bool? onlyMedia = null, bool? excludeReplies = null,
-        bool? excludeReblogs = null, bool? pinned = null, string? tagged = null)
-    {
+        bool? excludeReblogs = null, bool? pinned = null, string? tagged = null) {
         var q = new QueryBuilder();
 
         q.Add("max_id", maxId);
@@ -282,8 +255,7 @@ public sealed class AccountClient
     /// <summary>
     /// Obtain a list of all accounts that follow a given account, filtered for accounts you follow.
     /// </summary>
-    public Task<List<FamiliarFollowers>?> GetFamiliarFollowersAsync()
-    {
+    public Task<List<FamiliarFollowers>?> GetFamiliarFollowersAsync() {
         return _client.HttpClient.GetFromJsonAsync<List<FamiliarFollowers>>($"api/v1/accounts/familiar_followers", MastodonClient._options);
     }
 }

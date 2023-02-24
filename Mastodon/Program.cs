@@ -1,6 +1,4 @@
 using Mastodon;
-using Mastodon.Client;
-using Mastodon.Grpc;
 using Mastodon.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http.Extensions;

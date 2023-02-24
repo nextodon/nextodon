@@ -3,8 +3,7 @@
 /// <summary>
 /// Represents the tree around a given status. Used for reconstructing threads of statuses.
 /// </summary>
-public sealed partial class Context
-{
+public sealed partial class Context {
     /// <summary>
     /// Parents in the thread.
     /// </summary>
