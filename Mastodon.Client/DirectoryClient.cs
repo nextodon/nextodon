@@ -1,11 +1,9 @@
 ﻿namespace Mastodon.Client;
 
-public sealed class DirectoryClient
-{
+public sealed class DirectoryClient {
     private readonly MastodonClient _client;
 
-    internal DirectoryClient(MastodonClient client)
-    {
+    internal DirectoryClient(MastodonClient client) {
         _client = client;
     }
 
@@ -16,8 +14,7 @@ public sealed class DirectoryClient
     /// <param name="limit">How many accounts to load. Defaults to 40 accounts. Max 80 accounts.</param>
     /// <param name="order">Use active to sort by most recently posted statuses (default) or new to sort by most recently created profiles.</param>
     /// <param name="local">If true, returns only local accounts.</param>
-    public Task<Response<List<Account>>> GetDirectoryAsync(uint? offset = null, uint? limit = null, string? order = null, bool? local = null)
-    {
+    public Task<Response<List<Account>>> GetDirectoryAsync(uint? offset = null, uint? limit = null, string? order = null, bool? local = null) {
         var q = new QueryBuilder();
 
         q.Add("offset", offset);

@@ -1,35 +1,27 @@
 ﻿namespace Mastodon.Client;
 
-internal sealed class QueryBuilder
-{
+internal sealed class QueryBuilder {
     private readonly List<string> q = new();
 
-    public void Add(string name, uint? value)
-    {
-        if (value != null && value != 0)
-        {
+    public void Add(string name, uint? value) {
+        if (value != null && value != 0) {
             q.Add($"{name}={value}");
         }
     }
 
-    public void Add(string name, bool? value)
-    {
-        if (value != null)
-        {
+    public void Add(string name, bool? value) {
+        if (value != null) {
             q.Add($"{name}={value?.ToString().ToLower()}");
         }
     }
 
-    public void Add(string name, string? value)
-    {
-        if (!string.IsNullOrWhiteSpace(value))
-        {
+    public void Add(string name, string? value) {
+        if (!string.IsNullOrWhiteSpace(value)) {
             q.Add($"{name}={value}");
         }
     }
 
-    public string GetUrl(string originalUrl)
-    {
+    public string GetUrl(string originalUrl) {
         var b = new UriBuilder("https://localhost");
 
         var all = string.Join("&", q);

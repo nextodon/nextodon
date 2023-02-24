@@ -1,18 +1,13 @@
-﻿using Org.BouncyCastle.Utilities.Encoders;
-using System.Security.Cryptography.X509Certificates;
+﻿namespace Mastodon.Cryptography;
 
-namespace Mastodon.Cryptography;
-
-public sealed class PublicKey
-{
+public sealed class PublicKey {
     public readonly ReadOnlyMemory<byte> Value;
 
     /// <summary>
     /// Encoded data must either begin with 0x02 (for even), 0x03 (for odd) or 0x04 (for uncompressed).
     /// </summary>
     /// <param name="value">Encoded data</param>
-    public PublicKey(byte[] value)
-    {
+    public PublicKey(byte[] value) {
         Value = value;
     }
 
@@ -26,8 +21,7 @@ public sealed class PublicKey
     //    return h;
     //}
 
-    public override string ToString()
-    {
+    public override string ToString() {
         return HashHelpers.ByteArrayToHexString(Value).ToUpper();
     }
 }

@@ -6,8 +6,7 @@
 /// but development on Keybase has stalled entirely
 /// since it was acquired by Zoom.
 /// </summary>
-public sealed partial class IdentityProof
-{
+public sealed partial class IdentityProof {
     /// <summary>
     /// The name of the identity provider.
     /// </summary>

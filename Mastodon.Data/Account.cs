@@ -1,7 +1,6 @@
 ﻿namespace Mastodon.Data;
 
-public sealed class Account
-{
+public sealed class Account {
     [BsonElement("_id")]
     [BsonRequired]
     public required string Id;
@@ -21,12 +20,11 @@ public sealed class Account
 
     [BsonRequired]
     public required DateTime LoggedInAt;
-    
+
     [BsonRequired]
     public required List<Field> Fields;
 
-    public sealed class Field
-    {
+    public sealed class Field {
         [BsonRequired]
         public required string Name;
 

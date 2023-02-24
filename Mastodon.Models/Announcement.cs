@@ -3,8 +3,7 @@
 /// <summary>
 /// Represents an announcement set by an administrator.
 /// </summary>
-public sealed partial class Announcement
-{
+public sealed partial class Announcement {
     /// <summary>
     /// The ID of the announcement in the database.
     /// </summary>

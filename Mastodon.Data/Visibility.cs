@@ -1,7 +1,6 @@
 ﻿namespace Mastodon.Data;
 
-public enum Visibility
-{
+public enum Visibility {
     /// <summary>
     /// Visible to everyone, shown in public timelines.
     /// </summary>

@@ -4,8 +4,7 @@
 /// <summary>
 /// Represents an emoji reaction to an Announcement.
 /// </summary>
-public sealed partial class Reaction
-{
+public sealed partial class Reaction {
     /// <summary>
     /// The emoji used for the reaction. Either a unicode emoji, or a custom emoji’s shortcode.
     /// </summary>

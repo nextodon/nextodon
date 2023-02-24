@@ -3,8 +3,7 @@
 /// <summary>
 /// Represents a status posted by an account.
 /// </summary>
-public sealed partial class Status
-{
+public sealed partial class Status {
     /// <summary>
     /// ID of the status in the database.
     /// </summary>
@@ -162,8 +161,7 @@ public sealed partial class Status
     /// </summary>
     public List<FilterResult>? Filtered { get; set; }
 
-    public sealed partial class ApplicationHash
-    {
+    public sealed partial class ApplicationHash {
         /// <summary>
         /// The name of the application that posted this status.
         /// </summary>
@@ -175,8 +173,7 @@ public sealed partial class Status
         public string? Website { get; set; }
     }
 
-    public sealed partial class Mention
-    {
+    public sealed partial class Mention {
         /// <summary>
         /// The account ID of the mentioned user (cast from an integer, but not guaranteed to be a number).
         /// </summary>

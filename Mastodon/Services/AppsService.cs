@@ -1,22 +1,14 @@
-﻿using Google.Protobuf.WellKnownTypes;
-using Grpc.Core;
-using Mastodon.Client;
-using Mastodon.Grpc;
+﻿namespace Mastodon.Services;
 
-namespace Mastodon.Services;
-
-public sealed class AppsService : Mastodon.Grpc.Apps.AppsBase
-{
+public sealed class AppsService : Mastodon.Grpc.Apps.AppsBase {
     private readonly MastodonClient _mastodon;
     private readonly ILogger<AppsService> _logger;
-    public AppsService(ILogger<AppsService> logger, MastodonClient mastodon)
-    {
+    public AppsService(ILogger<AppsService> logger, MastodonClient mastodon) {
         _logger = logger;
         _mastodon = mastodon;
     }
 
-    public override async Task<Application> CreateApplication(CreateApplicationRequest request, ServerCallContext context)
-    {
+    public override async Task<Application> CreateApplication(CreateApplicationRequest request, ServerCallContext context) {
         var result = await _mastodon.Apps.CreateApplication(
             clientName: request.ClientName,
             redirectUris: request.RedirectUris,
@@ -27,8 +19,7 @@ public sealed class AppsService : Mastodon.Grpc.Apps.AppsBase
         return result!.ToGrpc();
     }
 
-    public override async Task<Application> VerifyCredentials(Empty request, ServerCallContext context)
-    {
+    public override async Task<Application> VerifyCredentials(Empty request, ServerCallContext context) {
         _mastodon.SetDefaults(context);
 
         var result = await _mastodon.Apps.VerifyCredentials();

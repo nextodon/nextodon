@@ -2,8 +2,7 @@
 
 namespace Mastodon.Client;
 
-public sealed class MastodonClient
-{
+public sealed class MastodonClient {
     public readonly HttpClient HttpClient;
 
     public readonly AccountClient Accounts;
@@ -23,14 +22,12 @@ public sealed class MastodonClient
 
     private readonly Uri baseAddress;
 
-    internal static JsonSerializerOptions _options = new()
-    {
+    internal static JsonSerializerOptions _options = new() {
         PropertyNameCaseInsensitive = true,
         PropertyNamingPolicy = new SnakeCaseNamingPolicy(),
     };
 
-    public MastodonClient(Uri baseAddress)
-    {
+    public MastodonClient(Uri baseAddress) {
         this.baseAddress = baseAddress;
         HttpClient = new HttpClient { BaseAddress = baseAddress };
 
@@ -50,15 +47,12 @@ public sealed class MastodonClient
         Bookmark = new BookmarkClient(this);
     }
 
-    private sealed class SnakeCaseNamingPolicy : JsonNamingPolicy
-    {
+    private sealed class SnakeCaseNamingPolicy : JsonNamingPolicy {
         public override string ConvertName(string name) => JsonUtils.ToSnakeCase(name);
 
 
-        private static class JsonUtils
-        {
-            private enum SeparatedCaseState
-            {
+        private static class JsonUtils {
+            private enum SeparatedCaseState {
                 Start,
                 Lower,
                 Upper,
@@ -67,36 +61,27 @@ public sealed class MastodonClient
 
             public static string ToSnakeCase(string s) => ToSeparatedCase(s, '_');
 
-            private static string ToSeparatedCase(string s, char separator)
-            {
-                if (string.IsNullOrEmpty(s))
-                {
+            private static string ToSeparatedCase(string s, char separator) {
+                if (string.IsNullOrEmpty(s)) {
                     return s;
                 }
 
                 StringBuilder sb = new StringBuilder();
                 SeparatedCaseState state = SeparatedCaseState.Start;
 
-                for (int i = 0; i < s.Length; i++)
-                {
-                    if (s[i] == ' ')
-                    {
-                        if (state != SeparatedCaseState.Start)
-                        {
+                for (int i = 0; i < s.Length; i++) {
+                    if (s[i] == ' ') {
+                        if (state != SeparatedCaseState.Start) {
                             state = SeparatedCaseState.NewWord;
                         }
                     }
-                    else if (char.IsUpper(s[i]))
-                    {
-                        switch (state)
-                        {
+                    else if (char.IsUpper(s[i])) {
+                        switch (state) {
                             case SeparatedCaseState.Upper:
                                 bool hasNext = (i + 1 < s.Length);
-                                if (i > 0 && hasNext)
-                                {
+                                if (i > 0 && hasNext) {
                                     char nextChar = s[i + 1];
-                                    if (!char.IsUpper(nextChar) && nextChar != separator)
-                                    {
+                                    if (!char.IsUpper(nextChar) && nextChar != separator) {
                                         sb.Append(separator);
                                     }
                                 }
@@ -113,15 +98,12 @@ public sealed class MastodonClient
 
                         state = SeparatedCaseState.Upper;
                     }
-                    else if (s[i] == separator)
-                    {
+                    else if (s[i] == separator) {
                         sb.Append(separator);
                         state = SeparatedCaseState.Start;
                     }
-                    else
-                    {
-                        if (state == SeparatedCaseState.NewWord)
-                        {
+                    else {
+                        if (state == SeparatedCaseState.NewWord) {
                             sb.Append(separator);
                         }
 

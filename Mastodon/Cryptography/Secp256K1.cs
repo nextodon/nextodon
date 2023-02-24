@@ -6,13 +6,11 @@ using System.Formats.Asn1;
 
 namespace Mastodon.Cryptography;
 
-public static class Secp256K1
-{
+public static class Secp256K1 {
     public readonly static X9ECParameters Curve = ECNamedCurveTable.GetByName("secp256k1");
     public readonly static ECDomainParameters DomainParams = new ECDomainParameters(Curve.Curve, Curve.G, Curve.N, Curve.H, Curve.GetSeed());
 
-    public static PublicKey CreatePublicKey(PrivateKey privateKey, bool compressed)
-    {
+    public static PublicKey CreatePublicKey(PrivateKey privateKey, bool compressed) {
         var bn = new BigInteger(1, privateKey.Value.ToArray());
         var q = Curve.G.Multiply(bn);
         var publicParams = new ECPublicKeyParameters(q, DomainParams);
@@ -20,8 +18,7 @@ public static class Secp256K1
         return new PublicKey(publicParams.Q.GetEncoded(compressed));
     }
 
-    public static byte[] GenerateSignature(PrivateKey privateKey, byte[] message)
-    {
+    public static byte[] GenerateSignature(PrivateKey privateKey, byte[] message) {
         var signer = new ECDsaSigner();
 
         var priv = new ECPrivateKeyParameters(new BigInteger(1, privateKey.Value.ToArray()), DomainParams);
@@ -31,8 +28,7 @@ public static class Secp256K1
         return ToDer(rs);
     }
 
-    private static byte[] ToDer(BigInteger[] rs)
-    {
+    private static byte[] ToDer(BigInteger[] rs) {
         var der = new AsnWriter(AsnEncodingRules.DER);
         var seq = der.PushSequence();
 
@@ -44,8 +40,7 @@ public static class Secp256K1
         return der.Encode();
     }
 
-    private static byte[] ToBytes(BigInteger[] rs)
-    {
+    private static byte[] ToBytes(BigInteger[] rs) {
         var result = new byte[64];
 
         rs[0].ToByteArrayUnsigned().CopyTo(result, 0);
@@ -54,8 +49,7 @@ public static class Secp256K1
         return result;
     }
 
-    public static byte[] GenerateSignatureCompact(PrivateKey privateKey, byte[] message)
-    {
+    public static byte[] GenerateSignatureCompact(PrivateKey privateKey, byte[] message) {
         var signer = new ECDsaSigner(new HMacDsaKCalculator(new Org.BouncyCastle.Crypto.Digests.Sha256Digest()));
 
         var priv = new ECPrivateKeyParameters(new BigInteger(1, privateKey.Value.ToArray()), DomainParams);
@@ -67,8 +61,7 @@ public static class Secp256K1
         return ToBytes(rs);
     }
 
-    public static bool VerifySignature(PublicKey publicKey, byte[] message, byte[] signature)
-    {
+    public static bool VerifySignature(PublicKey publicKey, byte[] message, byte[] signature) {
         var signer = new ECDsaSigner();
 
         var q = Curve.Curve.DecodePoint(publicKey.Value.ToArray());
@@ -89,8 +82,7 @@ public static class Secp256K1
         return result;
     }
 
-    public static bool VerifySignatureCompact(PublicKey publicKey, byte[] message, byte[] signature)
-    {
+    public static bool VerifySignatureCompact(PublicKey publicKey, byte[] message, byte[] signature) {
         var signer = new ECDsaSigner(new HMacDsaKCalculator(new Org.BouncyCastle.Crypto.Digests.Sha256Digest()));
 
         var q = Curve.Curve.DecodePoint(publicKey.Value.ToArray());

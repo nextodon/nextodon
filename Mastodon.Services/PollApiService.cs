@@ -1,12 +1,10 @@
 namespace Mastodon.Services;
 
-public sealed class PollApiService : Mastodon.Grpc.PollApi.PollApiBase
-{
+public sealed class PollApiService : Mastodon.Grpc.PollApi.PollApiBase {
     private readonly ILogger<PollApiService> _logger;
     private readonly Data.DataContext _db;
 
-    public PollApiService(ILogger<PollApiService> logger, Data.DataContext db)
-    {
+    public PollApiService(ILogger<PollApiService> logger, Data.DataContext db) {
         _logger = logger;
         _db = db;
     }

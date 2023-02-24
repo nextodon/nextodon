@@ -1,32 +1,24 @@
-using Mastodon.Grpc;
-using Grpc.Core;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using MongoDB.Driver;
-using Mastodon.Cryptography;
 
 namespace Mastodon.Services;
 
 [Authorize]
-public sealed class AuthenticationService : Authentication.AuthenticationBase
-{
+public sealed class AuthenticationService : Authentication.AuthenticationBase {
     private readonly IConfiguration _config;
     private readonly ILogger<AuthenticationService> _logger;
     private readonly Data.DataContext _db;
 
-    public AuthenticationService(ILogger<AuthenticationService> logger, IConfiguration config, DataContext db)
-    {
+    public AuthenticationService(ILogger<AuthenticationService> logger, IConfiguration config, DataContext db) {
         _logger = logger;
         _config = config;
         _db = db;
     }
 
     [AllowAnonymous]
-    public override async Task<JsonWebToken> SignIn(SignInRequest request, ServerCallContext context)
-    {
+    public override async Task<JsonWebToken> SignIn(SignInRequest request, ServerCallContext context) {
         var jwtOptions = _config.GetSection("JwtSettings").Get<JwtOptions>()!;
 
         var publicKeyBytes = request.PublicKey.ToArray();
@@ -37,8 +29,7 @@ public sealed class AuthenticationService : Authentication.AuthenticationBase
 
         var valid = Cryptography.Secp256K1.VerifySignature(publicKey, messageBytes, signatureBytes);
 
-        if (!valid)
-        {
+        if (!valid) {
             throw new RpcException(new global::Grpc.Core.Status(StatusCode.InvalidArgument, string.Empty));
         }
 
@@ -53,8 +44,7 @@ public sealed class AuthenticationService : Authentication.AuthenticationBase
 
         var expires = DateTime.UtcNow.AddYears(1);
 
-        var tokenDescriptor = new SecurityTokenDescriptor
-        {
+        var tokenDescriptor = new SecurityTokenDescriptor {
             Subject = new ClaimsIdentity(new Claim[] { new Claim(JwtRegisteredClaimNames.UniqueName, accountId) }),
             Claims = new Dictionary<string, object> { [JwtRegisteredClaimNames.UniqueName] = accountId },
             Expires = expires,
@@ -63,8 +53,7 @@ public sealed class AuthenticationService : Authentication.AuthenticationBase
 
         var jwttoken = tokenHandler.CreateToken(tokenDescriptor);
 
-        var jwt = new JsonWebToken
-        {
+        var jwt = new JsonWebToken {
             Value = tokenHandler.WriteToken(jwttoken)
         };
 

@@ -1,11 +1,9 @@
 ﻿namespace Mastodon.Client;
 
-public sealed class AppsClient
-{
+public sealed class AppsClient {
     private readonly MastodonClient _client;
 
-    internal AppsClient(MastodonClient client)
-    {
+    internal AppsClient(MastodonClient client) {
         _client = client;
     }
 
@@ -16,21 +14,17 @@ public sealed class AppsClient
     /// <param name="redirectUris">Where the user should be redirected after authorization. To display the authorization code to the user instead of redirecting to a web page, use urn:ietf:wg:oauth:2.0:oob in this parameter.</param>
     /// <param name="scopes">Space separated list of scopes. If none is provided, defaults to read. See OAuth Scopes for a list of possible scopes.</param>
     /// <param name="website">A URL to the homepage of your app.</param>
-    public async Task<Application?> CreateApplication(string clientName, string redirectUris, string? scopes = null, string? website = null)
-    {
-        var values = new Dictionary<string, string>
-        {
+    public async Task<Application?> CreateApplication(string clientName, string redirectUris, string? scopes = null, string? website = null) {
+        var values = new Dictionary<string, string> {
             ["client_name"] = clientName,
             ["redirect_uris"] = redirectUris,
         };
 
-        if (!string.IsNullOrEmpty(scopes))
-        {
+        if (!string.IsNullOrEmpty(scopes)) {
             values["scopes"] = scopes;
         }
 
-        if (!string.IsNullOrEmpty(website))
-        {
+        if (!string.IsNullOrEmpty(website)) {
             values["website"] = website;
         }
 
@@ -43,8 +37,7 @@ public sealed class AppsClient
         return app;
     }
 
-    public Task<Response<Application>> VerifyCredentials()
-    {
+    public Task<Response<Application>> VerifyCredentials() {
         return _client.HttpClient.GetFromJsonWithHeadersAsync<Application>("api/v1/apps/verify_credentials", MastodonClient._options);
     }
 }

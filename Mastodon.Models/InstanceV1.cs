@@ -1,7 +1,6 @@
 ﻿namespace Mastodon.Models;
 
-public sealed class InstanceV1
-{
+public sealed class InstanceV1 {
     public required string Uri { get; set; }
     public required string Title { get; set; }
     public required string ShortDescription { get; set; }
@@ -19,13 +18,11 @@ public sealed class InstanceV1
     public required Account ContactAccount { get; set; }
     public required List<Rule> Rules { get; set; }
 
-    public sealed class UrlsHash
-    {
+    public sealed class UrlsHash {
         public required string StreamingApi { get; set; }
     }
 
-    public sealed class StatsHash
-    {
+    public sealed class StatsHash {
         public uint UserCount { get; set; }
         public uint StatusCount { get; set; }
         public uint DomainCount { get; set; }
@@ -34,8 +31,7 @@ public sealed class InstanceV1
     /// <summary>
     /// Configured values and limits for this website.
     /// </summary>
-    public sealed partial class ConfigurationHash
-    {
+    public sealed partial class ConfigurationHash {
         public required Instance.ConfigurationHash.AccountsHash Accounts { get; set; }
 
         /// <summary>

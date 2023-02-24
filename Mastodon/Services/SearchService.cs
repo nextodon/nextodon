@@ -1,22 +1,15 @@
-﻿using Grpc.Core;
-using Mastodon.Client;
-using Mastodon.Grpc;
+﻿namespace Mastodon.Services;
 
-namespace Mastodon.Services;
-
-public sealed class SearchService : Mastodon.Grpc.SearchApi.SearchApiBase
-{
+public sealed class SearchService : Mastodon.Grpc.SearchApi.SearchApiBase {
     private readonly MastodonClient _mastodon;
     private readonly ILogger<SearchService> _logger;
 
-    public SearchService(ILogger<SearchService> logger, MastodonClient mastodon)
-    {
+    public SearchService(ILogger<SearchService> logger, MastodonClient mastodon) {
         _logger = logger;
         _mastodon = mastodon;
     }
 
-    public override async Task<Grpc.SearchResult> Search(SearchRequest request, ServerCallContext context)
-    {
+    public override async Task<Grpc.SearchResult> Search(SearchRequest request, ServerCallContext context) {
         _mastodon.SetDefaults(context);
 
         var result = await _mastodon.Search.Search(

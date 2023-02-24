@@ -1,11 +1,9 @@
 ﻿namespace Mastodon.Client;
 
-public sealed class ConversationClient
-{
+public sealed class ConversationClient {
     private readonly MastodonClient _client;
 
-    internal ConversationClient(MastodonClient client)
-    {
+    internal ConversationClient(MastodonClient client) {
         _client = client;
     }
 
@@ -13,8 +11,7 @@ public sealed class ConversationClient
     /// <summary>
     /// Direct conversations with other participants. (Currently, just threads containing a post with "direct" visibility.)
     /// </summary>
-    public Task<List<Conversation>?> GetConversationsAsync()
-    {
+    public Task<List<Conversation>?> GetConversationsAsync() {
         return _client.HttpClient.GetFromJsonAsync<List<Conversation>>($"api/v1/conversations", MastodonClient._options);
     }
 
@@ -23,8 +20,7 @@ public sealed class ConversationClient
     /// </summary>
     /// <param name="id">The ID of the Conversation in the database.</param>
     /// <returns></returns>
-    public Task DeleteAsync(string id)
-    {
+    public Task DeleteAsync(string id) {
         return _client.HttpClient.DeleteAsync($"api/v1/conversations/{id}");
     }
 
@@ -33,8 +29,7 @@ public sealed class ConversationClient
     /// </summary>
     /// <param name="id">The ID of the Conversation in the database.</param>
     /// <returns></returns>
-    public async Task<Conversation?> MarkReadAsync(string id)
-    {
+    public async Task<Conversation?> MarkReadAsync(string id) {
         var result = await _client.HttpClient.PostAsync($"api/v1/conversations/{id}/read", new StringContent(string.Empty));
         return await result.Content.ReadFromJsonAsync<Conversation>();
     }
