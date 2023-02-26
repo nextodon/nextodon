@@ -1,8 +1,15 @@
 syntax = "proto3";
+import "google/api/annotations.proto";
 option csharp_namespace = "Mastodon.Grpc";
 
 service Authentication {
-  rpc SignIn (SignInRequest) returns (JsonWebToken);
+  rpc SignIn (SignInRequest) returns (JsonWebToken)
+  {
+	option (google.api.http) = {
+      post: "/api/v1/authentication/signin"
+      body: "*"
+    };
+  }
 }
 
 message JsonWebToken {

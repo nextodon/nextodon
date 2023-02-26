@@ -26,7 +26,7 @@ public static class DataContextExtensions {
             foreach (var mediaId in mediaIds) {
                 var media = await db.Media.FindByIdAsync(mediaId);
 
-                result.MediaAttachments.Add(media.ToGrpc());
+                result.MediaAttachments.Add(media!.ToGrpc());
             }
         }
         result.Poll = null;

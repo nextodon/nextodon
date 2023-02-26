@@ -14,7 +14,7 @@ public sealed class OAuthService : Mastodon.Grpc.OAuth.OAuthBase {
 
         var i = new Token {
             TokenType = request.GrantType,
-            AccessToken = "0",
+            AccessToken = request.Code,
             CreatedAt = (uint)(DateTime.UtcNow - DateTime.UnixEpoch).TotalSeconds,
             Scope = request.Scope,
         };
