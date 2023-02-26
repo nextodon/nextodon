@@ -13,7 +13,7 @@ public static class TagExtensionMethods {
     //    return tags;
     //}
 
-    //public static Grpc.Tag ToGrpc(this Mastodon.Models.Tag i) {
+    //public static Grpc.Tag ToGrpc(this Mastodon.Data.Tag i) {
     //    var v = new Grpc.Tag {
     //        Name = i.Name,
     //        Url = WebFingerHelper.FixUrl(i.Url),
@@ -27,7 +27,7 @@ public static class TagExtensionMethods {
     //    return v;
     //}
 
-    //public static Grpc.Tag.Types.TagHistory ToGrpc(this Mastodon.Models.Tag.TagHistory i) {
+    //public static Grpc.Tag.Types.TagHistory ToGrpc(this Mastodon.Data.Tag.TagHistory i) {
     //    var v = new Grpc.Tag.Types.TagHistory {
     //        Day = i.Day,
     //        Uses = i.Uses,

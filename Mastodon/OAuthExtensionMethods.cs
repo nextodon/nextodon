@@ -1,7 +1,7 @@
 ﻿namespace Mastodon;
 
 public static class OAuthExtensionMethods {
-    //public static Grpc.Token ToGrpc(this Mastodon.Models.Token i) {
+    //public static Grpc.Token ToGrpc(this Mastodon.Data.Token i) {
     //    var v = new Grpc.Token {
     //        AccessToken = i.AccessToken,
     //        CreatedAt = i.CreatedAt,
