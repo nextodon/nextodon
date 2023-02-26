@@ -48,8 +48,32 @@ public sealed class TimelineService : Mastodon.Grpc.Timeline.TimelineBase {
         return base.GetByTag(request, context);
     }
 
-    public override Task<Statuses> GetHome(DefaultPaginationParameters request, ServerCallContext context) {
-        return base.GetHome(request, context);
+    public override async Task<Statuses> GetHome(DefaultPaginationParameters request, ServerCallContext context) {
+        var accountId = context.GetAccountId(false);
+
+        var sinceId = request.HasSinceId ? request.SinceId : null;
+        var maxId = request.HasMaxId ? request.MaxId : null;
+        var minId = request.HasMinId ? request.MinId : null;
+
+        var limit = request.HasLimit ? request.Limit : 40;
+        var filter = Builders<Data.Status>.Filter.Ne(x => x.Deleted, true);
+
+        var sort = Builders<Data.Status>.Sort.Descending(x => x.CreatedAt);
+
+        if (!string.IsNullOrWhiteSpace(maxId)) {
+            filter &= Builders<Data.Status>.Filter.Lt(x => x.Id, maxId);
+        }
+
+        var cursor = await _db.Status.FindAsync(filter, new FindOptions<Data.Status, Data.Status> { Limit = (int)limit, Sort = sort });
+        var statuses = await cursor.ToListAsync();
+
+        var v = new Grpc.Statuses();
+        foreach (var status in statuses) {
+            var s = await _db.GetStatusById(context, status.Id, accountId);
+            v.Data.Add(s);
+        }
+
+        return v;
     }
 
     public override Task<Statuses> GetList(StringValue request, ServerCallContext context) {

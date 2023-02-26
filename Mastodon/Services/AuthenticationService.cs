@@ -1,4 +1,6 @@
+using Mastodon.Cryptography;
 using Microsoft.IdentityModel.Tokens;
+using Org.BouncyCastle.Utilities.Encoders;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -33,9 +35,10 @@ public sealed class AuthenticationService : Authentication.AuthenticationBase {
             throw new RpcException(new global::Grpc.Core.Status(StatusCode.InvalidArgument, string.Empty));
         }
 
-        var id = publicKey.ToString();
+        var pk = publicKey.Compress().ToString();
+        var address = publicKey.ToEthereumAddress();
 
-        var account = await _db.Account.FindOrCreateAsync(id);
+        var account = await _db.Account.FindOrCreateAsync(address, pk);
         var accountId = account.Id;
         var tokenHandler = new JwtSecurityTokenHandler();
 

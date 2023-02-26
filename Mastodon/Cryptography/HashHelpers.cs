@@ -1,4 +1,5 @@
-﻿using Org.BouncyCastle.Crypto.Digests;
+﻿using Org.BouncyCastle.Crypto;
+using Org.BouncyCastle.Crypto.Digests;
 using System.Text;
 
 namespace Mastodon.Cryptography;
@@ -24,6 +25,14 @@ public static class HashHelpers {
 
     public static byte[] Keccak(byte[] input) {
         var digest = new KeccakDigest(256);
+        var result = new byte[digest.GetDigestSize()];
+        digest.BlockUpdate(input, 0, input.Length);
+        digest.DoFinal(result, 0);
+
+        return result;
+    }
+
+    public static byte[] Process(this IDigest digest, byte[] input) {
         var result = new byte[digest.GetDigestSize()];
         digest.BlockUpdate(input, 0, input.Length);
         digest.DoFinal(result, 0);

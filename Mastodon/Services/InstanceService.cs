@@ -11,9 +11,7 @@ public sealed class InstanceService : Mastodon.Grpc.InstanceApi.InstanceApiBase 
     }
 
     public override async Task<InstanceV1> GetInstanceV1(Empty request, ServerCallContext context) {
-        var filter = Builders<Data.Instance>.Filter.Empty;
-        var cursor = await _db.Instance.FindAsync(filter);
-        var instance = await cursor.FirstOrDefaultAsync();
+        var instance = await _db.Instance.FirstOrDefaultAsync();
 
         if (instance == null) {
             instance = new Data.Instance {
@@ -48,7 +46,7 @@ public sealed class InstanceService : Mastodon.Grpc.InstanceApi.InstanceApiBase 
 
                 },
                 Contact = new Data.Instance.Types.Contact {
-                    AccountId = "0343514470F2FA1E4B1AA118780AD720EC9F4B5CD9847DFB87C79869B697C47BE0",
+                    AccountId = "0xa98641d8031bc594ddb95f770f3101fa38c6efda",
                     Email = "admin@localhost",
                 },
 

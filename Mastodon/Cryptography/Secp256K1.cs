@@ -2,7 +2,9 @@
 using Org.BouncyCastle.Crypto.Parameters;
 using Org.BouncyCastle.Crypto.Signers;
 using Org.BouncyCastle.Math;
+using Org.BouncyCastle.Math.EC;
 using System.Formats.Asn1;
+using System.Security.Cryptography.X509Certificates;
 
 namespace Mastodon.Cryptography;
 
@@ -16,6 +18,20 @@ public static class Secp256K1 {
         var publicParams = new ECPublicKeyParameters(q, DomainParams);
 
         return new PublicKey(publicParams.Q.GetEncoded(compressed));
+    }
+
+    public static PublicKey Uncompress(this PublicKey publicKey) {
+        var ecpoint = Curve.Curve.DecodePoint(publicKey.Value.ToArray());
+        var uncompressed = ecpoint.GetEncoded(false);
+
+        return new PublicKey(uncompressed);
+    }
+
+    public static PublicKey Compress(this PublicKey publicKey) {
+        var ecpoint = Curve.Curve.DecodePoint(publicKey.Value.ToArray());
+        var compressed = ecpoint.GetEncoded(true);
+
+        return new PublicKey(compressed);
     }
 
     public static byte[] GenerateSignature(PrivateKey privateKey, byte[] message) {
