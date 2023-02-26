@@ -1,4 +1,6 @@
-﻿namespace Mastodon.Cryptography;
+﻿using System.Linq;
+
+namespace Mastodon.Cryptography;
 
 public sealed class PublicKey {
     public readonly ReadOnlyMemory<byte> Value;
@@ -11,15 +13,16 @@ public sealed class PublicKey {
         Value = value;
     }
 
-    //public string CreateAddress()
-    //{
-    //    var input = Value[1..];
-    //    var address = Cryptography.HashHelpers.Keccak(input.ToArray());
-    //    var w = address[^20..];
+    public string ToEthereumAddress() {
+        var pk = this.Uncompress();
 
-    //    var h = HashHelpers.ByteArrayToHexString(w).ToUpper();
-    //    return h;
-    //}
+        var input = pk.Value[1..];
+        var address = Cryptography.HashHelpers.Keccak(input.ToArray());
+        var w = address.Skip(address.Length - 20).ToArray();
+
+        var h = HashHelpers.ByteArrayToHexString(w).ToUpper();
+        return h;
+    }
 
     public override string ToString() {
         return HashHelpers.ByteArrayToHexString(Value).ToUpper();

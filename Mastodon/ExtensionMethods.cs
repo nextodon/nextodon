@@ -12,7 +12,7 @@ public static class ExtensionMethods {
         var accountId = identity?.Identity?.Name;
 
         if (throwIfNotFound) {
-            accountId ??= "0343514470F2FA1E4B1AA118780AD720EC9F4B5CD9847DFB87C79869B697C47BE0";
+            accountId ??= "0xa98641d8031bc594ddb95f770f3101fa38c6efda";
         }
 
         if (throwIfNotFound && string.IsNullOrWhiteSpace(accountId)) {

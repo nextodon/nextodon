@@ -1,6 +1,7 @@
 ﻿@page
 @addTagHelper*, Microsoft.AspNetCore.Mvc.TagHelpers
 @model Mastodon.Pages.AuthorizeModel
+@inject Mastodon.Data.DataContext db
 
 <!DOCTYPE html>
 <html lang="en">
@@ -10,7 +11,7 @@
     <title>Authorize</title>
     <script src="https://cdn.ethers.io/lib/ethers-5.2.umd.min.js" type="application/javascript"></script>
 </head>
-<body style="margin: 0">
+<body>
     <script>
         function hexToBytes(hex) {
             let bytes = [];
@@ -20,13 +21,12 @@
         }
 
         function postData(url, data) {
-            // Default options are marked with *
             const response = fetch(url, {
-                method: "POST", // *GET, POST, PUT, DELETE, etc.
+                method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify(data), // body data type must match "Content-Type" header
+                body: JSON.stringify(data),
             });
             return response;
         }
@@ -56,8 +56,7 @@
             return result.value;
         }
 
-        async function submit()
-        {
+        async function submit() {
             const mnemonicTA = document.getElementById("mnemonic");
             const mnemonic = mnemonicTA.value;
 
@@ -70,15 +69,22 @@
         }
     </script>
 
+    @{
+        var instance = await db.Instance.FirstOrDefaultAsync();
+
+        if (instance != null) {
+            <h1 style="text-align:center">@instance.Title</h1>
+        }
+    }
 
 
-        <div>
-            <textarea id="mnemonic" title="Mnemonic" rows="5" style="width: 100%"></textarea>
-        </div>
-        <p>Example: <code>smoke goat bus ketchup doctor artwork lizard actress armed fringe sing pond</code></p>
-        <br />
-        <div>
-            <button type="button" onclick="javascript:submit()">Submit</button>
-        </div>
+    <div>
+        <textarea id="mnemonic" title="Mnemonic" rows="5" style="width: 100%"></textarea>
+    </div>
+    <p>Example:<br /><code>smoke goat bus ketchup doctor artwork lizard actress armed fringe sing pond</code></p>
+    <br />
+    <div>
+        <button type="button" onclick="javascript:submit()">Submit</button>
+    </div>
 </body>
 </html>
