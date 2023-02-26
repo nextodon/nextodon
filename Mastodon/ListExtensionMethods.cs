@@ -1,7 +1,7 @@
 ﻿namespace Mastodon;
 
 public static class ListExtensionMethods {
-    //public static Grpc.List ToGrpc(this Mastodon.Models.List i) {
+    //public static Grpc.List ToGrpc(this Mastodon.Data.List i) {
     //    var v = new List {
     //        Id = i.Id,
     //        Title = i.Title,

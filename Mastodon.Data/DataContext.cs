@@ -8,6 +8,7 @@ public sealed class DataContext {
     public readonly IMongoCollection<Account> Account;
     public readonly IMongoCollection<Status> Status;
     public readonly IMongoCollection<Media> Media;
+    public readonly IMongoCollection<Instance> Instance;
     public readonly IMongoCollection<Status_Account> StatusAccount;
 
     private static bool inited = false;
@@ -39,6 +40,7 @@ public sealed class DataContext {
         Account = database.GetCollection<Account>("account");
         Status = database.GetCollection<Status>("status");
         Media = database.GetCollection<Media>("media");
+        Instance = database.GetCollection<Instance>("instance");
 
         StatusAccount = database.GetCollection<Status_Account>("status_account");
     }

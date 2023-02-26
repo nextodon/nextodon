@@ -10,32 +10,32 @@ public static class MediaExtensionMethods {
         };
 
 
-//        if (i.PreviewUrl != null) {
-//            v.PreviewUrl = i.PreviewUrl;
-//        }
+        //        if (i.PreviewUrl != null) {
+        //            v.PreviewUrl = i.PreviewUrl;
+        //        }
 
-//        if (i.Description != null) {
-//            v.Description = i.Description;
-//        }
+        //        if (i.Description != null) {
+        //            v.Description = i.Description;
+        //        }
 
-//        if (i.Blurhash != null) {
-//            v.Blurhash = i.Blurhash;
-//        }
+        //        if (i.Blurhash != null) {
+        //            v.Blurhash = i.Blurhash;
+        //        }
 
-//#pragma warning disable CS0612
-//        if (i.TextUrl != null) {
-//            v.TextUrl = i.TextUrl;
-//        }
-//#pragma warning restore CS0612
+        //#pragma warning disable CS0612
+        //        if (i.TextUrl != null) {
+        //            v.TextUrl = i.TextUrl;
+        //        }
+        //#pragma warning restore CS0612
 
-//        if (i.RemoteUrl != null) {
-//            v.RemoteUrl = WebFingerHelper.FixUrl(i.RemoteUrl);
-//        }
+        //        if (i.RemoteUrl != null) {
+        //            v.RemoteUrl = WebFingerHelper.FixUrl(i.RemoteUrl);
+        //        }
 
         return v;
     }
 
-    //public static Grpc.MediaAttachment.Types.Meta ToGrpc(this Mastodon.Models.MediaAttachment.Types.Meta i) {
+    //public static Grpc.MediaAttachment.Types.Meta ToGrpc(this Mastodon.Data.MediaAttachment.Types.Meta i) {
     //    var v = new Grpc.MediaAttachment.Types.Meta {
     //        Original = i.Original?.ToGrpc(),
     //        Small = i.Small?.ToGrpc(),
@@ -66,7 +66,7 @@ public static class MediaExtensionMethods {
     //    return v;
     //}
 
-    //public static Grpc.MediaAttachment.Types.Meta.Types.Original ToGrpc(this Mastodon.Models.MediaAttachment.Types.Meta.Types.Original i) {
+    //public static Grpc.MediaAttachment.Types.Meta.Types.Original ToGrpc(this Mastodon.Data.MediaAttachment.Types.Meta.Types.Original i) {
     //    var v = new Grpc.MediaAttachment.Types.Meta.Types.Original {
     //        Width = i.Width,
     //        Height = i.Height,
@@ -79,7 +79,7 @@ public static class MediaExtensionMethods {
     //    return v;
     //}
 
-    //public static Grpc.MediaAttachment.Types.Meta.Types.Small ToGrpc(this Mastodon.Models.MediaAttachment.Types.Meta.Types.Small i) {
+    //public static Grpc.MediaAttachment.Types.Meta.Types.Small ToGrpc(this Mastodon.Data.MediaAttachment.Types.Meta.Types.Small i) {
     //    var v = new Grpc.MediaAttachment.Types.Meta.Types.Small {
     //        Width = i.Width,
     //        Height = i.Height,

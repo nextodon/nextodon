@@ -1,7 +1,7 @@
 ﻿namespace Mastodon;
 
 public static class PollExtensionMethods {
-    //public static Grpc.Poll ToGrpc(this Mastodon.Models.Poll i) {
+    //public static Grpc.Poll ToGrpc(this Mastodon.Data.Poll i) {
     //    var v = new Grpc.Poll {
     //        Id = i.Id,
     //        Expired = i.Expired,
@@ -31,7 +31,7 @@ public static class PollExtensionMethods {
     //    return v;
     //}
 
-    //public static Grpc.Poll.Types.Option ToGrpc(this Mastodon.Models.Poll.Option i) {
+    //public static Grpc.Poll.Types.Option ToGrpc(this Mastodon.Data.Poll.Option i) {
     //    var v = new Grpc.Poll.Types.Option {
     //        Title = i.Title,
     //    };

@@ -1,7 +1,7 @@
 ﻿namespace Mastodon;
 
 public static class EmojiExtensionMethods {
-    //public static Grpc.CustomEmoji ToGrpc(this Mastodon.Models.CustomEmoji i) {
+    //public static Grpc.CustomEmoji ToGrpc(this Mastodon.Data.CustomEmoji i) {
     //    var v = new CustomEmoji {
     //        Shortcode = i.Shortcode,
     //        Url = i.Url,

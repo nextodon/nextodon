@@ -12,7 +12,7 @@ public static class StatusExtensionMethods {
         return statuses;
     }
 
-    //public static Grpc.Status.Types.Mention ToGrpc(this Mastodon.Models.Status.Mention i) {
+    //public static Grpc.Status.Types.Mention ToGrpc(this Mastodon.Data.Status.Mention i) {
     //    var v = new Grpc.Status.Types.Mention {
     //        Acct = WebFingerHelper.FixAcct(i.Acct),
     //        Id = i.Id,
@@ -23,7 +23,7 @@ public static class StatusExtensionMethods {
     //    return v;
     //}
 
-    //public static Grpc.Status.Types.Application ToGrpc(this Mastodon.Models.Status.ApplicationHash i) {
+    //public static Grpc.Status.Types.Application ToGrpc(this Mastodon.Data.Status.ApplicationHash i) {
     //    var v = new Grpc.Status.Types.Application {
     //        Name = i.Name,
     //    };
@@ -35,7 +35,7 @@ public static class StatusExtensionMethods {
     //    return v;
     //}
 
-    //public static Grpc.PreviewCard ToGrpc(this Mastodon.Models.PreviewCard i) {
+    //public static Grpc.PreviewCard ToGrpc(this Mastodon.Data.PreviewCard i) {
     //    var v = new Grpc.PreviewCard {
     //        Url = WebFingerHelper.FixUrl(i.Url),
     //        AuthorName = i.AuthorName,
@@ -92,7 +92,7 @@ public static class StatusExtensionMethods {
     }
 
 
-    //public static Grpc.Context ToGrpc(this Mastodon.Models.Context i) {
+    //public static Grpc.Context ToGrpc(this Mastodon.Data.Context i) {
     //    var v = new Grpc.Context();
 
     //    v.Ancestors.AddRange(i.Ancestors.Select(x => x.ToGrpc()));

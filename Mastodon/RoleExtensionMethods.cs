@@ -1,7 +1,7 @@
 ﻿namespace Mastodon;
 
 public static class RoleExtensionMethods {
-    //public static Grpc.Role ToGrpc(this Mastodon.Models.Role i) {
+    //public static Grpc.Role ToGrpc(this Mastodon.Data.Role i) {
     //    var v = new Role {
     //        Id = i.Id,
     //        Name = i.Name,
