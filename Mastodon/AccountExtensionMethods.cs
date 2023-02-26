@@ -34,6 +34,12 @@ public static class AccountExtensionMethods {
             //Moved = i.Moved?.ToGrpc(),
             CreatedAt = i.CreatedAt.ToGrpc(),
             LastStatusAt = i.CreatedAt.ToGrpc(),//TODO
+            FollowersCount = 1100,
+            FollowingCount = 20,
+            StatusesCount = 20,
+            Source = new Grpc.Account.Types.Source { },
+            Discoverable = false,
+            Role = new Role { Position = 0, }
         };
 
         if (i.Discoverable != null) {
