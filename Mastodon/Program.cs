@@ -100,6 +100,8 @@ app.MapGrpcService<AuthenticationService>().EnableGrpcWeb();
 app.MapGrpcService<BookmarkApiService>().EnableGrpcWeb();
 app.MapGrpcService<DirectoryService>().EnableGrpcWeb();
 app.MapGrpcService<InstanceService>().EnableGrpcWeb();
+app.MapGrpcService<MarkerService>().EnableGrpcWeb();
+app.MapGrpcService<MediaApiService>().EnableGrpcWeb();
 app.MapGrpcService<OAuthService>().EnableGrpcWeb();
 app.MapGrpcService<PollService>().EnableGrpcWeb();
 app.MapGrpcService<SearchService>().EnableGrpcWeb();

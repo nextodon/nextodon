@@ -5,6 +5,7 @@ namespace Mastodon.Data;
 
 public sealed class DataContext {
     internal readonly IMongoDatabase database;
+    public readonly IMongoCollection<Marker> Marker;
     public readonly IMongoCollection<Account> Account;
     public readonly IMongoCollection<Status> Status;
     public readonly IMongoCollection<Media> Media;
@@ -38,9 +39,10 @@ public sealed class DataContext {
         database = client.GetDatabase(settings.Value.Database);
 
         Account = database.GetCollection<Account>("account");
-        Status = database.GetCollection<Status>("status");
-        Media = database.GetCollection<Media>("media");
         Instance = database.GetCollection<Instance>("instance");
+        Marker = database.GetCollection<Marker>("marker");
+        Media = database.GetCollection<Media>("media");
+        Status = database.GetCollection<Status>("status");
 
         StatusAccount = database.GetCollection<Status_Account>("status_account");
     }
