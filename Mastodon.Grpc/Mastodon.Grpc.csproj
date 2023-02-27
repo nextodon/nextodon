@@ -29,6 +29,8 @@
 		<Protobuf Include="instanceapi.proto" />
 		<Protobuf Include="instancev1.proto" />
 		<Protobuf Include="list.proto" />
+		<Protobuf Include="marker.proto" />
+		<Protobuf Include="markerapi.proto" />
 		<Protobuf Include="media.proto" />
 		<Protobuf Include="mediaapi.proto" />
 		<Protobuf Include="oauth.proto" />
