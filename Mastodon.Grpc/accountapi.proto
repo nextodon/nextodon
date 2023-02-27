@@ -116,7 +116,7 @@ service AccountApi {
   rpc Unfollow (google.protobuf.StringValue) returns (Relationship)
   {
 	option (google.api.http) = {
-      post: "/api/v1/statuses/{value}/unfollow"
+      post: "/api/v1/accounts/{value}/unfollow"
     };
   }
   
@@ -130,7 +130,7 @@ service AccountApi {
   rpc Unblock (google.protobuf.StringValue) returns (Relationship)
   {
 	option (google.api.http) = {
-      post: "/api/v1/statuses/{value}/unblock"
+      post: "/api/v1/accounts/{value}/unblock"
     };
   }
 
@@ -144,7 +144,7 @@ service AccountApi {
   rpc Unmute (google.protobuf.StringValue) returns (Relationship)
   {
 	option (google.api.http) = {
-      post: "/api/v1/statuses/{value}/unmute"
+      post: "/api/v1/accounts/{value}/unmute"
     };
   }
 
@@ -158,14 +158,14 @@ service AccountApi {
   rpc Unpin (google.protobuf.StringValue) returns (Relationship)
   {
 	option (google.api.http) = {
-      post: "/api/v1/statuses/{value}/unpin"
+      post: "/api/v1/accounts/{value}/unpin"
     };
   }
   
   rpc Note (NoteRequest) returns (Relationship)
   {
 	option (google.api.http) = {
-      post: "/api/v1/statuses/{accountId}/note"
+      post: "/api/v1/accounts/{accountId}/note"
       body: "*"
     };
   }
