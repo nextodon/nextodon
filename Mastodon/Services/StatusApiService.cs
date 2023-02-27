@@ -137,10 +137,11 @@ public sealed class StatusApiService : Mastodon.Grpc.StatusApi.StatusApiBase {
     }
 
     public override async Task<Grpc.Status> Favourite(StringValue request, ServerCallContext context) {
+        var cancellationToken = context.CancellationToken;
         var accountId = context.GetAccountId(true);
         var statusId = request.Value;
 
-        await _db.StatusAccount.UpdateAsync(statusId, accountId!, favorite: true);
+        await _db.StatusAccount.UpdateAsync(statusId, accountId!, favorite: true, cancellationToken: cancellationToken);
 
         var result = await _db.GetStatusById(context, statusId, accountId);
         return result;
