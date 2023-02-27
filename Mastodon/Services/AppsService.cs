@@ -13,6 +13,7 @@ public sealed class AppsService : Mastodon.Grpc.Apps.AppsBase {
     public override Task<Application> CreateApplication(CreateApplicationRequest request, ServerCallContext context) {
 
         var i = new Application {
+            Name = "ForDem",
             RedirectUri = "/sign_up",
             ClientId = "1",
             ClientSecret = "2"
