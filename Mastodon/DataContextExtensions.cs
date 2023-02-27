@@ -1,4 +1,5 @@
-﻿using System.Runtime.ConstrainedExecution;
+﻿using MongoDB.Driver;
+using System.Runtime.ConstrainedExecution;
 
 namespace Mastodon;
 
@@ -20,8 +21,8 @@ public static class DataContextExtensions {
         var account = owner!.ToGrpc();
         result.Account = account;
 
-        result.Uri = context.GetUrlPath($"users/{account.Username}/statuses/{status.Id}");
-        result.Url = context.GetUrlPath($"@{account.Username}/{status.Id}");
+        result.Uri = context.GetUrlPath($"users/{account.Id}/statuses/{status.Id}");
+        result.Url = context.GetUrlPath($"@{account.Id}/{status.Id}");
 
         if (!string.IsNullOrWhiteSpace(status.ReblogedFromId)) {
             result.Reblog = await db.GetStatusById(context, status.ReblogedFromId, meId, false);
@@ -79,60 +80,96 @@ public static class DataContextExtensions {
             var sidFilter = Builders<Data.Status_Account>.Filter.Eq(x => x.StatusId, status.Id) & existFilter;
             var meFilter = Builders<Data.Status_Account>.Filter.Eq(x => x.AccountId, meId);
             var favFilter = Builders<Data.Status_Account>.Filter.Eq(x => x.Favorite, true);
-            var pinFilter = Builders<Data.Status_Account>.Filter.Eq(x => x.Pin, true);
 
             var favCount = db.StatusAccount.CountDocumentsAsync(sidFilter & favFilter);
 
-            var favourited = db.StatusAccount.CountDocumentsAsync(sidFilter & meFilter & favFilter);
-            var pinned = db.StatusAccount.CountDocumentsAsync(sidFilter & meFilter & pinFilter);
-
             result.FavouritesCount = (uint)(await favCount);
+        }
 
-            result.Pinned = (await pinned) > 0;
-            result.Favourited = (await favourited) > 0;
+        if (!string.IsNullOrWhiteSpace(meId)) {
+            var statusAccount = await db.StatusAccount.UpdateAsync(status.Id, meId);
+
+            result.Muted = statusAccount.Mute;
+            result.Pinned = statusAccount.Pin;
+            result.Bookmarked = statusAccount.Bookmark;
+            result.Favourited = statusAccount.Favorite;
         }
 
         return result;
     }
 
-    public static Task UpdateAsync(this IMongoCollection<Status_Account> collection, string statusId, string accountId, bool? favorite = null, bool? bookmark = null, bool? pin = null, bool? mute = null) {
+    public static async Task<Status_Account> UpdateAsync(this IMongoCollection<Status_Account> collection, string statusId, string accountId, bool? favorite = null, bool? bookmark = null, bool? pin = null, bool? mute = null, CancellationToken cancellationToken = default) {
         var filter1 = Builders<Data.Status_Account>.Filter.Eq(x => x.StatusId, statusId);
         var filter2 = Builders<Data.Status_Account>.Filter.Eq(x => x.AccountId, accountId);
-        var filter = filter1 & filter2;
 
         var update = Builders<Data.Status_Account>.Update
             .SetOnInsert(x => x.StatusId, statusId)
             .SetOnInsert(x => x.AccountId, accountId)
-            .SetOnInsert(x => x.Deleted, false);
+            .SetOnInsert(x => x.Deleted, false)
+            .SetOnInsert(x => x.Favorite, favorite ?? false)
+            .SetOnInsert(x => x.Bookmark, bookmark ?? false)
+            .SetOnInsert(x => x.Pin, pin ?? false)
+            .SetOnInsert(x => x.Mute, mute ?? false);
 
-        if (favorite == null) {
-            update = update.SetOnInsert(x => x.Favorite, false);
-        }
-        else {
-            update = update.Set(x => x.Favorite, favorite!);
-        }
 
-        if (bookmark == null) {
-            update = update.SetOnInsert(x => x.Bookmark, false);
-        }
-        else {
-            update = update.Set(x => x.Bookmark, bookmark!);
-        }
 
-        if (pin == null) {
-            update = update.SetOnInsert(x => x.Pin, false);
-        }
-        else {
-            update = update.Set(x => x.Pin, pin!);
-        }
+        var options = new FindOneAndUpdateOptions<Status_Account, Status_Account> {
+            IsUpsert = true,
+            ReturnDocument = ReturnDocument.After,
+        };
 
-        if (pin == null) {
-            update = update.SetOnInsert(x => x.Mute, false);
-        }
-        else {
-            update = update.Set(x => x.Mute, mute!);
+        var sa = await collection.FindOneAndUpdateAsync(filter1 & filter2, update, options, cancellationToken);
+
+
+        UpdateDefinition<Status_Account>? u = null;
+
+        if (favorite != null) {
+            var f = Builders<Data.Status_Account>.Update.Set(x => x.Favorite, favorite!);
+            if (u == null) {
+                u = f;
+            }
+            else {
+                u = Builders<Data.Status_Account>.Update.Combine(u, f);
+            }
         }
 
-        return collection.UpdateOneAsync(filter, update, new UpdateOptions { IsUpsert = true });
+        if (bookmark != null) {
+            var f = Builders<Data.Status_Account>.Update.Set(x => x.Bookmark, bookmark!);
+
+            if (u == null) {
+                u = f;
+            }
+            else {
+                u = Builders<Data.Status_Account>.Update.Combine(u, f);
+            }
+        }
+
+        if (pin != null) {
+            var f = Builders<Data.Status_Account>.Update.Set(x => x.Pin, pin!);
+            if (u == null) {
+                u = f;
+            }
+            else {
+                u = Builders<Data.Status_Account>.Update.Combine(u, f);
+            }
+        }
+
+        if (mute != null) {
+            var f = Builders<Data.Status_Account>.Update.Set(x => x.Mute, mute!);
+            if (u == null) {
+                u = f;
+            }
+            else {
+                u = Builders<Data.Status_Account>.Update.Combine(u, f);
+            }
+        }
+
+
+        if (u == null) {
+            return sa;
+        }
+
+        var filter = Builders<Data.Status_Account>.Filter.Eq(x => x.Id, sa.Id);
+        return await collection.FindOneAndUpdateAsync(filter, u, options, cancellationToken);
     }
 }
