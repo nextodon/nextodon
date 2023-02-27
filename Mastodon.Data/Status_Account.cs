@@ -15,6 +15,8 @@ public sealed class Status_Account {
     [BsonRequired]
     public required string AccountId;
 
+    public required bool Deleted;
+
     [BsonRequired]
     public bool Favorite;
 
