@@ -1,13 +1,15 @@
 ﻿
 
+using System.Diagnostics.CodeAnalysis;
+
 namespace Mastodon;
 
 public static class ExtensionMethods {
-    public static string? GetAccountId(this ServerCallContext context, bool throwIfNotFound) {
+    public static string? GetAccountId(this ServerCallContext context, [NotNullWhen(true)][MaybeNullWhen(false)] bool throwIfNotFound) {
         return context.GetHttpContext().GetAccountId(throwIfNotFound);
     }
 
-    public static string? GetAccountId(this HttpContext context, bool throwIfNotFound) {
+    public static string? GetAccountId(this HttpContext context, [NotNullWhen(true)] bool throwIfNotFound) {
         var identity = context.User;
         var accountId = identity?.Identity?.Name;
 
@@ -22,7 +24,7 @@ public static class ExtensionMethods {
         return accountId;
     }
 
-    public static async Task<Data.Account?> GetAccount(this ServerCallContext context, Data.DataContext db, bool throwIfNotFound) {
+    public static async Task<Data.Account?> GetAccount(this ServerCallContext context, Data.DataContext db, [NotNullWhen(true)] bool throwIfNotFound) {
         var accountId = GetAccountId(context, throwIfNotFound);
 
         var filter = Builders<Data.Account>.Filter.Eq(u => u.Id, accountId);

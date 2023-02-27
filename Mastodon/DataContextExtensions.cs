@@ -1,10 +1,17 @@
-﻿namespace Mastodon;
+﻿using System.Runtime.ConstrainedExecution;
+
+namespace Mastodon;
 
 public static class DataContextExtensions {
-    public static async Task<Grpc.Status> GetStatusById(this DataContext db, ServerCallContext context, string id, string? meId) {
+    public static async Task<Grpc.Status> GetStatusById(this DataContext db, ServerCallContext context, string id, string? meId, bool throwIfNotFound = true) {
         var status = await db.Status.FindByIdAsync(id);
         if (status == null) {
-            throw new RpcException(new global::Grpc.Core.Status(StatusCode.NotFound, string.Empty));
+            if (throwIfNotFound) {
+                throw new RpcException(new global::Grpc.Core.Status(StatusCode.NotFound, string.Empty));
+            }
+            else {
+                return new Grpc.Status { Id = id };
+            }
         }
 
         var owner = await db.Account.FindByIdAsync(status.AccountId);
@@ -17,7 +24,13 @@ public static class DataContextExtensions {
         result.Url = context.GetUrlPath($"@{account.Username}/{status.Id}");
 
         if (!string.IsNullOrWhiteSpace(status.ReblogedFromId)) {
-            result.Reblog = await db.GetStatusById(context, status.ReblogedFromId, meId);
+            result.Reblog = await db.GetStatusById(context, status.ReblogedFromId, meId, false);
+        }
+
+        {
+            var filter1 = Builders<Data.Status>.Filter.Ne(x => x.Deleted, true);
+            var filter2 = Builders<Data.Status>.Filter.Eq(x => x.InReplyToId, status.Id);
+            result.RepliesCount = (uint)(await db.Status.CountDocumentsAsync(filter1 & filter2));
         }
 
         var mediaIds = status.MediaIds;
@@ -58,6 +71,25 @@ public static class DataContextExtensions {
             var filter2 = Builders<Data.Status>.Filter.Eq(x => x.ReblogedFromId, status.Id);
             var filter3 = Builders<Data.Status>.Filter.Eq(x => x.AccountId, meId);
             result.Reblogged = (await db.Status.CountDocumentsAsync(filter1 & filter2 & filter3)) > 0;
+        }
+
+
+        if (!string.IsNullOrWhiteSpace(meId)) {
+            var existFilter = Builders<Data.Status_Account>.Filter.Ne(x => x.Deleted, true);
+            var sidFilter = Builders<Data.Status_Account>.Filter.Eq(x => x.StatusId, status.Id) & existFilter;
+            var meFilter = Builders<Data.Status_Account>.Filter.Eq(x => x.AccountId, meId);
+            var favFilter = Builders<Data.Status_Account>.Filter.Eq(x => x.Favorite, true);
+            var pinFilter = Builders<Data.Status_Account>.Filter.Eq(x => x.Pin, true);
+
+            var favCount = db.StatusAccount.CountDocumentsAsync(sidFilter & favFilter);
+
+            var favourited = db.StatusAccount.CountDocumentsAsync(sidFilter & meFilter & favFilter);
+            var pinned = db.StatusAccount.CountDocumentsAsync(sidFilter & meFilter & pinFilter);
+
+            result.FavouritesCount = (uint)(await favCount);
+
+            result.Pinned = (await pinned) > 0;
+            result.Favourited = (await favourited) > 0;
         }
 
         return result;

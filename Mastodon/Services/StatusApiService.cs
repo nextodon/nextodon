@@ -8,7 +8,6 @@ public sealed class StatusApiService : Mastodon.Grpc.StatusApi.StatusApiBase {
 
     public StatusApiService(ILogger<StatusApiService> logger, DataContext db) {
         _logger = logger;
-
         _db = db;
     }
 
@@ -25,7 +24,7 @@ public sealed class StatusApiService : Mastodon.Grpc.StatusApi.StatusApiBase {
 
     [AllowAnonymous]
     public override async Task<Accounts> GetRebloggedBy(GetRebloggedByRequest request, ServerCallContext context) {
-        //var accountId = context.GetUserId(false);
+        //var accountId = context.GetAccountId(false);
         var statusId = request.StatusId;
 
         IMongoQueryable<string> q = from x in _db.Status.AsQueryable()
@@ -33,24 +32,26 @@ public sealed class StatusApiService : Mastodon.Grpc.StatusApi.StatusApiBase {
                                     select x.AccountId;
 
         var accountIds = await q.ToListAsync();
-        var dist = accountIds.Distinct();
-
-        var result = new List<Data.Account>();
-
-        foreach (var accountId in accountIds) {
-            var account = await _db.Account.FindByIdAsync(accountId);
-            result.Add(account!);
-        }
+        var distinct = accountIds.Distinct();
+        var result = await _db.Account.FindByIdsAsync(distinct);
 
         return result.ToGrpc();
     }
 
     [AllowAnonymous]
-    public override Task<Accounts> GetFavouritedBy(GetFavouritedByRequest request, ServerCallContext context) {
+    public override async Task<Accounts> GetFavouritedBy(GetFavouritedByRequest request, ServerCallContext context) {
         var accountId = context.GetAccountId(false);
         var statusId = request.StatusId;
 
-        return base.GetFavouritedBy(request, context);
+        IMongoQueryable<string> q = from x in _db.StatusAccount.AsQueryable()
+                                    where x.StatusId == statusId && x.Favorite
+                                    select x.AccountId;
+
+        var accountIds = await q.ToListAsync();
+        var distinct = accountIds.Distinct();
+        var result = await _db.Account.FindByIdsAsync(distinct);
+
+        return result.ToGrpc();
     }
 
     [AllowAnonymous]
@@ -103,6 +104,8 @@ public sealed class StatusApiService : Mastodon.Grpc.StatusApi.StatusApiBase {
             Language = request.HasLanguage ? request.Language : null,
             SpoilerText = request.HasSpoilerText ? request.SpoilerText : null,
             InReplyToId = request.HasInReplyToId ? request.InReplyToId : null,
+            ReblogedFromId = null,
+            Deleted = false,
         };
 
         await _db.Status.InsertOneAsync(status);
@@ -113,15 +116,24 @@ public sealed class StatusApiService : Mastodon.Grpc.StatusApi.StatusApiBase {
     }
 
     public override async Task<Grpc.Status> DeleteStatus(StringValue request, ServerCallContext context) {
-        var account = await context.GetAccount(_db, true);
+        var accountId = context.GetAccountId(true);
+        var statusId = request.Value;
 
-        var filter = Builders<Data.Status>.Filter.Eq(x => x.Id, request.Value);
-        var update = Builders<Data.Status>.Update.Set(x => x.Deleted, true);
+        {
+            var filter = Builders<Data.Status>.Filter.Eq(x => x.Id, statusId);
+            var update = Builders<Data.Status>.Update.Set(x => x.Deleted, true);
 
-        await _db.Status.UpdateOneAsync(filter, update);
+            await _db.Status.UpdateOneAsync(filter, update);
+        }
 
-        var result = await _db.Status.FindByIdAsync(request.Value);
-        return result!.ToGrpc(account!);
+        {
+            var filter = Builders<Data.Status_Account>.Filter.Eq(x => x.StatusId, statusId);
+            var update = Builders<Data.Status_Account>.Update.Set(x => x.Deleted, true);
+
+            await _db.StatusAccount.UpdateManyAsync(filter, update);
+        }
+
+        return new Grpc.Status { Id = statusId };
     }
 
     public override async Task<Grpc.Status> Favourite(StringValue request, ServerCallContext context) {
@@ -299,7 +311,7 @@ public sealed class StatusApiService : Mastodon.Grpc.StatusApi.StatusApiBase {
         var accountId = context.GetAccountId(true);
         var statusId = request.StatusId;
 
-        var oldStatus = await _db.Status.FindByIdAsync(request.StatusId);
+        var oldStatus = await _db.Status.FindByIdAsync(statusId);
 
         if (oldStatus == null) {
             throw new RpcException(new global::Grpc.Core.Status(StatusCode.NotFound, string.Empty));
@@ -316,7 +328,8 @@ public sealed class StatusApiService : Mastodon.Grpc.StatusApi.StatusApiBase {
             ReblogedFromId = oldStatus.ReblogedFromId ?? request.StatusId,
             Language = oldStatus.Language,
             SpoilerText = oldStatus.SpoilerText,
-            InReplyToId = null, //TODO: oldStatus.InReplyToId,
+            InReplyToId = oldStatus.InReplyToId,
+            Deleted = false,
         };
 
         await _db.Status.InsertOneAsync(status);
@@ -329,16 +342,28 @@ public sealed class StatusApiService : Mastodon.Grpc.StatusApi.StatusApiBase {
     public override async Task<Grpc.Status> Unreblog(StringValue request, ServerCallContext context) {
         var accountId = context.GetAccountId(true);
         var statusId = request.Value;
+        IMongoQueryable<string> q = from x in _db.Status.AsQueryable()
+                                    where x.AccountId == accountId
+                                    where x.ReblogedFromId == statusId
+                                    select x.Id;
 
+        var reblogs = await q.ToListAsync();
 
-        // Update.
-        var filter = Builders<Data.Status>.Filter.Ne(x => x.Deleted, true) & Builders<Data.Status>.Filter.Eq(x => x.Id, request.Value);
-        var update = Builders<Data.Status>.Update.Set(x => x.Deleted, true);
+        {
+            var filter = Builders<Data.Status>.Filter.In(x => x.Id, reblogs);
+            var update = Builders<Data.Status>.Update.Set(x => x.Deleted, true);
 
-        await _db.Status.UpdateOneAsync(filter, update);
+            await _db.Status.UpdateManyAsync(filter, update);
+        }
 
-        // Return.
-        var result = await _db.GetStatusById(context, request.Value, accountId);
+        {
+            var filter = Builders<Data.Status_Account>.Filter.In(x => x.StatusId, reblogs);
+            var update = Builders<Data.Status_Account>.Update.Set(x => x.Deleted, true);
+
+            await _db.StatusAccount.UpdateManyAsync(filter, update);
+        }
+
+        var result = await _db.GetStatusById(context, statusId, accountId);
         return result;
     }
 }
