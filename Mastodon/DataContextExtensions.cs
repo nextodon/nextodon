@@ -94,4 +94,45 @@ public static class DataContextExtensions {
 
         return result;
     }
+
+    public static Task UpdateAsync(this IMongoCollection<Status_Account> collection, string statusId, string accountId, bool? favorite = null, bool? bookmark = null, bool? pin = null, bool? mute = null) {
+        var filter1 = Builders<Data.Status_Account>.Filter.Eq(x => x.StatusId, statusId);
+        var filter2 = Builders<Data.Status_Account>.Filter.Eq(x => x.AccountId, accountId);
+        var filter = filter1 & filter2;
+
+        var update = Builders<Data.Status_Account>.Update
+            .SetOnInsert(x => x.StatusId, statusId)
+            .SetOnInsert(x => x.AccountId, accountId)
+            .SetOnInsert(x => x.Deleted, false);
+
+        if (favorite == null) {
+            update = update.SetOnInsert(x => x.Favorite, false);
+        }
+        else {
+            update = update.Set(x => x.Favorite, favorite!);
+        }
+
+        if (bookmark == null) {
+            update = update.SetOnInsert(x => x.Bookmark, false);
+        }
+        else {
+            update = update.Set(x => x.Bookmark, bookmark!);
+        }
+
+        if (pin == null) {
+            update = update.SetOnInsert(x => x.Pin, false);
+        }
+        else {
+            update = update.Set(x => x.Pin, pin!);
+        }
+
+        if (pin == null) {
+            update = update.SetOnInsert(x => x.Mute, false);
+        }
+        else {
+            update = update.Set(x => x.Mute, mute!);
+        }
+
+        return collection.UpdateOneAsync(filter, update, new UpdateOptions { IsUpsert = true });
+    }
 }

@@ -140,20 +140,9 @@ public sealed class StatusApiService : Mastodon.Grpc.StatusApi.StatusApiBase {
         var accountId = context.GetAccountId(true);
         var statusId = request.Value;
 
-        var filter1 = Builders<Data.Status_Account>.Filter.Eq(x => x.StatusId, statusId);
-        var filter2 = Builders<Data.Status_Account>.Filter.Eq(x => x.AccountId, accountId);
-        var filter = filter1 & filter2;
-        var update = Builders<Data.Status_Account>.Update
-            .SetOnInsert(x => x.StatusId, request.Value)
-            .SetOnInsert(x => x.AccountId, accountId)
-            .SetOnInsert(x => x.Mute, false)
-            .SetOnInsert(x => x.Pin, false)
-            .SetOnInsert(x => x.Bookmark, false)
-            .Set(x => x.Favorite, true);
+        await _db.StatusAccount.UpdateAsync(statusId, accountId!, favorite: true);
 
-        await _db.StatusAccount.UpdateOneAsync(filter, update, new UpdateOptions { IsUpsert = true });
-
-        var result = await _db.GetStatusById(context, request.Value, accountId);
+        var result = await _db.GetStatusById(context, statusId, accountId);
         return result;
 
     }
@@ -162,20 +151,9 @@ public sealed class StatusApiService : Mastodon.Grpc.StatusApi.StatusApiBase {
         var accountId = context.GetAccountId(true);
         var statusId = request.Value;
 
-        var filter1 = Builders<Data.Status_Account>.Filter.Eq(x => x.StatusId, request.Value);
-        var filter2 = Builders<Data.Status_Account>.Filter.Eq(x => x.AccountId, accountId);
-        var filter = filter1 & filter2;
-        var update = Builders<Data.Status_Account>.Update
-            .SetOnInsert(x => x.StatusId, request.Value)
-            .SetOnInsert(x => x.AccountId, accountId)
-            .SetOnInsert(x => x.Mute, false)
-            .SetOnInsert(x => x.Pin, false)
-            .SetOnInsert(x => x.Bookmark, false)
-            .Set(x => x.Favorite, false);
+        await _db.StatusAccount.UpdateAsync(statusId, accountId!, favorite: false);
 
-        await _db.StatusAccount.UpdateOneAsync(filter, update, new UpdateOptions { IsUpsert = true });
-
-        var result = await _db.GetStatusById(context, request.Value, accountId);
+        var result = await _db.GetStatusById(context, statusId, accountId);
         return result;
     }
 
@@ -183,18 +161,7 @@ public sealed class StatusApiService : Mastodon.Grpc.StatusApi.StatusApiBase {
         var accountId = context.GetAccountId(true);
         var statusId = request.Value;
 
-        var filter1 = Builders<Data.Status_Account>.Filter.Eq(x => x.StatusId, request.Value);
-        var filter2 = Builders<Data.Status_Account>.Filter.Eq(x => x.AccountId, accountId);
-        var filter = filter1 & filter2;
-        var update = Builders<Data.Status_Account>.Update
-            .SetOnInsert(x => x.StatusId, request.Value)
-            .SetOnInsert(x => x.AccountId, accountId)
-            .SetOnInsert(x => x.Mute, false)
-            .SetOnInsert(x => x.Pin, false)
-            .SetOnInsert(x => x.Favorite, false)
-            .Set(x => x.Bookmark, true);
-
-        await _db.StatusAccount.UpdateOneAsync(filter, update, new UpdateOptions { IsUpsert = true });
+        await _db.StatusAccount.UpdateAsync(statusId, accountId!, bookmark: true);
 
         var result = await _db.GetStatusById(context, request.Value, accountId);
         return result;
@@ -204,18 +171,7 @@ public sealed class StatusApiService : Mastodon.Grpc.StatusApi.StatusApiBase {
         var accountId = context.GetAccountId(true);
         var statusId = request.Value;
 
-        var filter1 = Builders<Data.Status_Account>.Filter.Eq(x => x.StatusId, request.Value);
-        var filter2 = Builders<Data.Status_Account>.Filter.Eq(x => x.AccountId, accountId);
-        var filter = filter1 & filter2;
-        var update = Builders<Data.Status_Account>.Update
-            .SetOnInsert(x => x.StatusId, request.Value)
-            .SetOnInsert(x => x.AccountId, accountId)
-            .SetOnInsert(x => x.Mute, false)
-            .SetOnInsert(x => x.Pin, false)
-            .SetOnInsert(x => x.Favorite, false)
-            .Set(x => x.Bookmark, false);
-
-        await _db.StatusAccount.UpdateOneAsync(filter, update, new UpdateOptions { IsUpsert = true });
+        await _db.StatusAccount.UpdateAsync(statusId, accountId!, bookmark: false);
 
         var result = await _db.GetStatusById(context, request.Value, accountId);
         return result;
@@ -225,18 +181,7 @@ public sealed class StatusApiService : Mastodon.Grpc.StatusApi.StatusApiBase {
         var accountId = context.GetAccountId(true);
         var statusId = request.Value;
 
-        var filter1 = Builders<Data.Status_Account>.Filter.Eq(x => x.StatusId, request.Value);
-        var filter2 = Builders<Data.Status_Account>.Filter.Eq(x => x.AccountId, accountId);
-        var filter = filter1 & filter2;
-        var update = Builders<Data.Status_Account>.Update
-            .SetOnInsert(x => x.StatusId, request.Value)
-            .SetOnInsert(x => x.AccountId, accountId)
-            .SetOnInsert(x => x.Pin, false)
-            .SetOnInsert(x => x.Bookmark, false)
-            .SetOnInsert(x => x.Favorite, false)
-            .Set(x => x.Mute, true);
-
-        await _db.StatusAccount.UpdateOneAsync(filter, update, new UpdateOptions { IsUpsert = true });
+        await _db.StatusAccount.UpdateAsync(statusId, accountId!, mute: true);
 
         var result = await _db.GetStatusById(context, request.Value, accountId);
         return result;
@@ -246,18 +191,7 @@ public sealed class StatusApiService : Mastodon.Grpc.StatusApi.StatusApiBase {
         var accountId = context.GetAccountId(true);
         var statusId = request.Value;
 
-        var filter1 = Builders<Data.Status_Account>.Filter.Eq(x => x.StatusId, request.Value);
-        var filter2 = Builders<Data.Status_Account>.Filter.Eq(x => x.AccountId, accountId);
-        var filter = filter1 & filter2;
-        var update = Builders<Data.Status_Account>.Update
-            .SetOnInsert(x => x.StatusId, request.Value)
-            .SetOnInsert(x => x.AccountId, accountId)
-            .SetOnInsert(x => x.Pin, false)
-            .SetOnInsert(x => x.Bookmark, false)
-            .SetOnInsert(x => x.Favorite, false)
-            .Set(x => x.Mute, false);
-
-        await _db.StatusAccount.UpdateOneAsync(filter, update, new UpdateOptions { IsUpsert = true });
+        await _db.StatusAccount.UpdateAsync(statusId, accountId!, mute: false);
 
         var result = await _db.GetStatusById(context, request.Value, accountId);
         return result;
@@ -267,18 +201,7 @@ public sealed class StatusApiService : Mastodon.Grpc.StatusApi.StatusApiBase {
         var accountId = context.GetAccountId(true);
         var statusId = request.Value;
 
-        var filter1 = Builders<Data.Status_Account>.Filter.Eq(x => x.StatusId, request.Value);
-        var filter2 = Builders<Data.Status_Account>.Filter.Eq(x => x.AccountId, accountId);
-        var filter = filter1 & filter2;
-        var update = Builders<Data.Status_Account>.Update
-            .SetOnInsert(x => x.StatusId, request.Value)
-            .SetOnInsert(x => x.AccountId, accountId)
-            .SetOnInsert(x => x.Mute, false)
-            .SetOnInsert(x => x.Bookmark, false)
-            .SetOnInsert(x => x.Favorite, false)
-            .Set(x => x.Pin, true);
-
-        await _db.StatusAccount.UpdateOneAsync(filter, update, new UpdateOptions { IsUpsert = true });
+        await _db.StatusAccount.UpdateAsync(statusId, accountId!, pin: true);
 
         var result = await _db.GetStatusById(context, request.Value, accountId);
         return result;
@@ -288,18 +211,7 @@ public sealed class StatusApiService : Mastodon.Grpc.StatusApi.StatusApiBase {
         var accountId = context.GetAccountId(true);
         var statusId = request.Value;
 
-        var filter1 = Builders<Data.Status_Account>.Filter.Eq(x => x.StatusId, request.Value);
-        var filter2 = Builders<Data.Status_Account>.Filter.Eq(x => x.AccountId, accountId);
-        var filter = filter1 & filter2;
-        var update = Builders<Data.Status_Account>.Update
-            .SetOnInsert(x => x.StatusId, request.Value)
-            .SetOnInsert(x => x.AccountId, accountId)
-            .SetOnInsert(x => x.Mute, false)
-            .SetOnInsert(x => x.Bookmark, false)
-            .SetOnInsert(x => x.Favorite, false)
-            .Set(x => x.Pin, false);
-
-        await _db.StatusAccount.UpdateOneAsync(filter, update, new UpdateOptions { IsUpsert = true });
+        await _db.StatusAccount.UpdateAsync(statusId, accountId!, pin: false);
 
         // Return.
         var result = await _db.GetStatusById(context, request.Value, accountId);
