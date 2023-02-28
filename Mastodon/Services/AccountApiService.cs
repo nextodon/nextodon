@@ -81,17 +81,35 @@ public sealed class AccountApiService : Mastodon.Grpc.AccountApi.AccountApiBase 
         return account == null ? throw new RpcException(new global::Grpc.Core.Status(StatusCode.NotFound, string.Empty)) : account.ToGrpc();
     }
 
+    [Authorize]
+    [AllowAnonymous]
     public override async Task<Statuses> GetStatuses(GetStatusesRequest request, ServerCallContext context) {
+        var me = context.GetAccountId(true);
+
         var limit = request.HasLimit ? request.Limit : 40;
         limit = Math.Min(limit, 80);
 
+        var onlyMedia = request.OnlyMedia;
+        var sinceId = request.HasSinceId ? request.SinceId : null;
+        var maxId = request.HasMaxId ? request.MaxId : null;
+        var minId = request.HasMinId ? request.MinId : null;
+
+        var sort = Builders<Data.Status>.Sort.Descending(x => x.CreatedAt);
+
+
         var filters = new List<FilterDefinition<Data.Status>>
         {
-            Builders<Data.Status>.Filter.Eq(x => x.AccountId, request.AccountId)
+            Builders<Data.Status>.Filter.Eq(x => x.AccountId, request.AccountId),
+            Builders<Data.Status>.Filter.Ne(x => x.Deleted, true),
         };
 
-        if (request.HasSinceId) {
 
+        if (!string.IsNullOrWhiteSpace(maxId)) {
+            filters.Add(Builders<Data.Status>.Filter.Lt(x => x.Id, maxId));
+        }
+
+        if (!string.IsNullOrWhiteSpace(minId)) {
+            filters.Add(Builders<Data.Status>.Filter.Gt(x => x.Id, minId));
         }
 
         var options = new FindOptions<Data.Status, Data.Status> { Limit = (int)limit };
@@ -100,9 +118,17 @@ public sealed class AccountApiService : Mastodon.Grpc.AccountApi.AccountApiBase 
         var cursor = await _db.Status.FindAsync(filter, options);
         var statuses = await cursor.ToListAsync();
 
-        var account = await _db.Account.FindByIdAsync(request.AccountId);
+        var v = new Statuses();
 
-        return statuses.ToGrpc(account!);
+        foreach(var status in statuses) {
+            try {
+                var s = await _db.GetStatusById(context, status.Id, me, true);
+                v.Data.Add(s);
+            }
+            catch { }
+        }
+
+        return v;
     }
 
     [Authorize]
