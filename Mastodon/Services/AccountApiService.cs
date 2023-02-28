@@ -1,3 +1,5 @@
+using System.Threading.Tasks.Dataflow;
+
 namespace Mastodon.Services;
 
 public sealed class AccountApiService : Mastodon.Grpc.AccountApi.AccountApiBase {
@@ -7,12 +9,51 @@ public sealed class AccountApiService : Mastodon.Grpc.AccountApi.AccountApiBase 
 
     public AccountApiService(ILogger<AccountApiService> logger, DataContext db) {
         _logger = logger;
-
         _db = db;
     }
 
-    public override Task<Token> Register(RegisterRequest request, ServerCallContext context) {
-        return base.Register(request, context);
+    [Authorize]
+    public override async Task<Grpc.Account> UpdateCredentials(UpdateCredentialsRequest request, ServerCallContext context) {
+        var accountId = context.GetAccountId(true);
+
+        var filter = Builders<Data.Account>.Filter.Eq(x => x.Id, accountId);
+        var updates = new List<UpdateDefinition<Data.Account>>();
+
+        if (request.HasBot) {
+            var u = Builders<Data.Account>.Update.Set(x => x.Bot, request.Bot);
+            updates.Add(u);
+        }
+
+        if (request.HasLocked) {
+            var u = Builders<Data.Account>.Update.Set(x => x.Locked, request.Locked);
+            updates.Add(u);
+        }
+
+        if (request.HasNote) {
+            var u = Builders<Data.Account>.Update.Set(x => x.Note, request.Note);
+            updates.Add(u);
+        }
+
+        if (request.HasDiscoverable) {
+            var u = Builders<Data.Account>.Update.Set(x => x.Discoverable, request.Discoverable);
+            updates.Add(u);
+        }
+
+        if (request.HasDisplayName) {
+            var u = Builders<Data.Account>.Update.Set(x => x.DisplayName, request.DisplayName);
+            updates.Add(u);
+        }
+
+        //if (request.Ha) {
+        //    var u = Builders<Data.Account>.Update.Set(x => x.DisplayName, request.DisplayName);
+        //    updates.Add(u);
+        //}
+
+        var update = Builders<Data.Account>.Update.Combine(updates);
+
+        var account = await _db.Account.FindOneAndUpdateAsync(filter, update);
+
+        return account.ToGrpc();
     }
 
     public override async Task<Grpc.Account> GetById(StringValue request, ServerCallContext context) {
@@ -64,8 +105,53 @@ public sealed class AccountApiService : Mastodon.Grpc.AccountApi.AccountApiBase 
         return statuses.ToGrpc(account!);
     }
 
-    public override Task<FeaturedTags> GetFeaturedTags(StringValue request, ServerCallContext context) {
-        return base.GetFeaturedTags(request, context);
+    [Authorize]
+    public override async Task<Statuses> GetFavourites(DefaultPaginationParameters request, ServerCallContext context) {
+
+        var accountId = context.GetAccountId(true);
+
+        IMongoQueryable<string> q = from x in _db.StatusAccount.AsQueryable()
+                                    where x.AccountId == accountId
+                                    where x.Deleted != true
+                                    where x.Favorite == true
+                                    select x.StatusId;
+
+        var ids = await q.ToListAsync();
+        var v = new Statuses();
+
+        foreach (var id in ids) {
+            try {
+                var status = await _db.GetStatusById(context, id, accountId, true);
+                v.Data.Add(status);
+            }
+            catch { }
+        }
+
+        return v;
+    }
+
+    public override Task<Tags> GetFollowedTags(DefaultPaginationParameters request, ServerCallContext context) {
+        var v = new Tags();
+
+        return Task.FromResult(v);
+    }
+
+    public override Task<Preferences> GetPreferences(Empty request, ServerCallContext context) {
+        var v = new Preferences();
+
+        return Task.FromResult(v);
+    }
+
+    public override Task<FiltersV1> GetFilters(Empty request, ServerCallContext context) {
+        var v = new FiltersV1();
+
+        return Task.FromResult(v);
+    }
+
+    public override Task<FeaturedTags> GetFeaturedTags(Empty request, ServerCallContext context) {
+        var v = new FeaturedTags();
+
+        return Task.FromResult(v);
     }
 
     public override Task<Accounts> GetFollowers(GetFollowersRequest request, ServerCallContext context) {
@@ -80,8 +166,26 @@ public sealed class AccountApiService : Mastodon.Grpc.AccountApi.AccountApiBase 
         return base.RemoveFromFollowers(request, context);
     }
 
-    public override Task<Relationships> GetRelationships(GetRelationshipsRequest request, ServerCallContext context) {
-        return base.GetRelationships(request, context);
+    [Authorize]
+    public override async Task<Relationships> GetRelationships(GetRelationshipsRequest request, ServerCallContext context) {
+        var accountId = context.GetAccountId(true);
+        var ids = request.Ids.ToArray();
+
+        var v = new Relationships();
+
+        foreach (var id in ids) {
+            var filter1 = Builders<Data.Relationship>.Filter.Eq(x => x.From, accountId);
+            var filter2 = Builders<Data.Relationship>.Filter.Eq(x => x.To, id);
+
+            var filter = filter1 & filter2;
+            var update = Builders<Data.Relationship>.Update.SetOnInsert(x => x.From, accountId).SetOnInsert(x => x.To, id);
+
+            var relationship = await _db.Relationship.FindOneAndUpdateAsync(filter, update, new FindOneAndUpdateOptions<Data.Relationship, Data.Relationship> { IsUpsert = true });
+
+            v.Data.Add(new Grpc.Relationship { Id = id, Note = "test" });
+        }
+
+        return v;
     }
 
     public override Task<Lists> GetLists(StringValue request, ServerCallContext context) {

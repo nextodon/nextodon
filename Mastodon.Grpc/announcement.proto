@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+option csharp_namespace = "Mastodon.Grpc";
+
+message Announcement
+{
+
+}
+
+message Announcements
+{
+    repeated Announcement data = 1;
+}

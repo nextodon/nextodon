@@ -2,6 +2,7 @@ syntax = "proto3";
 
 option csharp_namespace = "Mastodon.Grpc";
 
+import "google/protobuf/any.proto";
 import "google/protobuf/timestamp.proto";
 import "emoji.proto";
 import "role.proto";
@@ -24,8 +25,8 @@ message Account
     // The profile�s display name.
     optional string displayName = 5 [json_name="display_name"];
 
-    // The profile�s bio or description.
-    string note = 6;
+    // The profile's bio or description.
+    optional string note = 6;
 
     // An image icon that is shown next to statuses and in the profile.
     string avatar = 7;
@@ -131,4 +132,9 @@ message Account
 message Accounts
 {
     repeated Account data = 1;
+}
+
+message Preferences
+{
+    map<string, google.protobuf.Any> data = 1;
 }

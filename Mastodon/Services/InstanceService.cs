@@ -129,4 +129,10 @@ public sealed class InstanceService : Mastodon.Grpc.InstanceApi.InstanceApiBase 
 
         return Task.FromResult(lists);
     }
+
+    public override Task<Announcements> GetAnnouncements(Empty request, ServerCallContext context) {
+        var lists = new Announcements();
+
+        return Task.FromResult(lists);
+    }
 }

@@ -4,21 +4,24 @@ import "google/api/annotations.proto";
 import "google/protobuf/empty.proto";
 import "google/protobuf/wrappers.proto";
 import "account.proto";
+import "common.proto";
 import "featuredtag.proto";
+import "filter.proto";
 import "list.proto";
 import "relationship.proto";
 import "status.proto";
+import "tag.proto";
 import "token.proto";
 
 option csharp_namespace = "Mastodon.Grpc";
 
-service AccountApi {    
-  rpc Register (RegisterRequest) returns (Token)
+service AccountApi {     
+  rpc UpdateCredentials (UpdateCredentialsRequest) returns (Account)
   {
-	option (google.api.http) = {
-      post: "/api/v1/accounts"
-      body: "*"
-    };
+//	option (google.api.http) = {
+//      patch: "/api/v1/accounts/update_credentials"
+//      body: "*"
+//    };
   }
 
   rpc VerifyCredentials (google.protobuf.Empty) returns (Account)
@@ -50,10 +53,26 @@ service AccountApi {
     };
   }
 
-  rpc GetFeaturedTags (google.protobuf.StringValue) returns (FeaturedTags)
+  rpc GetFollowedTags (DefaultPaginationParameters) returns (Tags)
   {
 	option (google.api.http) = {
-      get: "/api/v1/accounts/{value}/featured_tags"
+      get: "/api/v1/followed_tags"
+      response_body: "data"
+    };
+  }
+
+  rpc GetPreferences(google.protobuf.Empty) returns (Preferences)
+  {
+	option (google.api.http) = {
+      get: "/api/v1/preferences"
+      response_body: "data"
+    };
+  }
+  
+  rpc GetFeaturedTags (google.protobuf.Empty) returns (FeaturedTags)
+  {
+	option (google.api.http) = {
+      get: "/api/v1/featured_tags"
       response_body: "data"
     };
   }
@@ -70,6 +89,22 @@ service AccountApi {
   {
 	option (google.api.http) = {
       get: "/api/v1/accounts/{accountId}/following"
+      response_body: "data"
+    };
+  }
+  
+  rpc GetFavourites (DefaultPaginationParameters) returns (Statuses)
+  {
+	option (google.api.http) = {
+      get: "/api/v1/favourites"
+      response_body: "data"
+    };
+  }
+
+  rpc GetFilters (google.protobuf.Empty) returns (FiltersV1)
+  {
+	option (google.api.http) = {
+      get: "/api/v1/filters"
       response_body: "data"
     };
   }
@@ -171,25 +206,51 @@ service AccountApi {
   }
 }
 
-message RegisterRequest
+message UpdateCredentialsRequest
 {
-    // The desired username for the account.
-    string username = 1;
+    // The display name to use for the profile.
+    optional string display_name = 1;
 
-    // The email address to be used for login.
-    string email = 2;
-
-    // The password to be used for login.
-    string password = 3;
-
-    // Whether the user agrees to the local rules, terms, and policies. These should be presented to the user in order to allow them to consent before setting this parameter to TRUE.
-    bool agreement = 4;
-
-    // The language of the confirmation email that will be sent.
-    string locale = 5;
+    // The account bio.
+    optional string note = 2;
     
-    // If registrations require manual approval, this text will be reviewed by moderators.
-    optional string reason = 6;
+    // Avatar image encoded using multipart/form-data.
+    optional string avatar = 3;
+    
+    // Header image encoded using multipart/form-data.
+    optional string header = 4;
+    
+    // Whether manual approval of follow requests is required.
+    optional bool locked = 5;
+    
+    // Whether the account has a bot flag.
+    optional bool bot = 6;
+
+    // Whether the account should be shown in the profile directory.
+    optional bool discoverable = 7;
+
+    repeated FieldAttribute fields_attributes = 8;
+    
+    optional Source source = 9;
+
+    message FieldAttribute
+    {
+        string name = 1;
+        string value = 2;
+    }
+
+
+    message Source
+    {
+        // Default post privacy for authored statuses. Can be public, unlisted, or private.
+        string privacy = 1;
+
+        // Whether to mark authored statuses as sensitive by default.
+        bool sensitive = 2;
+
+        // Default language to use for authored statuses (ISO 6391)
+        string language = 3;
+    }
 }
 
 message AccountSearchRequest

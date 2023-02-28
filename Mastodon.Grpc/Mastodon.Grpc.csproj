@@ -14,6 +14,7 @@
 		<Protobuf Include="account.proto" />
 		<Protobuf Include="accountapi.proto" />
 		<Protobuf Include="activity.proto" />
+		<Protobuf Include="announcement.proto" />
 		<Protobuf Include="application.proto" />
 		<Protobuf Include="apps.proto" />
 		<Protobuf Include="authentication.proto" />
@@ -33,6 +34,8 @@
 		<Protobuf Include="markerapi.proto" />
 		<Protobuf Include="media.proto" />
 		<Protobuf Include="mediaapi.proto" />
+		<Protobuf Include="notification.proto" />
+		<Protobuf Include="notificationapi.proto" />
 		<Protobuf Include="oauth.proto" />
 		<Protobuf Include="poll.proto" />
 		<Protobuf Include="pollapi.proto" />

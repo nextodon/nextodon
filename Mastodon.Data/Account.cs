@@ -27,6 +27,12 @@ public sealed class Account {
     [BsonRequired]
     public required List<Field> Fields;
 
+
+    public bool Bot;
+    public bool Locked;
+
+    public string? Note;
+
     public sealed class Field {
         [BsonRequired]
         public required string Name;
