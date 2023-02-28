@@ -12,13 +12,13 @@ message Tag
     string url  = 2;
 
     // Usage statistics for given days (typically the past week).
-    repeated TagHistory history  = 3;
+    repeated History history  = 3;
 
     // Whether the current token’s authorized user is following this tag.
     optional bool following  = 4;
 
     // Usage statistics for given days (typically the past week).
-    message TagHistory
+    message History
     {
         // UNIX timestamp on midnight of the given day.
         string day = 1;

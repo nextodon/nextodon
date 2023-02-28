@@ -21,8 +21,8 @@ public static class DataContextExtensions {
         var account = owner!.ToGrpc();
         result.Account = account;
 
-        result.Uri = context.GetUrlPath($"users/{account.Id}/statuses/{status.Id}");
-        result.Url = context.GetUrlPath($"@{account.Id}/{status.Id}");
+        result.Uri = context.GetUrlPath($"statuses/{status.Id}");
+        result.Url = context.GetUrlPath($"statuses/{status.Id}");
 
         if (!string.IsNullOrWhiteSpace(status.ReblogedFromId)) {
             result.Reblog = await db.GetStatusById(context, status.ReblogedFromId, meId, false);

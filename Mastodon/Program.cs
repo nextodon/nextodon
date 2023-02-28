@@ -14,6 +14,7 @@ var config = builder.Configuration;
 builder.Services.Configure<Mastodon.Data.MongoDbSettings>(builder.Configuration.GetSection("MongoDb"));
 
 builder.Services.AddRazorPages();
+builder.Services.AddControllers();
 
 builder.Services.AddGrpc().AddJsonTranscoding(options => {
     options.JsonSettings.WriteIndented = true;
@@ -102,6 +103,7 @@ app.MapGrpcService<DirectoryService>().EnableGrpcWeb();
 app.MapGrpcService<InstanceService>().EnableGrpcWeb();
 app.MapGrpcService<MarkerService>().EnableGrpcWeb();
 app.MapGrpcService<MediaApiService>().EnableGrpcWeb();
+app.MapGrpcService<NotificationApiService>().EnableGrpcWeb();
 app.MapGrpcService<OAuthService>().EnableGrpcWeb();
 app.MapGrpcService<PollService>().EnableGrpcWeb();
 app.MapGrpcService<SearchService>().EnableGrpcWeb();
@@ -112,6 +114,7 @@ app.MapGrpcService<TrendsService>().EnableGrpcWeb();
 
 app.MapGrpcReflectionService().EnableGrpcWeb();
 
+app.MapControllers();
 app.MapGet("/", () => "Communication with gRPC endpoints must be made through a gRPC client.");
 
 app.MapPost("/auth/sign_in", async (context) => {

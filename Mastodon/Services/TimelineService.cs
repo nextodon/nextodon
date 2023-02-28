@@ -31,6 +31,10 @@ public sealed class TimelineService : Mastodon.Grpc.Timeline.TimelineBase {
             filter &= Builders<Data.Status>.Filter.Lt(x => x.Id, maxId);
         }
 
+        if (!string.IsNullOrWhiteSpace(minId)) {
+            filter &= Builders<Data.Status>.Filter.Gt(x => x.Id, minId);
+        }
+
         var cursor = await _db.Status.FindAsync(filter, new FindOptions<Data.Status, Data.Status> { Limit = (int)limit, Sort = sort });
         var statuses = await cursor.ToListAsync();
 
@@ -62,6 +66,10 @@ public sealed class TimelineService : Mastodon.Grpc.Timeline.TimelineBase {
 
         if (!string.IsNullOrWhiteSpace(maxId)) {
             filter &= Builders<Data.Status>.Filter.Lt(x => x.Id, maxId);
+        }
+
+        if (!string.IsNullOrWhiteSpace(minId)) {
+            filter &= Builders<Data.Status>.Filter.Gt(x => x.Id, minId);
         }
 
         var cursor = await _db.Status.FindAsync(filter, new FindOptions<Data.Status, Data.Status> { Limit = (int)limit, Sort = sort });

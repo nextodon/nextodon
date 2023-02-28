@@ -21,15 +21,15 @@ public static class AccountExtensionMethods {
             DisplayName = i.DisplayName ?? i.Id,
             Header = "https://img.freepik.com/premium-photo/soccer-ball-colourful-background-mixed-media_641298-12866.jpg?w=1380",
             HeaderStatic = "https://img.freepik.com/premium-photo/soccer-ball-colourful-background-mixed-media_641298-12866.jpg?w=1380",
-            Locked = false,
-            Note = i.Id,
+            Locked = i.Locked,
             Url = WebFingerHelper.FixUrl("https://img.freepik.com/premium-photo/soccer-ball-colourful-background-mixed-media_641298-12866.jpg?w=1380"),
             Username = i.Username ?? i.Id,
-            Bot = false,
+            Bot = i.Locked,
             Group = false,
             Limited = false,
             Suspended = false,
             //Role = i.Role?.ToGrpc(),
+            Role = new Role { Position = 0, },
             //Source = i.Source?.ToGrpc(),
             //Moved = i.Moved?.ToGrpc(),
             CreatedAt = i.CreatedAt.ToGrpc(),
@@ -38,12 +38,15 @@ public static class AccountExtensionMethods {
             FollowingCount = 20,
             StatusesCount = 20,
             Source = new Grpc.Account.Types.Source { },
-            Discoverable = false,
-            Role = new Role { Position = 0, }
+            Discoverable = i.Discoverable ?? false,
         };
 
         if (i.Discoverable != null) {
             v.Discoverable = i.Discoverable.Value;
+        }
+
+        if (i.Note != null) {
+            v.Note = i.Note;
         }
 
         //if (i.FollowersCount != null)

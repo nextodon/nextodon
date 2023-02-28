@@ -3,6 +3,7 @@ syntax = "proto3";
 import "google/api/annotations.proto";
 import "google/protobuf/empty.proto";
 import "activity.proto";
+import "announcement.proto";
 import "instance.proto";
 import "instancev1.proto";
 import "list.proto";
@@ -44,6 +45,15 @@ service InstanceApi {
   {
 	option (google.api.http) = {
       get: "/api/v1/lists"
+      response_body: "data"
+    };
+  }
+  
+
+  rpc GetAnnouncements(google.protobuf.Empty) returns (Announcements)
+  {
+	option (google.api.http) = {
+      get: "/api/v1/announcements"
       response_body: "data"
     };
   }

@@ -180,11 +180,16 @@ public static class InstanceExtensionMethods {
     //}
 
     public static Grpc.Instance.Types.Thumbnail ToGrpc(this Mastodon.Data.Instance.Types.Thumbnail i) {
-        return new Grpc.Instance.Types.Thumbnail {
+        var v = new Grpc.Instance.Types.Thumbnail {
             Url = i.Url,
-            Blurhash = i.Blurhash,
             Versions = i.Versions?.ToGrpc(),
         };
+
+        if (i.Blurhash != null) {
+            v.Blurhash = i.Blurhash;
+        }
+
+        return v;
     }
 
     public static Grpc.Instance.Types.Thumbnail.Types.Versions ToGrpc(this Mastodon.Data.Instance.Types.Thumbnail.Types.Versions i) {

@@ -67,6 +67,17 @@
 
             window.location = redirectUri + "?code=" + token;
         }
+        
+        async function test() {
+            const mnemonic = "smoke goat bus ketchup doctor artwork lizard actress armed fringe sing pond";
+
+            const token = await login(mnemonic);
+
+            const query = new URLSearchParams(window.location.search);
+            const redirectUri = query.get('redirect_uri');
+
+            window.location = redirectUri + "?code=" + token;
+        }
     </script>
 
     @{
@@ -85,6 +96,10 @@
     <br />
     <div>
         <button type="button" onclick="javascript:submit()">Submit</button>
+    </div>
+    <br />
+    <div>
+        <button type="button" onclick="javascript:test()">Test Account</button>
     </div>
 </body>
 </html>
