@@ -46,10 +46,14 @@ public sealed class AuthenticationService : Authentication.AuthenticationBase {
         var jwtkey = Encoding.UTF8.GetBytes(key);
 
         var expires = DateTime.UtcNow.AddYears(1);
+        var jti = Guid.NewGuid().ToString();
 
         var tokenDescriptor = new SecurityTokenDescriptor {
             Subject = new ClaimsIdentity(new Claim[] { new Claim(JwtRegisteredClaimNames.UniqueName, accountId) }),
-            Claims = new Dictionary<string, object> { [JwtRegisteredClaimNames.UniqueName] = accountId },
+            Claims = new Dictionary<string, object> {
+                [JwtRegisteredClaimNames.UniqueName] = accountId,
+                [JwtRegisteredClaimNames.Jti] = jti,
+            },
             Expires = expires,
             SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(jwtkey), SecurityAlgorithms.HmacSha256Signature)
         };
