@@ -18,5 +18,5 @@ message JsonWebToken {
 
 message SignInRequest {
 	bytes publicKey = 1;
-	bytes digitalSignature = 2;
+	bytes signature = 2;
 }
