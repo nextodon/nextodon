@@ -26,7 +26,7 @@ public sealed class AuthenticationService : Authentication.AuthenticationBase {
         var publicKeyBytes = request.PublicKey.ToArray();
         var publicKey = new Mastodon.Cryptography.PublicKey(publicKeyBytes);
 
-        var signatureBytes = request.DigitalSignature.ToArray();
+        var signatureBytes = request.Signature.ToArray();
         var messageBytes = Cryptography.HashHelpers.SHA256(publicKeyBytes);
 
         var valid = Cryptography.Secp256K1.VerifySignature(publicKey, messageBytes, signatureBytes);
