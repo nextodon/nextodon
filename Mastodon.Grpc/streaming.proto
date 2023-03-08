@@ -1,0 +1,15 @@
+syntax = "proto3";
+import "google/api/annotations.proto";
+import "google/protobuf/empty.proto";
+option csharp_namespace = "Mastodon.Grpc";
+
+
+service Streaming
+{    
+  rpc User (google.protobuf.Empty) returns (stream google.protobuf.Empty)
+  {
+	option (google.api.http) = {
+      get: "/api/v1/streaming/user"
+    };
+  }
+}

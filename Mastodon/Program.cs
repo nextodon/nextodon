@@ -108,6 +108,7 @@ app.MapGrpcService<OAuthService>().EnableGrpcWeb();
 app.MapGrpcService<PollService>().EnableGrpcWeb();
 app.MapGrpcService<SearchService>().EnableGrpcWeb();
 app.MapGrpcService<StatusApiService>().EnableGrpcWeb();
+app.MapGrpcService<StreamingService>().EnableGrpcWeb();
 app.MapGrpcService<TimelineService>().EnableGrpcWeb();
 app.MapGrpcService<TrendsService>().EnableGrpcWeb();
 
