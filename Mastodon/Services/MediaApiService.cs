@@ -4,7 +4,6 @@ namespace Mastodon.Services;
 
 public sealed class MediaApiService : Mastodon.Grpc.MediaApi.MediaApiBase
 {
-
     private readonly ILogger<MediaApiService> _logger;
     private readonly Data.DataContext _db;
 
@@ -26,7 +25,7 @@ public sealed class MediaApiService : Mastodon.Grpc.MediaApi.MediaApiBase
         var v = media!.ToGrpc();
 
         var url = context.GetUrlPath($"/api/v1/media/{media.Id}");
-        v.Url = $"{url}/image";
+        v.Url = $"{url}/original";
         v.PreviewUrl = $"{url}/preview";
         v.Type = "image";
         v.Blurhash = "LGF5?xYk^6#M@-5c,1J5@[or[Q6.";
