@@ -1,3 +1,5 @@
+using System;
+
 namespace Mastodon.Services;
 
 public sealed class MediaApiService : Mastodon.Grpc.MediaApi.MediaApiBase
@@ -12,8 +14,23 @@ public sealed class MediaApiService : Mastodon.Grpc.MediaApi.MediaApiBase
         _db = db;
     }
 
-    public override Task<MediaAttachment> GetMedia(StringValue request, ServerCallContext context)
+    public override async Task<MediaAttachment> GetMedia(StringValue request, ServerCallContext context)
     {
-        return base.GetMedia(request, context);
+        var media = await _db.Media.FindByIdAsync(request.Value);
+
+        if (media == null)
+        {
+            throw new RpcException(new global::Grpc.Core.Status(StatusCode.NotFound, ""));
+        }
+
+        var v = media!.ToGrpc();
+
+        var url = context.GetUrlPath($"/api/v1/media/{media.Id}");
+        v.Url = $"{url}/image";
+        v.PreviewUrl = $"{url}/preview";
+        v.Type = "image";
+        v.Blurhash = "LGF5?xYk^6#M@-5c,1J5@[or[Q6.";
+
+        return v;
     }
 }
