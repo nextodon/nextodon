@@ -1,16 +1,18 @@
-﻿using MongoDB.Driver;
-using System.Runtime.ConstrainedExecution;
+﻿namespace Mastodon;
 
-namespace Mastodon;
-
-public static class DataContextExtensions {
-    public static async Task<Grpc.Status> GetStatusById(this DataContext db, ServerCallContext context, string id, string? meId, bool throwIfNotFound = true) {
+public static class DataContextExtensions
+{
+    public static async Task<Grpc.Status> GetStatusById(this DataContext db, ServerCallContext context, string id, string? meId, bool throwIfNotFound = true)
+    {
         var status = await db.Status.FindByIdAsync(id);
-        if (status == null) {
-            if (throwIfNotFound) {
+        if (status == null)
+        {
+            if (throwIfNotFound)
+            {
                 throw new RpcException(new global::Grpc.Core.Status(StatusCode.NotFound, string.Empty));
             }
-            else {
+            else
+            {
                 return new Grpc.Status { Id = id };
             }
         }
@@ -24,7 +26,8 @@ public static class DataContextExtensions {
         result.Uri = context.GetUrlPath($"statuses/{status.Id}");
         result.Url = context.GetUrlPath($"statuses/{status.Id}");
 
-        if (!string.IsNullOrWhiteSpace(status.ReblogedFromId)) {
+        if (!string.IsNullOrWhiteSpace(status.ReblogedFromId))
+        {
             result.Reblog = await db.GetStatusById(context, status.ReblogedFromId, meId, false);
         }
 
@@ -36,8 +39,10 @@ public static class DataContextExtensions {
 
         var mediaIds = status.MediaIds;
 
-        if (mediaIds != null) {
-            foreach (var mediaId in mediaIds) {
+        if (mediaIds != null)
+        {
+            foreach (var mediaId in mediaIds)
+            {
                 var media = await db.Media.FindByIdAsync(mediaId);
 
                 result.MediaAttachments.Add(media!.ToGrpc());
@@ -45,8 +50,10 @@ public static class DataContextExtensions {
         }
         result.Poll = null;
 
-        if (status.Poll != null) {
-            result.Poll = new Grpc.Poll {
+        if (status.Poll != null)
+        {
+            result.Poll = new Grpc.Poll
+            {
                 Id = status.Id,
                 Kind = Grpc.PollKind.Priority,
                 Expired = false,
@@ -56,7 +63,8 @@ public static class DataContextExtensions {
                 Voted = true,
             };
 
-            foreach (var option in status.Poll.Options) {
+            foreach (var option in status.Poll.Options)
+            {
                 result.Poll.Options.Add(new Grpc.Poll.Types.Option { Title = option, VotesCount = 100, });
             }
         }
@@ -67,7 +75,8 @@ public static class DataContextExtensions {
             result.ReblogsCount = (uint)(await db.Status.CountDocumentsAsync(filter1 & filter2));
         }
 
-        if (!string.IsNullOrWhiteSpace(meId)) {
+        if (!string.IsNullOrWhiteSpace(meId))
+        {
             var filter1 = Builders<Data.Status>.Filter.Ne(x => x.Deleted, true);
             var filter2 = Builders<Data.Status>.Filter.Eq(x => x.ReblogedFromId, status.Id);
             var filter3 = Builders<Data.Status>.Filter.Eq(x => x.AccountId, meId);
@@ -75,7 +84,8 @@ public static class DataContextExtensions {
         }
 
 
-        if (!string.IsNullOrWhiteSpace(meId)) {
+        if (!string.IsNullOrWhiteSpace(meId))
+        {
             var existFilter = Builders<Data.Status_Account>.Filter.Ne(x => x.Deleted, true);
             var sidFilter = Builders<Data.Status_Account>.Filter.Eq(x => x.StatusId, status.Id) & existFilter;
             var meFilter = Builders<Data.Status_Account>.Filter.Eq(x => x.AccountId, meId);
@@ -86,7 +96,8 @@ public static class DataContextExtensions {
             result.FavouritesCount = (uint)(await favCount);
         }
 
-        if (!string.IsNullOrWhiteSpace(meId)) {
+        if (!string.IsNullOrWhiteSpace(meId))
+        {
             var statusAccount = await db.StatusAccount.UpdateAsync(status.Id, meId);
 
             result.Muted = statusAccount.Mute;
@@ -98,7 +109,8 @@ public static class DataContextExtensions {
         return result;
     }
 
-    public static async Task<Status_Account> UpdateAsync(this IMongoCollection<Status_Account> collection, string statusId, string accountId, bool? favorite = null, bool? bookmark = null, bool? pin = null, bool? mute = null, CancellationToken cancellationToken = default) {
+    public static async Task<Status_Account> UpdateAsync(this IMongoCollection<Status_Account> collection, string statusId, string accountId, bool? favorite = null, bool? bookmark = null, bool? pin = null, bool? mute = null, CancellationToken cancellationToken = default)
+    {
         var filter1 = Builders<Data.Status_Account>.Filter.Eq(x => x.StatusId, statusId);
         var filter2 = Builders<Data.Status_Account>.Filter.Eq(x => x.AccountId, accountId);
 
@@ -113,7 +125,8 @@ public static class DataContextExtensions {
 
 
 
-        var options = new FindOneAndUpdateOptions<Status_Account, Status_Account> {
+        var options = new FindOneAndUpdateOptions<Status_Account, Status_Account>
+        {
             IsUpsert = true,
             ReturnDocument = ReturnDocument.After,
         };
@@ -123,49 +136,62 @@ public static class DataContextExtensions {
 
         UpdateDefinition<Status_Account>? u = null;
 
-        if (favorite != null) {
+        if (favorite != null)
+        {
             var f = Builders<Data.Status_Account>.Update.Set(x => x.Favorite, favorite!);
-            if (u == null) {
+            if (u == null)
+            {
                 u = f;
             }
-            else {
+            else
+            {
                 u = Builders<Data.Status_Account>.Update.Combine(u, f);
             }
         }
 
-        if (bookmark != null) {
+        if (bookmark != null)
+        {
             var f = Builders<Data.Status_Account>.Update.Set(x => x.Bookmark, bookmark!);
 
-            if (u == null) {
+            if (u == null)
+            {
                 u = f;
             }
-            else {
+            else
+            {
                 u = Builders<Data.Status_Account>.Update.Combine(u, f);
             }
         }
 
-        if (pin != null) {
+        if (pin != null)
+        {
             var f = Builders<Data.Status_Account>.Update.Set(x => x.Pin, pin!);
-            if (u == null) {
+            if (u == null)
+            {
                 u = f;
             }
-            else {
+            else
+            {
                 u = Builders<Data.Status_Account>.Update.Combine(u, f);
             }
         }
 
-        if (mute != null) {
+        if (mute != null)
+        {
             var f = Builders<Data.Status_Account>.Update.Set(x => x.Mute, mute!);
-            if (u == null) {
+            if (u == null)
+            {
                 u = f;
             }
-            else {
+            else
+            {
                 u = Builders<Data.Status_Account>.Update.Combine(u, f);
             }
         }
 
 
-        if (u == null) {
+        if (u == null)
+        {
             return sa;
         }
 

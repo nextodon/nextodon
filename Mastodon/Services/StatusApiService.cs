@@ -1,18 +1,21 @@
 namespace Mastodon.Services;
 
 [Authorize]
-public sealed class StatusApiService : Mastodon.Grpc.StatusApi.StatusApiBase {
+public sealed class StatusApiService : Mastodon.Grpc.StatusApi.StatusApiBase
+{
 
     private readonly ILogger<StatusApiService> _logger;
     private readonly Data.DataContext _db;
 
-    public StatusApiService(ILogger<StatusApiService> logger, DataContext db) {
+    public StatusApiService(ILogger<StatusApiService> logger, DataContext db)
+    {
         _logger = logger;
         _db = db;
     }
 
     [AllowAnonymous]
-    public override async Task<Grpc.Status> GetStatus(StringValue request, ServerCallContext context) {
+    public override async Task<Grpc.Status> GetStatus(StringValue request, ServerCallContext context)
+    {
         var accountId = context.GetAccountId(false);
         var statusId = request.Value;
 
@@ -23,7 +26,8 @@ public sealed class StatusApiService : Mastodon.Grpc.StatusApi.StatusApiBase {
     }
 
     [AllowAnonymous]
-    public override async Task<Accounts> GetRebloggedBy(GetRebloggedByRequest request, ServerCallContext context) {
+    public override async Task<Accounts> GetRebloggedBy(GetRebloggedByRequest request, ServerCallContext context)
+    {
         //var accountId = context.GetAccountId(false);
         var statusId = request.StatusId;
 
@@ -39,7 +43,8 @@ public sealed class StatusApiService : Mastodon.Grpc.StatusApi.StatusApiBase {
     }
 
     [AllowAnonymous]
-    public override async Task<Accounts> GetFavouritedBy(GetFavouritedByRequest request, ServerCallContext context) {
+    public override async Task<Accounts> GetFavouritedBy(GetFavouritedByRequest request, ServerCallContext context)
+    {
         var accountId = context.GetAccountId(false);
         var statusId = request.StatusId;
 
@@ -55,21 +60,24 @@ public sealed class StatusApiService : Mastodon.Grpc.StatusApi.StatusApiBase {
     }
 
     [AllowAnonymous]
-    public override async Task<Grpc.Context> GetContext(StringValue request, ServerCallContext context) {
+    public override async Task<Grpc.Context> GetContext(StringValue request, ServerCallContext context)
+    {
         var accountId = context.GetAccountId(false);
 
         var ctx = new Grpc.Context();
 
         var theStatus = await _db.Status.FindByIdAsync(request.Value);
 
-        if (!string.IsNullOrEmpty(theStatus!.InReplyToId)) {
+        if (!string.IsNullOrEmpty(theStatus!.InReplyToId))
+        {
             IMongoQueryable<string> q = from x in _db.Status.AsQueryable()
                                         where x.Id == theStatus.InReplyToId
                                         select x.Id;
 
             var ancestorsIds = await q.ToListAsync();
 
-            foreach (var statusId in ancestorsIds) {
+            foreach (var statusId in ancestorsIds)
+            {
                 var status = await _db.GetStatusById(context, statusId, accountId);
                 ctx.Ancestors.Add(status);
             }
@@ -81,7 +89,8 @@ public sealed class StatusApiService : Mastodon.Grpc.StatusApi.StatusApiBase {
 
             var descendantIds = await q.ToListAsync();
 
-            foreach (var statusId in descendantIds) {
+            foreach (var statusId in descendantIds)
+            {
                 var status = await _db.GetStatusById(context, statusId, accountId);
                 ctx.Descendants.Add(status);
             }
@@ -90,10 +99,12 @@ public sealed class StatusApiService : Mastodon.Grpc.StatusApi.StatusApiBase {
         return ctx;
     }
 
-    public override async Task<Grpc.Status> CreateStatus(CreateStatusRequest request, ServerCallContext context) {
+    public override async Task<Grpc.Status> CreateStatus(CreateStatusRequest request, ServerCallContext context)
+    {
         var accountId = context.GetAccountId(true);
 
-        var status = new Data.Status {
+        var status = new Data.Status
+        {
             AccountId = accountId!,
             Text = request.Status,
             CreatedAt = DateTime.UtcNow,
@@ -115,7 +126,8 @@ public sealed class StatusApiService : Mastodon.Grpc.StatusApi.StatusApiBase {
         return result;
     }
 
-    public override async Task<Grpc.Status> DeleteStatus(StringValue request, ServerCallContext context) {
+    public override async Task<Grpc.Status> DeleteStatus(StringValue request, ServerCallContext context)
+    {
         var accountId = context.GetAccountId(true);
         var statusId = request.Value;
 
@@ -136,7 +148,8 @@ public sealed class StatusApiService : Mastodon.Grpc.StatusApi.StatusApiBase {
         return new Grpc.Status { Id = statusId };
     }
 
-    public override async Task<Grpc.Status> Favourite(StringValue request, ServerCallContext context) {
+    public override async Task<Grpc.Status> Favourite(StringValue request, ServerCallContext context)
+    {
         var cancellationToken = context.CancellationToken;
         var accountId = context.GetAccountId(true);
         var statusId = request.Value;
@@ -148,7 +161,8 @@ public sealed class StatusApiService : Mastodon.Grpc.StatusApi.StatusApiBase {
 
     }
 
-    public override async Task<Grpc.Status> Unfavourite(StringValue request, ServerCallContext context) {
+    public override async Task<Grpc.Status> Unfavourite(StringValue request, ServerCallContext context)
+    {
         var accountId = context.GetAccountId(true);
         var statusId = request.Value;
 
@@ -158,7 +172,8 @@ public sealed class StatusApiService : Mastodon.Grpc.StatusApi.StatusApiBase {
         return result;
     }
 
-    public override async Task<Grpc.Status> Bookmark(StringValue request, ServerCallContext context) {
+    public override async Task<Grpc.Status> Bookmark(StringValue request, ServerCallContext context)
+    {
         var accountId = context.GetAccountId(true);
         var statusId = request.Value;
 
@@ -168,7 +183,8 @@ public sealed class StatusApiService : Mastodon.Grpc.StatusApi.StatusApiBase {
         return result;
     }
 
-    public override async Task<Grpc.Status> Unbookmark(StringValue request, ServerCallContext context) {
+    public override async Task<Grpc.Status> Unbookmark(StringValue request, ServerCallContext context)
+    {
         var accountId = context.GetAccountId(true);
         var statusId = request.Value;
 
@@ -178,7 +194,8 @@ public sealed class StatusApiService : Mastodon.Grpc.StatusApi.StatusApiBase {
         return result;
     }
 
-    public override async Task<Grpc.Status> Mute(StringValue request, ServerCallContext context) {
+    public override async Task<Grpc.Status> Mute(StringValue request, ServerCallContext context)
+    {
         var accountId = context.GetAccountId(true);
         var statusId = request.Value;
 
@@ -188,7 +205,8 @@ public sealed class StatusApiService : Mastodon.Grpc.StatusApi.StatusApiBase {
         return result;
     }
 
-    public override async Task<Grpc.Status> Unmute(StringValue request, ServerCallContext context) {
+    public override async Task<Grpc.Status> Unmute(StringValue request, ServerCallContext context)
+    {
         var accountId = context.GetAccountId(true);
         var statusId = request.Value;
 
@@ -198,7 +216,8 @@ public sealed class StatusApiService : Mastodon.Grpc.StatusApi.StatusApiBase {
         return result;
     }
 
-    public override async Task<Grpc.Status> Pin(StringValue request, ServerCallContext context) {
+    public override async Task<Grpc.Status> Pin(StringValue request, ServerCallContext context)
+    {
         var accountId = context.GetAccountId(true);
         var statusId = request.Value;
 
@@ -208,7 +227,8 @@ public sealed class StatusApiService : Mastodon.Grpc.StatusApi.StatusApiBase {
         return result;
     }
 
-    public override async Task<Grpc.Status> Unpin(StringValue request, ServerCallContext context) {
+    public override async Task<Grpc.Status> Unpin(StringValue request, ServerCallContext context)
+    {
         var accountId = context.GetAccountId(true);
         var statusId = request.Value;
 
@@ -219,18 +239,21 @@ public sealed class StatusApiService : Mastodon.Grpc.StatusApi.StatusApiBase {
         return result;
     }
 
-    public override async Task<Grpc.Status> Reblog(ReblogRequest request, ServerCallContext context) {
+    public override async Task<Grpc.Status> Reblog(ReblogRequest request, ServerCallContext context)
+    {
 
         var accountId = context.GetAccountId(true);
         var statusId = request.StatusId;
 
         var oldStatus = await _db.Status.FindByIdAsync(statusId);
 
-        if (oldStatus == null) {
+        if (oldStatus == null)
+        {
             throw new RpcException(new global::Grpc.Core.Status(StatusCode.NotFound, string.Empty));
         }
 
-        var status = new Data.Status {
+        var status = new Data.Status
+        {
             Text = oldStatus.Text,
             CreatedAt = DateTime.UtcNow,
             Visibility = Mastodon.Data.Visibility.Public,
@@ -252,7 +275,8 @@ public sealed class StatusApiService : Mastodon.Grpc.StatusApi.StatusApiBase {
         return result;
     }
 
-    public override async Task<Grpc.Status> Unreblog(StringValue request, ServerCallContext context) {
+    public override async Task<Grpc.Status> Unreblog(StringValue request, ServerCallContext context)
+    {
         var accountId = context.GetAccountId(true);
         var statusId = request.Value;
         IMongoQueryable<string> q = from x in _db.Status.AsQueryable()

@@ -1,6 +1,7 @@
 ﻿namespace Mastodon.Data;
 
-public sealed class Relationship {
+public sealed class Relationship
+{
     [BsonElement("_id")]
     [BsonId(IdGenerator = typeof(StringObjectIdGenerator))]
     [BsonRepresentation(BsonType.ObjectId)]

@@ -1,6 +1,7 @@
 ﻿namespace Mastodon;
 
-public static class InstanceExtensionMethods {
+public static class InstanceExtensionMethods
+{
     //public static Grpc.Activities ToGrpc(this IEnumerable<Mastodon.Models.Activity>? i) {
     //    var rules = new Grpc.Activities();
 
@@ -13,8 +14,10 @@ public static class InstanceExtensionMethods {
     //    return rules;
     //}
 
-    public static Grpc.Instance ToGrpc(this Mastodon.Data.Instance i) {
-        var v = new Grpc.Instance {
+    public static Grpc.Instance ToGrpc(this Mastodon.Data.Instance i)
+    {
+        var v = new Grpc.Instance
+        {
             Domain = "fordem.org",
             Title = i.Title,
             Version = i.Version,
@@ -33,8 +36,10 @@ public static class InstanceExtensionMethods {
         return v;
     }
 
-    public static Grpc.InstanceV1 ToV1(this Mastodon.Data.Instance i) {
-        var v = new InstanceV1 {
+    public static Grpc.InstanceV1 ToV1(this Mastodon.Data.Instance i)
+    {
+        var v = new InstanceV1
+        {
             Uri = "fordem.org",
             Title = i.Title,
             Email = i.Contact.Email,
@@ -96,23 +101,29 @@ public static class InstanceExtensionMethods {
     //    };
     //}
 
-    public static Grpc.Instance.Types.Contact ToGrpc(this Mastodon.Data.Instance.Types.Contact i) {
-        return new Grpc.Instance.Types.Contact {
+    public static Grpc.Instance.Types.Contact ToGrpc(this Mastodon.Data.Instance.Types.Contact i)
+    {
+        return new Grpc.Instance.Types.Contact
+        {
             Email = i.Email,
             //Account = i.Account.ToGrpc(),
         };
     }
 
-    public static Grpc.Instance.Types.Registrations ToGrpc(this Mastodon.Data.Instance.Types.Registrations i) {
-        return new Grpc.Instance.Types.Registrations {
+    public static Grpc.Instance.Types.Registrations ToGrpc(this Mastodon.Data.Instance.Types.Registrations i)
+    {
+        return new Grpc.Instance.Types.Registrations
+        {
             Enabled = i.Enabled,
             ApprovalRequired = i.ApprovalRequired,
             Message = i.Message ?? string.Empty,
         };
     }
 
-    public static Grpc.Instance.Types.Configuration ToGrpc(this Mastodon.Data.Instance.Types.Configuration i) {
-        return new Grpc.Instance.Types.Configuration {
+    public static Grpc.Instance.Types.Configuration ToGrpc(this Mastodon.Data.Instance.Types.Configuration i)
+    {
+        return new Grpc.Instance.Types.Configuration
+        {
             Accounts = i.Accounts.ToGrpc(),
             MediaAttachments = i.MediaAttachments?.ToGrpc(),
             Polls = i.Polls.ToGrpc(),
@@ -122,14 +133,18 @@ public static class InstanceExtensionMethods {
         };
     }
 
-    public static Grpc.Instance.Types.Configuration.Types.Accounts ToGrpc(this Mastodon.Data.Instance.Types.Configuration.Types.Accounts i) {
-        return new Grpc.Instance.Types.Configuration.Types.Accounts {
+    public static Grpc.Instance.Types.Configuration.Types.Accounts ToGrpc(this Mastodon.Data.Instance.Types.Configuration.Types.Accounts i)
+    {
+        return new Grpc.Instance.Types.Configuration.Types.Accounts
+        {
             MaxFeaturedTags = i.MaxFeaturedTags ?? 0,
         };
     }
 
-    public static Grpc.Instance.Types.Configuration.Types.MediaAttachments ToGrpc(this Mastodon.Data.Instance.Types.Configuration.Types.MediaAttachments i) {
-        var v = new Grpc.Instance.Types.Configuration.Types.MediaAttachments {
+    public static Grpc.Instance.Types.Configuration.Types.MediaAttachments ToGrpc(this Mastodon.Data.Instance.Types.Configuration.Types.MediaAttachments i)
+    {
+        var v = new Grpc.Instance.Types.Configuration.Types.MediaAttachments
+        {
             ImageMatrixLimit = i.ImageMatrixLimit,
             ImageSizeLimit = i.ImageSizeLimit,
             VideoFrameRateLimit = i.VideoFrameRateLimit,
@@ -142,8 +157,10 @@ public static class InstanceExtensionMethods {
         return v;
     }
 
-    public static Grpc.Instance.Types.Configuration.Types.Polls ToGrpc(this Mastodon.Data.Instance.Types.Configuration.Types.Polls i) {
-        return new Grpc.Instance.Types.Configuration.Types.Polls {
+    public static Grpc.Instance.Types.Configuration.Types.Polls ToGrpc(this Mastodon.Data.Instance.Types.Configuration.Types.Polls i)
+    {
+        return new Grpc.Instance.Types.Configuration.Types.Polls
+        {
             MaxCharactersPerOption = i.MaxCharactersPerOption ?? 0,
             MaxOptions = i.MaxOptions ?? 0,
             MinExpiration = i.MinExpiration ?? 0,
@@ -151,22 +168,28 @@ public static class InstanceExtensionMethods {
         };
     }
 
-    public static Grpc.Instance.Types.Configuration.Types.Statuses ToGrpc(this Mastodon.Data.Instance.Types.Configuration.Types.Statuses i) {
-        return new Grpc.Instance.Types.Configuration.Types.Statuses {
+    public static Grpc.Instance.Types.Configuration.Types.Statuses ToGrpc(this Mastodon.Data.Instance.Types.Configuration.Types.Statuses i)
+    {
+        return new Grpc.Instance.Types.Configuration.Types.Statuses
+        {
             CharactersReservedPerUrl = i.CharactersReservedPerUrl ?? 0,
             MaxCharacters = i.MaxCharacters ?? 0,
             MaxMediaAttachments = i.MaxMediaAttachments ?? 0,
         };
     }
 
-    public static Grpc.Instance.Types.Configuration.Types.Translation ToGrpc(this Mastodon.Data.Instance.Types.Configuration.Types.Translation i) {
-        return new Grpc.Instance.Types.Configuration.Types.Translation {
+    public static Grpc.Instance.Types.Configuration.Types.Translation ToGrpc(this Mastodon.Data.Instance.Types.Configuration.Types.Translation i)
+    {
+        return new Grpc.Instance.Types.Configuration.Types.Translation
+        {
             Enabled = i.Enabled,
         };
     }
 
-    public static Grpc.Instance.Types.Configuration.Types.Urls ToGrpc(this Mastodon.Data.Instance.Types.Configuration.Types.Urls i) {
-        return new Grpc.Instance.Types.Configuration.Types.Urls {
+    public static Grpc.Instance.Types.Configuration.Types.Urls ToGrpc(this Mastodon.Data.Instance.Types.Configuration.Types.Urls i)
+    {
+        return new Grpc.Instance.Types.Configuration.Types.Urls
+        {
             Streaming = i.Streaming,
         };
     }
@@ -179,21 +202,26 @@ public static class InstanceExtensionMethods {
     //    };
     //}
 
-    public static Grpc.Instance.Types.Thumbnail ToGrpc(this Mastodon.Data.Instance.Types.Thumbnail i) {
-        var v = new Grpc.Instance.Types.Thumbnail {
+    public static Grpc.Instance.Types.Thumbnail ToGrpc(this Mastodon.Data.Instance.Types.Thumbnail i)
+    {
+        var v = new Grpc.Instance.Types.Thumbnail
+        {
             Url = i.Url,
             Versions = i.Versions?.ToGrpc(),
         };
 
-        if (i.Blurhash != null) {
+        if (i.Blurhash != null)
+        {
             v.Blurhash = i.Blurhash;
         }
 
         return v;
     }
 
-    public static Grpc.Instance.Types.Thumbnail.Types.Versions ToGrpc(this Mastodon.Data.Instance.Types.Thumbnail.Types.Versions i) {
-        return new Grpc.Instance.Types.Thumbnail.Types.Versions {
+    public static Grpc.Instance.Types.Thumbnail.Types.Versions ToGrpc(this Mastodon.Data.Instance.Types.Thumbnail.Types.Versions i)
+    {
+        return new Grpc.Instance.Types.Thumbnail.Types.Versions
+        {
             OneX = i.OneX,
             TwoX = i.TwoX,
         };

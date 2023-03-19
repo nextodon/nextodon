@@ -2,17 +2,20 @@ namespace Mastodon.Services;
 
 [Authorize]
 [AllowAnonymous]
-public sealed class TimelineService : Mastodon.Grpc.Timeline.TimelineBase {
+public sealed class TimelineService : Mastodon.Grpc.Timeline.TimelineBase
+{
 
     private readonly DataContext _db;
     private readonly ILogger<TimelineService> _logger;
 
-    public TimelineService(ILogger<TimelineService> logger, DataContext db) {
+    public TimelineService(ILogger<TimelineService> logger, DataContext db)
+    {
         _logger = logger;
         _db = db;
     }
 
-    public override async Task<Grpc.Statuses> GetPublic(GetPublicTimelineRequest request, ServerCallContext context) {
+    public override async Task<Grpc.Statuses> GetPublic(GetPublicTimelineRequest request, ServerCallContext context)
+    {
         var accountId = context.GetAccountId(false);
 
         var local = request.Local;
@@ -27,19 +30,22 @@ public sealed class TimelineService : Mastodon.Grpc.Timeline.TimelineBase {
 
         var sort = Builders<Data.Status>.Sort.Descending(x => x.CreatedAt);
 
-        if (!string.IsNullOrWhiteSpace(maxId)) {
-            filter &= Builders<Data.Status>.Filter.Lt(x => x.Id, maxId);
+        if (!string.IsNullOrWhiteSpace(maxId))
+        {
+            filter &= Builders<Data.Status>.Filter.Gt(x => x.Id, maxId);
         }
 
-        if (!string.IsNullOrWhiteSpace(minId)) {
-            filter &= Builders<Data.Status>.Filter.Gt(x => x.Id, minId);
+        if (!string.IsNullOrWhiteSpace(minId))
+        {
+            filter &= Builders<Data.Status>.Filter.Lt(x => x.Id, minId);
         }
 
         var cursor = await _db.Status.FindAsync(filter, new FindOptions<Data.Status, Data.Status> { Limit = (int)limit, Sort = sort });
         var statuses = await cursor.ToListAsync();
 
         var v = new Grpc.Statuses();
-        foreach (var status in statuses) {
+        foreach (var status in statuses)
+        {
             var s = await _db.GetStatusById(context, status.Id, accountId);
             v.Data.Add(s);
         }
@@ -48,11 +54,13 @@ public sealed class TimelineService : Mastodon.Grpc.Timeline.TimelineBase {
 
     }
 
-    public override Task<Statuses> GetByTag(StringValue request, ServerCallContext context) {
+    public override Task<Statuses> GetByTag(StringValue request, ServerCallContext context)
+    {
         return base.GetByTag(request, context);
     }
 
-    public override async Task<Statuses> GetHome(DefaultPaginationParameters request, ServerCallContext context) {
+    public override async Task<Statuses> GetHome(DefaultPaginationParameters request, ServerCallContext context)
+    {
         var accountId = context.GetAccountId(false);
 
         var sinceId = request.HasSinceId ? request.SinceId : null;
@@ -64,19 +72,22 @@ public sealed class TimelineService : Mastodon.Grpc.Timeline.TimelineBase {
 
         var sort = Builders<Data.Status>.Sort.Descending(x => x.CreatedAt);
 
-        if (!string.IsNullOrWhiteSpace(maxId)) {
-            filter &= Builders<Data.Status>.Filter.Lt(x => x.Id, maxId);
+        if (!string.IsNullOrWhiteSpace(maxId))
+        {
+            filter &= Builders<Data.Status>.Filter.Gt(x => x.Id, maxId);
         }
 
-        if (!string.IsNullOrWhiteSpace(minId)) {
-            filter &= Builders<Data.Status>.Filter.Gt(x => x.Id, minId);
+        if (!string.IsNullOrWhiteSpace(minId))
+        {
+            filter &= Builders<Data.Status>.Filter.Lt(x => x.Id, minId);
         }
 
         var cursor = await _db.Status.FindAsync(filter, new FindOptions<Data.Status, Data.Status> { Limit = (int)limit, Sort = sort });
         var statuses = await cursor.ToListAsync();
 
         var v = new Grpc.Statuses();
-        foreach (var status in statuses) {
+        foreach (var status in statuses)
+        {
             var s = await _db.GetStatusById(context, status.Id, accountId);
             v.Data.Add(s);
         }
@@ -84,13 +95,15 @@ public sealed class TimelineService : Mastodon.Grpc.Timeline.TimelineBase {
         return v;
     }
 
-    public override Task<Statuses> GetList(StringValue request, ServerCallContext context) {
+    public override Task<Statuses> GetList(StringValue request, ServerCallContext context)
+    {
         return base.GetList(request, context);
     }
 
 #pragma warning disable CS0809
     [Obsolete]
-    public override Task<Statuses> GetDirect(DefaultPaginationParameters request, ServerCallContext context) {
+    public override Task<Statuses> GetDirect(DefaultPaginationParameters request, ServerCallContext context)
+    {
         return base.GetDirect(request, context);
     }
 #pragma warning restore CS0809

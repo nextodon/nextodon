@@ -1,6 +1,7 @@
 ﻿namespace Mastodon;
 
-public static class ApplicationExtensionMethods {
+public static class ApplicationExtensionMethods
+{
     //public static Grpc.Application ToGrpc(this Mastodon.Data.Application i) {
     //    var v = new Grpc.Application();
 

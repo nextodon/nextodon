@@ -1,6 +1,7 @@
 ﻿namespace Mastodon;
 
-public static class SearchExtensionMethods {
+public static class SearchExtensionMethods
+{
     //public static Grpc.SearchResults ToGrpc(this IEnumerable<Mastodon.Models.Search>? i) {
     //    var v = new Grpc.SearchResults();
 

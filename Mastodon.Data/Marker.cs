@@ -1,6 +1,7 @@
 ﻿namespace Mastodon.Data;
 
-public sealed class Marker {
+public sealed class Marker
+{
     [BsonElement("_id")]
     [BsonRequired]
     public required string AccountId;
@@ -12,7 +13,8 @@ public sealed class Marker {
     public MarkerItem? Notifications;
 
 
-    public sealed class MarkerItem {
+    public sealed class MarkerItem
+    {
         [BsonRepresentation(BsonType.ObjectId)]
         [BsonRequired]
         public required string LastReadId;

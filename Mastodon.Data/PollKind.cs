@@ -1,6 +1,7 @@
 ﻿namespace Mastodon.Data;
 
-public enum PollKind {
+public enum PollKind
+{
     Single = 0,
     Multiple = 1,
     Weighted = 2,

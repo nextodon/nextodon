@@ -1,10 +1,14 @@
 ﻿namespace Mastodon;
 
-public static class AccountExtensionMethods {
-    public static Grpc.Accounts ToGrpc(this IEnumerable<Mastodon.Data.Account>? i) {
+public static class AccountExtensionMethods
+{
+    public static Grpc.Accounts ToGrpc(this IEnumerable<Mastodon.Data.Account>? i)
+    {
         var accounts = new Grpc.Accounts();
-        if (i != null) {
-            foreach (var r in i) {
+        if (i != null)
+        {
+            foreach (var r in i)
+            {
                 accounts.Data.Add(r.ToGrpc());
             }
         }
@@ -12,17 +16,19 @@ public static class AccountExtensionMethods {
         return accounts;
     }
 
-    public static Grpc.Account ToGrpc(this Mastodon.Data.Account i) {
-        var v = new Grpc.Account {
+    public static Grpc.Account ToGrpc(this Mastodon.Data.Account i, string domain = "app.fordem.org")
+    {
+        var v = new Grpc.Account
+        {
             Id = i.Id,
-            Acct = WebFingerHelper.FixAcct(i.Id),
-            Avatar = "https://img.freepik.com/premium-photo/soccer-ball-colourful-background-mixed-media_641298-12866.jpg?w=1380",
-            AvatarStatic = "https://img.freepik.com/premium-photo/soccer-ball-colourful-background-mixed-media_641298-12866.jpg?w=1380",
-            DisplayName = i.DisplayName ?? i.Id,
-            Header = "https://img.freepik.com/premium-photo/soccer-ball-colourful-background-mixed-media_641298-12866.jpg?w=1380",
-            HeaderStatic = "https://img.freepik.com/premium-photo/soccer-ball-colourful-background-mixed-media_641298-12866.jpg?w=1380",
+            Url = $"app.fordem.org/account/{i.Id}",
+            Acct = $"{i.Id}@{domain}",
+            Avatar = $"https://{domain}/asset/avatar/man-03.png",
+            AvatarStatic = $"https://{domain}/asset/avatar/man-03.png",
+            Header = $"https://{domain}/asset/header/scene-024.png",
+            HeaderStatic = $"https://{domain}/asset/header/scene-024.png",
             Locked = i.Locked,
-            Url = WebFingerHelper.FixUrl("https://img.freepik.com/premium-photo/soccer-ball-colourful-background-mixed-media_641298-12866.jpg?w=1380"),
+            DisplayName = i.DisplayName ?? i.Id,
             Username = i.Username ?? i.Id,
             Bot = i.Locked,
             Group = false,
@@ -41,11 +47,13 @@ public static class AccountExtensionMethods {
             Discoverable = i.Discoverable ?? false,
         };
 
-        if (i.Discoverable != null) {
+        if (i.Discoverable != null)
+        {
             v.Discoverable = i.Discoverable.Value;
         }
 
-        if (i.Note != null) {
+        if (i.Note != null)
+        {
             v.Note = i.Note;
         }
 
@@ -71,13 +79,16 @@ public static class AccountExtensionMethods {
         return v;
     }
 
-    public static Grpc.Account.Types.Field ToGrpc(this Mastodon.Data.Account.Field i) {
-        var v = new Grpc.Account.Types.Field {
+    public static Grpc.Account.Types.Field ToGrpc(this Mastodon.Data.Account.Field i)
+    {
+        var v = new Grpc.Account.Types.Field
+        {
             Name = i.Name,
             Value = i.Value,
         };
 
-        if (i.VerifiedAt != null) {
+        if (i.VerifiedAt != null)
+        {
             v.VerifiedAt = Timestamp.FromDateTime(i.VerifiedAt.Value.ToUniversalTime());
         }
 
