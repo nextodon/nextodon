@@ -1,45 +1,51 @@
-using System.Threading.Tasks.Dataflow;
-
 namespace Mastodon.Services;
 
-public sealed class AccountApiService : Mastodon.Grpc.AccountApi.AccountApiBase {
+public sealed class AccountApiService : Mastodon.Grpc.AccountApi.AccountApiBase
+{
 
     private readonly ILogger<AccountApiService> _logger;
     private readonly Data.DataContext _db;
 
-    public AccountApiService(ILogger<AccountApiService> logger, DataContext db) {
+    public AccountApiService(ILogger<AccountApiService> logger, DataContext db)
+    {
         _logger = logger;
         _db = db;
     }
 
     [Authorize]
-    public override async Task<Grpc.Account> UpdateCredentials(UpdateCredentialsRequest request, ServerCallContext context) {
+    public override async Task<Grpc.Account> UpdateCredentials(UpdateCredentialsRequest request, ServerCallContext context)
+    {
         var accountId = context.GetAccountId(true);
 
         var filter = Builders<Data.Account>.Filter.Eq(x => x.Id, accountId);
         var updates = new List<UpdateDefinition<Data.Account>>();
 
-        if (request.HasBot) {
+        if (request.HasBot)
+        {
             var u = Builders<Data.Account>.Update.Set(x => x.Bot, request.Bot);
             updates.Add(u);
         }
 
-        if (request.HasLocked) {
+        if (request.HasLocked)
+        {
             var u = Builders<Data.Account>.Update.Set(x => x.Locked, request.Locked);
             updates.Add(u);
         }
 
-        if (request.HasNote) {
+        if (request.HasNote)
+        {
             var u = Builders<Data.Account>.Update.Set(x => x.Note, request.Note);
             updates.Add(u);
         }
 
-        if (request.HasDiscoverable) {
+        if (request.HasDiscoverable)
+        {
             var u = Builders<Data.Account>.Update.Set(x => x.Discoverable, request.Discoverable);
             updates.Add(u);
         }
 
-        if (request.HasDisplayName) {
+        if (request.HasDisplayName)
+        {
             var u = Builders<Data.Account>.Update.Set(x => x.DisplayName, request.DisplayName);
             updates.Add(u);
         }
@@ -56,7 +62,8 @@ public sealed class AccountApiService : Mastodon.Grpc.AccountApi.AccountApiBase 
         return account.ToGrpc();
     }
 
-    public override async Task<Grpc.Account> GetById(StringValue request, ServerCallContext context) {
+    public override async Task<Grpc.Account> GetById(StringValue request, ServerCallContext context)
+    {
         var account = await _db.Account.FindByIdAsync(request.Value);
 
         return account == null ? throw new RpcException(new global::Grpc.Core.Status(StatusCode.NotFound, string.Empty)) : account.ToGrpc();
@@ -67,23 +74,27 @@ public sealed class AccountApiService : Mastodon.Grpc.AccountApi.AccountApiBase 
     /// <br />
     /// Quickly lookup a username to see if it is available, skipping WebFinger resolution.
     /// </summary>
-    public override Task<Grpc.Account> Lookup(LookupRequest request, ServerCallContext context) {
+    public override Task<Grpc.Account> Lookup(LookupRequest request, ServerCallContext context)
+    {
         return base.Lookup(request, context);
     }
 
-    public override Task<Accounts> Search(AccountSearchRequest request, ServerCallContext context) {
+    public override Task<Accounts> Search(AccountSearchRequest request, ServerCallContext context)
+    {
         return base.Search(request, context);
     }
 
     [Authorize]
-    public override async Task<Grpc.Account> VerifyCredentials(Empty request, ServerCallContext context) {
+    public override async Task<Grpc.Account> VerifyCredentials(Empty request, ServerCallContext context)
+    {
         var account = await context.GetAccount(_db, true);
         return account == null ? throw new RpcException(new global::Grpc.Core.Status(StatusCode.NotFound, string.Empty)) : account.ToGrpc();
     }
 
     [Authorize]
     [AllowAnonymous]
-    public override async Task<Statuses> GetStatuses(GetStatusesRequest request, ServerCallContext context) {
+    public override async Task<Statuses> GetStatuses(GetStatusesRequest request, ServerCallContext context)
+    {
         var me = context.GetAccountId(true);
 
         var limit = request.HasLimit ? request.Limit : 40;
@@ -96,7 +107,6 @@ public sealed class AccountApiService : Mastodon.Grpc.AccountApi.AccountApiBase 
 
         var sort = Builders<Data.Status>.Sort.Descending(x => x.CreatedAt);
 
-
         var filters = new List<FilterDefinition<Data.Status>>
         {
             Builders<Data.Status>.Filter.Eq(x => x.AccountId, request.AccountId),
@@ -104,12 +114,14 @@ public sealed class AccountApiService : Mastodon.Grpc.AccountApi.AccountApiBase 
         };
 
 
-        if (!string.IsNullOrWhiteSpace(maxId)) {
-            filters.Add(Builders<Data.Status>.Filter.Lt(x => x.Id, maxId));
+        if (!string.IsNullOrWhiteSpace(maxId))
+        {
+            filters.Add(Builders<Data.Status>.Filter.Gt(x => x.Id, maxId));
         }
 
-        if (!string.IsNullOrWhiteSpace(minId)) {
-            filters.Add(Builders<Data.Status>.Filter.Gt(x => x.Id, minId));
+        if (!string.IsNullOrWhiteSpace(minId))
+        {
+            filters.Add(Builders<Data.Status>.Filter.Lt(x => x.Id, minId));
         }
 
         var options = new FindOptions<Data.Status, Data.Status> { Limit = (int)limit };
@@ -120,8 +132,10 @@ public sealed class AccountApiService : Mastodon.Grpc.AccountApi.AccountApiBase 
 
         var v = new Statuses();
 
-        foreach(var status in statuses) {
-            try {
+        foreach (var status in statuses)
+        {
+            try
+            {
                 var s = await _db.GetStatusById(context, status.Id, me, true);
                 v.Data.Add(s);
             }
@@ -132,7 +146,8 @@ public sealed class AccountApiService : Mastodon.Grpc.AccountApi.AccountApiBase 
     }
 
     [Authorize]
-    public override async Task<Statuses> GetFavourites(DefaultPaginationParameters request, ServerCallContext context) {
+    public override async Task<Statuses> GetFavourites(DefaultPaginationParameters request, ServerCallContext context)
+    {
 
         var accountId = context.GetAccountId(true);
 
@@ -145,8 +160,10 @@ public sealed class AccountApiService : Mastodon.Grpc.AccountApi.AccountApiBase 
         var ids = await q.ToListAsync();
         var v = new Statuses();
 
-        foreach (var id in ids) {
-            try {
+        foreach (var id in ids)
+        {
+            try
+            {
                 var status = await _db.GetStatusById(context, id, accountId, true);
                 v.Data.Add(status);
             }
@@ -156,50 +173,59 @@ public sealed class AccountApiService : Mastodon.Grpc.AccountApi.AccountApiBase 
         return v;
     }
 
-    public override Task<Tags> GetFollowedTags(DefaultPaginationParameters request, ServerCallContext context) {
+    public override Task<Tags> GetFollowedTags(DefaultPaginationParameters request, ServerCallContext context)
+    {
         var v = new Tags();
 
         return Task.FromResult(v);
     }
 
-    public override Task<Preferences> GetPreferences(Empty request, ServerCallContext context) {
+    public override Task<Preferences> GetPreferences(Empty request, ServerCallContext context)
+    {
         var v = new Preferences();
 
         return Task.FromResult(v);
     }
 
-    public override Task<FiltersV1> GetFilters(Empty request, ServerCallContext context) {
+    public override Task<FiltersV1> GetFilters(Empty request, ServerCallContext context)
+    {
         var v = new FiltersV1();
 
         return Task.FromResult(v);
     }
 
-    public override Task<FeaturedTags> GetFeaturedTags(Empty request, ServerCallContext context) {
+    public override Task<FeaturedTags> GetFeaturedTags(Empty request, ServerCallContext context)
+    {
         var v = new FeaturedTags();
 
         return Task.FromResult(v);
     }
 
-    public override Task<Accounts> GetFollowers(GetFollowersRequest request, ServerCallContext context) {
+    public override Task<Accounts> GetFollowers(GetFollowersRequest request, ServerCallContext context)
+    {
         return base.GetFollowers(request, context);
     }
 
-    public override Task<Accounts> GetFollowing(GetFollowingRequest request, ServerCallContext context) {
+    public override Task<Accounts> GetFollowing(GetFollowingRequest request, ServerCallContext context)
+    {
         return base.GetFollowing(request, context);
     }
 
-    public override Task<Grpc.Relationship> RemoveFromFollowers(StringValue request, ServerCallContext context) {
+    public override Task<Grpc.Relationship> RemoveFromFollowers(StringValue request, ServerCallContext context)
+    {
         return base.RemoveFromFollowers(request, context);
     }
 
     [Authorize]
-    public override async Task<Relationships> GetRelationships(GetRelationshipsRequest request, ServerCallContext context) {
+    public override async Task<Relationships> GetRelationships(GetRelationshipsRequest request, ServerCallContext context)
+    {
         var accountId = context.GetAccountId(true);
         var ids = request.Ids.ToArray();
 
         var v = new Relationships();
 
-        foreach (var id in ids) {
+        foreach (var id in ids)
+        {
             var filter1 = Builders<Data.Relationship>.Filter.Eq(x => x.From, accountId);
             var filter2 = Builders<Data.Relationship>.Filter.Eq(x => x.To, id);
 
@@ -214,46 +240,56 @@ public sealed class AccountApiService : Mastodon.Grpc.AccountApi.AccountApiBase 
         return v;
     }
 
-    public override Task<Lists> GetLists(StringValue request, ServerCallContext context) {
+    public override Task<Lists> GetLists(StringValue request, ServerCallContext context)
+    {
         return base.GetLists(request, context);
     }
 
-    public override Task<Grpc.Relationship> Follow(StringValue request, ServerCallContext context) {
+    public override Task<Grpc.Relationship> Follow(StringValue request, ServerCallContext context)
+    {
         return base.Follow(request, context);
     }
 
-    public override Task<Grpc.Relationship> Unfollow(StringValue request, ServerCallContext context) {
+    public override Task<Grpc.Relationship> Unfollow(StringValue request, ServerCallContext context)
+    {
         return base.Unfollow(request, context);
     }
 
-    public override Task<Grpc.Relationship> Block(StringValue request, ServerCallContext context) {
+    public override Task<Grpc.Relationship> Block(StringValue request, ServerCallContext context)
+    {
         return base.Block(request, context);
     }
 
-    public override Task<Grpc.Relationship> Unblock(StringValue request, ServerCallContext context) {
+    public override Task<Grpc.Relationship> Unblock(StringValue request, ServerCallContext context)
+    {
         return base.Unblock(request, context);
     }
 
-    public override Task<Grpc.Relationship> Mute(StringValue request, ServerCallContext context) {
+    public override Task<Grpc.Relationship> Mute(StringValue request, ServerCallContext context)
+    {
         return base.Mute(request, context);
     }
 
-    public override Task<Grpc.Relationship> Unmute(StringValue request, ServerCallContext context) {
+    public override Task<Grpc.Relationship> Unmute(StringValue request, ServerCallContext context)
+    {
         return base.Unmute(request, context);
     }
 
-    public override Task<Grpc.Relationship> Pin(StringValue request, ServerCallContext context) {
+    public override Task<Grpc.Relationship> Pin(StringValue request, ServerCallContext context)
+    {
         return base.Pin(request, context);
     }
 
-    public override Task<Grpc.Relationship> Unpin(StringValue request, ServerCallContext context) {
+    public override Task<Grpc.Relationship> Unpin(StringValue request, ServerCallContext context)
+    {
         return base.Unpin(request, context);
     }
 
     /// <summary>
     /// Sets a private note on a user.
     /// </summary>
-    public override Task<Grpc.Relationship> Note(NoteRequest request, ServerCallContext context) {
+    public override Task<Grpc.Relationship> Note(NoteRequest request, ServerCallContext context)
+    {
         return base.Note(request, context);
     }
 }

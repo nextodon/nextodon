@@ -1,10 +1,13 @@
 ﻿namespace Mastodon.Data;
 
-public static class AuthenticationHelpers {
-    public static async Task<Account> FindOrCreateAsync(this IMongoCollection<Account> account, string address, string publicKey) {
+public static class AuthenticationHelpers
+{
+    public static async Task<Account> FindOrCreateAsync(this IMongoCollection<Account> account, string address, string publicKey)
+    {
         publicKey = publicKey.ToLower();
 
-        if (!address.StartsWith("0x", StringComparison.OrdinalIgnoreCase)) {
+        if (!address.StartsWith("0x", StringComparison.OrdinalIgnoreCase))
+        {
             address = $"0x{address}";
         }
 

@@ -1,6 +1,7 @@
 ﻿namespace Mastodon.Data;
 
-public sealed class Media {
+public sealed class Media
+{
     [BsonElement("_id")]
     [BsonId(IdGenerator = typeof(StringObjectIdGenerator))]
     [BsonRepresentation(BsonType.ObjectId)]

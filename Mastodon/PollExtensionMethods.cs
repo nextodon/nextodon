@@ -1,6 +1,7 @@
 ﻿namespace Mastodon;
 
-public static class PollExtensionMethods {
+public static class PollExtensionMethods
+{
     //public static Grpc.Poll ToGrpc(this Mastodon.Data.Poll i) {
     //    var v = new Grpc.Poll {
     //        Id = i.Id,
@@ -44,8 +45,10 @@ public static class PollExtensionMethods {
     //}
 
 
-    public static Data.PollKind ToData(this Grpc.PollKind i) {
-        return i switch {
+    public static Data.PollKind ToData(this Grpc.PollKind i)
+    {
+        return i switch
+        {
             Grpc.PollKind.Priority => Data.PollKind.Priority,
             Grpc.PollKind.Multiple => Data.PollKind.Multiple,
             Grpc.PollKind.Single => Data.PollKind.Single,
@@ -54,8 +57,10 @@ public static class PollExtensionMethods {
         };
     }
 
-    public static Data.Poll ToData(this Grpc.CreateStatusRequest.Types.Poll i) {
-        var v = new Data.Poll {
+    public static Data.Poll ToData(this Grpc.CreateStatusRequest.Types.Poll i)
+    {
+        var v = new Data.Poll
+        {
             Kind = i.Kind.ToData(),
             Options = i.Options.ToList(),
             Votes = new Dictionary<string, Vote> { },

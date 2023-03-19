@@ -3,7 +3,8 @@ using MongoDB.Bson.Serialization.Conventions;
 
 namespace Mastodon.Data;
 
-public sealed class DataContext {
+public sealed class DataContext
+{
     internal readonly IMongoDatabase database;
     public readonly IMongoCollection<Marker> Marker;
     public readonly IMongoCollection<Account> Account;
@@ -15,12 +16,15 @@ public sealed class DataContext {
 
     private static bool inited = false;
 
-    static DataContext() {
+    static DataContext()
+    {
         RegisterConventions();
     }
 
-    public static void RegisterConventions() {
-        if (inited) {
+    public static void RegisterConventions()
+    {
+        if (inited)
+        {
             return;
         }
 
@@ -35,7 +39,8 @@ public sealed class DataContext {
         inited = true;
     }
 
-    public DataContext(IOptions<MongoDbSettings> settings) {
+    public DataContext(IOptions<MongoDbSettings> settings)
+    {
         var client = new MongoClient(settings.Value.ConnectionString);
         database = client.GetDatabase(settings.Value.Database);
 

@@ -16,7 +16,8 @@ builder.Services.Configure<Mastodon.Data.MongoDbSettings>(builder.Configuration.
 builder.Services.AddRazorPages();
 builder.Services.AddControllers();
 
-builder.Services.AddGrpc().AddJsonTranscoding(options => {
+builder.Services.AddGrpc().AddJsonTranscoding(options =>
+{
     options.JsonSettings.WriteIndented = true;
     options.JsonSettings.IgnoreDefaultValues = false;
 });
@@ -30,14 +31,17 @@ builder.Services.Configure<ForwardedHeadersOptions>(options => { options.Forward
 var jwtOptions = config.GetSection("JwtSettings").Get<JwtOptions>()!;
 
 var key = Encoding.UTF8.GetBytes(jwtOptions.SecretKey);
-builder.Services.AddAuthentication(x => {
+builder.Services.AddAuthentication(x =>
+{
     x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
     x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
 })
-.AddJwtBearer(x => {
+.AddJwtBearer(x =>
+{
     x.RequireHttpsMetadata = false;
     x.SaveToken = true;
-    x.TokenValidationParameters = new TokenValidationParameters {
+    x.TokenValidationParameters = new TokenValidationParameters
+    {
         ValidateIssuerSigningKey = true,
         IssuerSigningKey = new SymmetricSecurityKey(key),
         ValidateIssuer = false,
@@ -47,9 +51,11 @@ builder.Services.AddAuthentication(x => {
 
 builder.Services.AddAuthorization();
 
-builder.Services.AddCors(o => {
+builder.Services.AddCors(o =>
+{
     o.AddDefaultPolicy(
-    builder => {
+    builder =>
+    {
         builder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod();
     });
 
@@ -64,13 +70,17 @@ builder.Services.AddCors(o => {
 
 var app = builder.Build();
 
-app.Use((context, next) => {
+app.Use((context, next) =>
+{
     var contentType = context.Request.Headers.ContentType;
     var contentLength = context.Request.Headers.ContentLength ?? 0;
 
-    if (contentType.Count == 0 || string.IsNullOrWhiteSpace(contentType.ToString())) {
-        if (context.Request.Path.StartsWithSegments("/api/v1", StringComparison.OrdinalIgnoreCase)) {
-            if (contentLength == 0) {
+    if (contentType.Count == 0 || string.IsNullOrWhiteSpace(contentType.ToString()))
+    {
+        if (context.Request.Path.StartsWithSegments("/api/v1", StringComparison.OrdinalIgnoreCase))
+        {
+            if (contentLength == 0)
+            {
                 context.Request.Body = new MemoryStream("{}"u8.ToArray());
                 context.Request.Headers.ContentType = new Microsoft.Extensions.Primitives.StringValues("application/json");
             }
@@ -118,7 +128,8 @@ app.MapGrpcReflectionService().EnableGrpcWeb();
 app.MapControllers();
 app.MapGet("/", () => "Communication with gRPC endpoints must be made through a gRPC client.");
 
-app.MapPost("/auth/sign_in", async (context) => {
+app.MapPost("/auth/sign_in", async (context) =>
+{
     var q = context.Request;
 
     var url = context.Request.GetEncodedUrl();
@@ -133,7 +144,8 @@ app.MapPost("/auth/sign_in", async (context) => {
     var client = new HttpClient(handler);
 
     var cookie = string.Join(";", q.Cookies.Select(x => $"{x.Key}={x.Value}"));
-    try {
+    try
+    {
         client.DefaultRequestHeaders.UserAgent.TryParseAdd(context.Request.Headers.UserAgent.FirstOrDefault());
         client.DefaultRequestHeaders.TryAddWithoutValidation("Cookie", cookie);
 
@@ -150,36 +162,42 @@ app.MapPost("/auth/sign_in", async (context) => {
         context.Response.StatusCode = (int)response.StatusCode;
 
         var d = context.Response.Cookies;
-        foreach (var ck in cookieContainer.GetAllCookies().ToList()) {
+        foreach (var ck in cookieContainer.GetAllCookies().ToList())
+        {
             d.Append(ck.Name, ck.Value);
         }
 
         await context.Response.BodyWriter.WriteAsync(utf8);
     }
-    catch (Exception) {
+    catch (Exception)
+    {
         //
     }
 });
 
 
-app.MapPost("/api/v1/media", async (HttpContext context, DataContext db) => {
+app.MapPost("/api/v1/media", async (HttpContext context, DataContext db) =>
+{
     var accountId = context.GetAccountId(true);
     var form = await context.Request.ReadFormAsync();
 
-    foreach (var f in form.Files) {
+    foreach (var f in form.Files)
+    {
         using var stream = f.OpenReadStream();
         using var memory = new MemoryStream();
 
         await stream.CopyToAsync(memory);
 
-        var media = new Mastodon.Data.Media {
+        var media = new Mastodon.Data.Media
+        {
             AccountId = accountId!,
             Content = memory.ToArray()
         };
 
         await db.Media.InsertOneAsync(media);
 
-        var mediaAttachment = new {
+        var mediaAttachment = new
+        {
             Id = media.Id,
             Type = "image",
             Url = $"https://m.com/{media.Id}",
@@ -192,24 +210,28 @@ app.MapPost("/api/v1/media", async (HttpContext context, DataContext db) => {
     }
 });
 
-app.MapPost("/api/v2/media", async (HttpContext context, DataContext db) => {
+app.MapPost("/api/v2/media", async (HttpContext context, DataContext db) =>
+{
     var accountId = context.GetAccountId(true);
     var form = await context.Request.ReadFormAsync();
 
-    foreach (var f in form.Files) {
+    foreach (var f in form.Files)
+    {
         using var stream = f.OpenReadStream();
         using var memory = new MemoryStream();
 
         await stream.CopyToAsync(memory);
 
-        var media = new Mastodon.Data.Media {
+        var media = new Mastodon.Data.Media
+        {
             AccountId = accountId!,
             Content = memory.ToArray()
         };
 
         await db.Media.InsertOneAsync(media);
 
-        var mediaAttachment = new {
+        var mediaAttachment = new
+        {
             Id = media.Id,
             Type = "image",
             Url = $"https://m.com/{media.Id}",
@@ -223,7 +245,8 @@ app.MapPost("/api/v2/media", async (HttpContext context, DataContext db) => {
 
 app.MapRazorPages();
 
-app.MapFallback(async context => {
+app.MapFallback(async context =>
+{
     var logger = ((IApplicationBuilder)app).ApplicationServices.GetService<ILogger<Program>>();
     var content = $"{context.Request.Method}: {context.Request.GetDisplayUrl()}";
 
@@ -234,7 +257,8 @@ app.MapFallback(async context => {
 
     context.Response.StatusCode = 404;
 
-    if (body != null && body.Length > 0) {
+    if (body != null && body.Length > 0)
+    {
         content += "\r\n" + body;
     }
 

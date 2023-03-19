@@ -1,40 +1,44 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using MongoDB.Bson;
-using System.Text.Json;
 
 namespace Mastodon.Controllers;
 
 [Route("api/v1/accounts")]
 [ApiController]
 [Authorize]
-public sealed class AccountController : ControllerBase {
+public sealed class AccountController : ControllerBase
+{
     private readonly ILogger<AccountController> _logger;
     private readonly Data.DataContext _db;
 
-    public AccountController(ILogger<AccountController> logger, DataContext db) {
+    public AccountController(ILogger<AccountController> logger, DataContext db)
+    {
         _logger = logger;
 
         _db = db;
     }
 
     [HttpPatch("update_credentials")]
-    public async Task<IActionResult> UpdateCredentials([FromForm] UpdateCredentialsRequest request) {
+    public async Task<IActionResult> UpdateCredentials([FromForm] UpdateCredentialsRequest request)
+    {
         var accountId = this.Request.HttpContext.GetAccountId(true);
 
         var filter = Builders<Data.Account>.Filter.Eq(x => x.Id, accountId);
         var updates = new List<UpdateDefinition<Data.Account>>();
 
-        if (request.Bot != null) {
+        if (request.Bot != null)
+        {
             var u = Builders<Data.Account>.Update.Set(x => x.Bot, request.Bot);
             updates.Add(u);
         }
 
-        if (request.Locked!=null) {
+        if (request.Locked != null)
+        {
             var u = Builders<Data.Account>.Update.Set(x => x.Locked, request.Locked);
             updates.Add(u);
         }
 
-        if (request.Note != null) {
+        if (request.Note != null)
+        {
             var u = Builders<Data.Account>.Update.Set(x => x.Note, request.Note);
             updates.Add(u);
         }
@@ -44,7 +48,8 @@ public sealed class AccountController : ControllerBase {
         //    updates.Add(u);
         //}
 
-        if (request.DisplayName != null) {
+        if (request.DisplayName != null)
+        {
             var u = Builders<Data.Account>.Update.Set(x => x.DisplayName, request.DisplayName);
             updates.Add(u);
         }
@@ -63,13 +68,14 @@ public sealed class AccountController : ControllerBase {
         var formatter = new Google.Protobuf.JsonFormatter(Google.Protobuf.JsonFormatter.Settings.Default);
         var json = formatter.Format(c);
 
-        
+
 
         return Ok(json);
     }
 
 
-    public sealed class UpdateCredentialsRequest {
+    public sealed class UpdateCredentialsRequest
+    {
         /// <summary>
         /// The display name to use for the profile.
         /// </summary>
@@ -116,29 +122,38 @@ public sealed class AccountController : ControllerBase {
         [BindProperty(Name = "source")]
         public Types.Source? Source { get; set; }
 
-        public static class Types {
+        public static class Types
+        {
 
-            public sealed class FieldAttribute {
-                public required string Name;
-                public required string Value;
+            public sealed class FieldAttribute
+            {
+                [BindProperty(Name = "name")]
+                public required string Name { get; set; }
+
+                [BindProperty(Name = "value")]
+                public required string Value { get; set; }
             }
 
 
-            public sealed class Source {
+            public sealed class Source
+            {
                 /// <summary>
                 /// Default post privacy for authored statuses. Can be public, unlisted, or private.
                 /// </summary>
-                public required string Privacy;
+                [BindProperty(Name = "privacy")]
+                public required string Privacy { get; set; }
 
                 /// <summary>
                 /// Whether to mark authored statuses as sensitive by default.
                 /// </summary>
-                public required bool Sensitive;
+                [BindProperty(Name = "sensitive")]
+                public required bool Sensitive { get; set; }
 
                 /// <summary>
                 /// Default language to use for authored statuses (ISO 6391)
                 /// </summary>
-                public required string Language;
+                [BindProperty(Name = "language")]
+                public required string Language { get; set; }
             }
         }
     }

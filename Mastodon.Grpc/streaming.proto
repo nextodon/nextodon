@@ -11,5 +11,12 @@ service Streaming
 	option (google.api.http) = {
       get: "/api/v1/streaming/user"
     };
+  } 
+  
+  rpc Notification (google.protobuf.Empty) returns (stream google.protobuf.Empty)
+  {
+	option (google.api.http) = {
+      get: "/api/v1/streaming/user/notification"
+    };
   }
 }

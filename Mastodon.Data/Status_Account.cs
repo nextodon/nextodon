@@ -1,7 +1,8 @@
 ﻿namespace Mastodon.Data;
 
 [BsonIgnoreExtraElements]
-public sealed class Status_Account {
+public sealed class Status_Account
+{
     [BsonElement("_id")]
     [BsonId(IdGenerator = typeof(StringObjectIdGenerator))]
     [BsonRepresentation(BsonType.ObjectId)]

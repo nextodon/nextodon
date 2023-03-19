@@ -1,8 +1,11 @@
 ﻿namespace Mastodon;
 
-public static class MediaExtensionMethods {
-    public static Grpc.MediaAttachment ToGrpc(this Mastodon.Data.Media i) {
-        var v = new Grpc.MediaAttachment {
+public static class MediaExtensionMethods
+{
+    public static Grpc.MediaAttachment ToGrpc(this Mastodon.Data.Media i)
+    {
+        var v = new Grpc.MediaAttachment
+        {
             Id = i.Id,
             //Url = i.Url,
             //Type = i.Type,

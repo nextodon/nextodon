@@ -1,6 +1,7 @@
 ﻿namespace Mastodon;
 
-public static class TagExtensionMethods {
+public static class TagExtensionMethods
+{
     //public static Grpc.Tags ToGrpc(this IEnumerable<Mastodon.Models.Tag>? i) {
     //    var tags = new Grpc.Tags();
 
