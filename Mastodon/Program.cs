@@ -196,12 +196,15 @@ app.MapPost("/api/v1/media", async (HttpContext context, DataContext db) =>
 
         await db.Media.InsertOneAsync(media);
 
+        var url = context.GetUrlPath($"/api/v1/media/{media.Id}");
+
         var mediaAttachment = new
         {
             Id = media.Id,
             Type = "image",
-            Url = $"https://m.com/{media.Id}",
-            PreviewUrl = $"https://m.com/{media.Id}",
+            Url = $"{url}/image",
+            PreviewUrl = $"{url}/preview",
+            Blurhash = "LGF5?xYk^6#M@-5c,1J5@[or[Q6.",
         };
 
         await context.Response.WriteAsJsonAsync(mediaAttachment);
@@ -214,6 +217,8 @@ app.MapPost("/api/v2/media", async (HttpContext context, DataContext db) =>
 {
     var accountId = context.GetAccountId(true);
     var form = await context.Request.ReadFormAsync();
+
+
 
     foreach (var f in form.Files)
     {
@@ -230,12 +235,15 @@ app.MapPost("/api/v2/media", async (HttpContext context, DataContext db) =>
 
         await db.Media.InsertOneAsync(media);
 
+        var url = context.GetUrlPath($"/api/v1/media/{media.Id}");
+
         var mediaAttachment = new
         {
             Id = media.Id,
             Type = "image",
-            Url = $"https://m.com/{media.Id}",
-            PreviewUrl = $"https://m.com/{media.Id}",
+            Url = $"{url}/image",
+            PreviewUrl = $"{url}/preview",
+            Blurhash = "LGF5?xYk^6#M@-5c,1J5@[or[Q6.",
         };
 
         await context.Response.WriteAsJsonAsync(mediaAttachment);
