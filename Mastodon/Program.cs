@@ -202,7 +202,7 @@ app.MapPost("/api/v1/media", async (HttpContext context, DataContext db) =>
         {
             Id = media.Id,
             Type = "image",
-            Url = $"{url}/image",
+            Url = $"{url}/original",
             PreviewUrl = $"{url}/preview",
             Blurhash = "LGF5?xYk^6#M@-5c,1J5@[or[Q6.",
         };
@@ -241,7 +241,7 @@ app.MapPost("/api/v2/media", async (HttpContext context, DataContext db) =>
         {
             Id = media.Id,
             Type = "image",
-            Url = $"{url}/image",
+            Url = $"{url}/original",
             PreviewUrl = $"{url}/preview",
             Blurhash = "LGF5?xYk^6#M@-5c,1J5@[or[Q6.",
         };
