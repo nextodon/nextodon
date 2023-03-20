@@ -50,7 +50,7 @@
             const signature64 = ethers.utils.base64.encode(signatureBytes);
             const publicKey64 = ethers.utils.base64.encode(publicKeyBytes);
 
-            const response = await postData("/api/v1/authentication/signin", { digitalSignature: signature64, publicKey: publicKey64 });
+            const response = await postData("/api/v1/authentication/signin", { signature: signature64, publicKey: publicKey64 });
             const result = await response.json();
 
             return result.value;
@@ -65,7 +65,9 @@
             const query = new URLSearchParams(window.location.search);
             const redirectUri = query.get('redirect_uri');
 
-            window.location = redirectUri + "?code=" + token;
+            if (token) {
+                window.location = redirectUri + "?code=" + token;
+            }
         }
         
         async function test() {
@@ -76,7 +78,9 @@
             const query = new URLSearchParams(window.location.search);
             const redirectUri = query.get('redirect_uri');
 
-            window.location = redirectUri + "?code=" + token;
+            if(token) {
+                window.location = redirectUri + "?code=" + token;
+            }
         }
     </script>
 
