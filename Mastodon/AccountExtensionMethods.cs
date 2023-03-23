@@ -22,7 +22,7 @@ public static class AccountExtensionMethods
         {
             Id = i.Id,
             Url = $"app.fordem.org/account/{i.Id}",
-            Acct = $"{i.Id}@{domain}",
+            Acct = $"{i.Id}",
             Avatar = $"https://{domain}/asset/avatar/man-03.png",
             AvatarStatic = $"https://{domain}/asset/avatar/man-03.png",
             Header = $"https://{domain}/asset/header/scene-024.png",
