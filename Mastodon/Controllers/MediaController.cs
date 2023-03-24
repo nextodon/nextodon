@@ -15,6 +15,47 @@ public sealed class MediaController : ControllerBase
         _db = db;
     }
 
+    [Authorize]
+    [HttpPost("~/api/v1/media")]
+    [HttpPost("~/api/v2/media")]
+    public async void Upload()
+    {
+        var context = this.HttpContext;
+
+        var accountId = context.GetAccountId(true);
+        var form = await context.Request.ReadFormAsync();
+
+        foreach (var f in form.Files)
+        {
+            using var stream = f.OpenReadStream();
+            using var memory = new MemoryStream();
+
+            await stream.CopyToAsync(memory);
+
+            var media = new Mastodon.Data.Media
+            {
+                AccountId = accountId!,
+                Content = memory.ToArray()
+            };
+
+            await _db.Media.InsertOneAsync(media);
+
+            var url = context.GetUrlPath($"/api/v1/media/{media.Id}");
+
+            var mediaAttachment = new
+            {
+                Id = media.Id,
+                Type = "image",
+                Url = $"{url}/original",
+                PreviewUrl = $"{url}/preview",
+                Blurhash = "LGF5?xYk^6#M@-5c,1J5@[or[Q6.",
+            };
+
+            await context.Response.WriteAsJsonAsync(mediaAttachment);
+            break;
+        }
+    }
+
     [HttpGet("{mediaId}/original")]
     [HttpGet("{mediaId}/preview")]
     public async Task<IActionResult> GetPreview([FromRoute] string mediaId)
