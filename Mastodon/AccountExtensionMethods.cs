@@ -30,6 +30,7 @@ public static class AccountExtensionMethods
             Locked = i.Locked,
             DisplayName = i.DisplayName ?? i.Id,
             Username = i.Username ?? i.Id,
+            Note = "My Note",
             Bot = i.Locked,
             Group = false,
             Limited = false,
