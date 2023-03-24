@@ -16,7 +16,7 @@ public static class AccountExtensionMethods
         return accounts;
     }
 
-    public static Grpc.Account ToGrpc(this Mastodon.Data.Account i, string domain = "app.fordem.org")
+    public static Grpc.Account ToGrpc(this Mastodon.Data.Account i, string domain = "fordem.org")
     {
         var v = new Grpc.Account
         {
@@ -30,7 +30,7 @@ public static class AccountExtensionMethods
             Locked = i.Locked,
             DisplayName = i.DisplayName ?? i.Id,
             Username = i.Username ?? i.Id,
-            Note = "My Note",
+            Note = i.Note ?? "My Note",
             Bot = i.Locked,
             Group = false,
             Limited = false,
@@ -51,11 +51,6 @@ public static class AccountExtensionMethods
         if (i.Discoverable != null)
         {
             v.Discoverable = i.Discoverable.Value;
-        }
-
-        if (i.Note != null)
-        {
-            v.Note = i.Note;
         }
 
         //if (i.FollowersCount != null)

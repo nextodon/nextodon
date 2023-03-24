@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.IdentityModel.Tokens;
-using System.Net;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -13,7 +12,6 @@ var config = builder.Configuration;
 
 builder.Services.Configure<Mastodon.Data.MongoDbSettings>(builder.Configuration.GetSection("MongoDb"));
 
-//builder.Services.AddRazorPages();
 builder.Services.AddControllers();
 
 builder.Services.AddGrpc().AddJsonTranscoding(options =>
@@ -51,22 +49,7 @@ builder.Services.AddAuthentication(x =>
 
 builder.Services.AddAuthorization();
 
-builder.Services.AddCors(o =>
-{
-    o.AddDefaultPolicy(
-    builder =>
-    {
-        builder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod();
-    });
-
-    //o.AddDefaultPolicy(
-    //builder =>
-    //{
-    //    builder.WithOrigins("https://app.fordem.org")
-    //                        .AllowAnyHeader()
-    //                        .AllowAnyMethod();
-    //});
-});
+builder.Services.AddCors();
 
 var app = builder.Build();
 
@@ -122,59 +105,9 @@ app.MapGrpcService<StreamingService>().EnableGrpcWeb();
 app.MapGrpcService<TimelineService>().EnableGrpcWeb();
 app.MapGrpcService<TrendsService>().EnableGrpcWeb();
 
-
 app.MapGrpcReflectionService().EnableGrpcWeb();
 
 app.MapControllers();
-app.MapGet("/", () => "Communication with gRPC endpoints must be made through a gRPC client.");
-
-app.MapPost("/auth/sign_in", async (context) =>
-{
-    var q = context.Request;
-
-    var url = context.Request.GetEncodedUrl();
-    var b = new UriBuilder(url);
-    b.Host = "mastodon.lol";
-    b.Scheme = "https";
-    b.Port = 443;
-
-    var cookieContainer = new CookieContainer();
-    using var handler = new HttpClientHandler { CookieContainer = cookieContainer };
-
-    var client = new HttpClient(handler);
-
-    var cookie = string.Join(";", q.Cookies.Select(x => $"{x.Key}={x.Value}"));
-    try
-    {
-        client.DefaultRequestHeaders.UserAgent.TryParseAdd(context.Request.Headers.UserAgent.FirstOrDefault());
-        client.DefaultRequestHeaders.TryAddWithoutValidation("Cookie", cookie);
-
-        var formData = await context.Request.ReadFormAsync();
-        var formDictionary = formData.ToDictionary(x => x.Key, x => x.Value.FirstOrDefault());
-
-        var form = new FormUrlEncodedContent(formDictionary);
-        form.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(context.Request.ContentType ?? "");
-
-        var response = await client.PostAsync(b.ToString(), form);
-        var content = await response.Content.ReadAsStringAsync();
-        var utf8 = Encoding.UTF8.GetBytes(content);
-
-        context.Response.StatusCode = (int)response.StatusCode;
-
-        var d = context.Response.Cookies;
-        foreach (var ck in cookieContainer.GetAllCookies().ToList())
-        {
-            d.Append(ck.Name, ck.Value);
-        }
-
-        await context.Response.BodyWriter.WriteAsync(utf8);
-    }
-    catch (Exception)
-    {
-        //
-    }
-});
-
 
 app.MapPost("/api/v1/media", async (HttpContext context, DataContext db) =>
 {
@@ -250,8 +183,6 @@ app.MapPost("/api/v2/media", async (HttpContext context, DataContext db) =>
         break;
     }
 });
-
-//app.MapRazorPages();
 
 app.MapFallback(async context =>
 {
