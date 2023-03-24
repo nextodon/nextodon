@@ -1,5 +1,3 @@
-using System;
-
 namespace Mastodon.Services;
 
 public sealed class MediaApiService : Mastodon.Grpc.MediaApi.MediaApiBase
@@ -19,7 +17,7 @@ public sealed class MediaApiService : Mastodon.Grpc.MediaApi.MediaApiBase
 
         if (media == null)
         {
-            throw new RpcException(new global::Grpc.Core.Status(StatusCode.NotFound, ""));
+            throw new RpcException(new global::Grpc.Core.Status(StatusCode.NotFound, $"Media not found: {request.Value}"));
         }
 
         var v = media!.ToGrpc();
