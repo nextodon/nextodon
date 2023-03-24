@@ -13,7 +13,7 @@ var config = builder.Configuration;
 
 builder.Services.Configure<Mastodon.Data.MongoDbSettings>(builder.Configuration.GetSection("MongoDb"));
 
-builder.Services.AddRazorPages();
+//builder.Services.AddRazorPages();
 builder.Services.AddControllers();
 
 builder.Services.AddGrpc().AddJsonTranscoding(options =>
@@ -251,7 +251,7 @@ app.MapPost("/api/v2/media", async (HttpContext context, DataContext db) =>
     }
 });
 
-app.MapRazorPages();
+//app.MapRazorPages();
 
 app.MapFallback(async context =>
 {
