@@ -1,0 +1,36 @@
+syntax = "proto3";
+
+import "google/api/annotations.proto";
+import "google/protobuf/empty.proto";
+
+import "notification.proto";
+
+option csharp_namespace = "Nextodon.Grpc";
+
+service NotificationApi {    
+
+  rpc Subscription (SubscriptionRequest) returns (WebPushSubscription)
+  {
+	option (google.api.http) = {
+      post: "/api/v1/push/subscription"
+      body: "*"
+    };
+  }
+}
+
+message SubscriptionRequest
+{
+    Subscription subscription = 1;
+
+    message Subscription
+    {
+        string endpoint = 1;
+        Keys keys = 2;
+
+        message Keys
+        {
+            string p256dh = 1;
+            string auth = 2;
+        }
+    }
+}

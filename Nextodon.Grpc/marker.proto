@@ -1,0 +1,22 @@
+syntax = "proto3";
+import "google/protobuf/timestamp.proto";
+option csharp_namespace = "Nextodon.Grpc";
+
+// Represents the last read position within a user's timelines.
+message MarkerItem
+{
+    // The ID of the most recently viewed entity.
+    string last_read_id = 1;
+
+    // An incrementing counter, used for locking to prevent write conflicts.
+    uint32 version = 2;
+
+    // The timestamp of when the marker was set.
+    optional google.protobuf.Timestamp updated_at = 3;
+}
+
+message Marker
+{
+    optional MarkerItem home = 1;
+    optional MarkerItem notifications = 2;
+}

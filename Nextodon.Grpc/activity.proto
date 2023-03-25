@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+option csharp_namespace = "Nextodon.Grpc";
+
+// Instance activity over the last 3 months, binned weekly.
+message Activity
+{
+    // Midnight at the first day of the week.
+    string week = 1;
+
+    // The number of Statuses created since the week began.
+    string statuses = 2;
+
+    // The number of user logins since the week began.
+    string logins = 3;
+
+    // The number of user registrations since the week began.
+    string registrations = 4;
+}
+
+message Activities
+{
+    repeated Activity data = 1;
+}
