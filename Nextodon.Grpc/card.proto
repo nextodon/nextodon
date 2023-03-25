@@ -1,0 +1,53 @@
+syntax = "proto3";
+
+option csharp_namespace = "Nextodon.Grpc";
+
+// Represents a rich preview card that is generated using OpenGraph tags from a URL.
+message PreviewCard
+{
+    // Location of linked resource.
+    string url = 1;
+
+    // Title of linked resource.
+    string title = 2;
+
+    // Description of preview.
+    string description = 3;
+
+    // The type of the preview card.
+    // <para>link = Link OEmbed</para>
+    // <para>photo = Photo OEmbed</para>
+    // <para>video = Video OEmbed</para>
+    // <para>rich = iframe OEmbed. Not currently accepted, so won’t show up in practice.</para>
+    string type = 4;
+
+    // The author of the original resource.
+    string authorName = 5 [json_name="author_name"];
+
+    // A link to the author of the original resource.
+    string authorUrl = 6 [json_name="author_url"];
+
+    // The provider of the original resource.
+    string providerName = 7 [json_name="provider_name"];
+
+    // A link to the provider of the original resource.
+    string providerUrl = 8 [json_name="provider_url"];
+
+    // HTML to be used for generating the preview card.
+    string html = 9;
+
+    // Width of preview, in pixels.
+    uint32 width = 10;
+
+    // Height of preview, in pixels.
+    uint32 height = 11;
+
+    // Preview thumbnail.
+    optional string image = 12;
+
+    // Used for photo embeds, instead of custom html.
+    string embedUrl = 13 [json_name="embed_url"];
+
+    // A hash computed by the BlurHash algorithm, for generating colorful preview thumbnails when media has not been downloaded yet.
+    optional string blurhash = 14;
+}

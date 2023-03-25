@@ -1,0 +1,56 @@
+syntax = "proto3";
+
+option csharp_namespace = "Nextodon.Grpc";
+
+import "account.proto";
+import "instance.proto";
+import "rule.proto";
+
+// The response message containing the Instance information.
+message InstanceV1
+{
+    string uri = 1;
+    string title = 2;
+    string shortDescription = 3 [json_name="short_description"];
+    string description = 4;
+    string email = 5;
+    string version = 6;
+    Urls urls = 7;
+    Stats stats = 8;
+    string thumbnail = 9;
+    repeated string languages = 10;
+    bool registrations = 11;
+    bool approvalRequired = 12 [json_name="approval_required"];
+    bool invitesEnabled = 13 [json_name="invites_enabled"];
+    Configuration configuration = 14;
+    Account contactAccount = 15 [json_name="contact_account"];
+    repeated Rule rules = 16;
+
+    message Urls
+    {
+        string streamingApi = 1 [json_name="streaming_api"];
+    }
+
+    message Stats
+    {
+        uint32 userCount = 1 [json_name="user_count"];
+        uint32 statusCount = 2 [json_name="status_count"];
+        uint32 domainCount = 3 [json_name="domain_count"];
+    }
+    
+    // Configured values and limits for this website.
+    message Configuration
+    {
+        // Limits related to accounts.
+        Instance.Configuration.Accounts accounts = 1;
+
+        // Limits related to authoring statuses.
+        Instance.Configuration.Statuses statuses = 2;
+
+        // Hints for which attachments will be accepted.
+        optional Instance.Configuration.MediaAttachments mediaAttachments = 3 [json_name="media_attachments"];
+
+        // Limits related to polls.
+        Instance.Configuration.Polls polls = 4;
+    }
+}

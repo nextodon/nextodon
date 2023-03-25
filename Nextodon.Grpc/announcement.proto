@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+option csharp_namespace = "Nextodon.Grpc";
+
+message Announcement
+{
+
+}
+
+message Announcements
+{
+    repeated Announcement data = 1;
+}

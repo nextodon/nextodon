@@ -1,0 +1,30 @@
+syntax = "proto3";
+
+import "google/api/annotations.proto";
+import "google/protobuf/empty.proto";
+import "status.proto";
+import "tag.proto";
+
+option csharp_namespace = "Nextodon.Grpc";
+
+service Trends {
+  rpc GetTags (google.protobuf.Empty) returns (Tags)
+  {
+	option (google.api.http) = {
+      get: "/api/v1/trends/tags"
+      response_body: "data"
+      additional_bindings {
+          get: "/api/v1/trends"
+          response_body: "data"
+      }
+    };
+  }
+
+  rpc GetStatuses (google.protobuf.Empty) returns (Statuses)
+  {
+	option (google.api.http) = {
+      get: "/api/v1/trends/statuses"
+      response_body: "data"
+    };
+  }
+}

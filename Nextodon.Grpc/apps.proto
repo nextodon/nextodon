@@ -1,0 +1,32 @@
+syntax = "proto3";
+
+import "google/api/annotations.proto";
+import "google/protobuf/empty.proto";
+import "application.proto";
+
+option csharp_namespace = "Nextodon.Grpc";
+
+service Apps {
+  rpc CreateApplication (CreateApplicationRequest) returns (Application)
+  {
+	option (google.api.http) = {
+      post: "/api/v1/apps"
+      body: "*"
+    };
+  }
+  
+  rpc VerifyCredentials(google.protobuf.Empty) returns (Application)
+  {
+	option (google.api.http) = {
+      get: "/api/v1/apps/verify_credentials"
+    };
+  }
+}
+
+message CreateApplicationRequest
+{
+    string clientName  = 1 [json_name="client_name"];
+    string redirectUris = 2 [json_name="redirect_uris"];
+    optional string scopes = 3;
+    optional string website = 4;
+}

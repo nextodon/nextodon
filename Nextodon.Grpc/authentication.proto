@@ -1,0 +1,22 @@
+syntax = "proto3";
+import "google/api/annotations.proto";
+option csharp_namespace = "Nextodon.Grpc";
+
+service Authentication {
+  rpc SignIn (SignInRequest) returns (JsonWebToken)
+  {
+	option (google.api.http) = {
+      post: "/api/v1/authentication/signin"
+      body: "*"
+    };
+  }
+}
+
+message JsonWebToken {
+  string value = 1;
+}
+
+message SignInRequest {
+	bytes publicKey = 1;
+	bytes signature = 2;
+}
