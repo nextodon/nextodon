@@ -3,14 +3,15 @@ namespace Nextodon.Services;
 [Authorize]
 public sealed class StatusApiService : Nextodon.Grpc.StatusApi.StatusApiBase
 {
-
     private readonly ILogger<StatusApiService> _logger;
     private readonly Data.DataContext _db;
+    private readonly EventSource<Grpc.Status> _es;
 
-    public StatusApiService(ILogger<StatusApiService> logger, DataContext db)
+    public StatusApiService(ILogger<StatusApiService> logger, DataContext db, EventSource<Grpc.Status> es)
     {
         _logger = logger;
         _db = db;
+        _es = es;
     }
 
     [AllowAnonymous]
@@ -104,6 +105,7 @@ public sealed class StatusApiService : Nextodon.Grpc.StatusApi.StatusApiBase
     public override async Task<Grpc.Status> CreateStatus(CreateStatusRequest request, ServerCallContext context)
     {
         var accountId = context.GetAccountId(true);
+        var channel = _es[accountId!];
 
         var status = new Data.Status
         {
@@ -123,7 +125,9 @@ public sealed class StatusApiService : Nextodon.Grpc.StatusApi.StatusApiBase
 
         await _db.Status.InsertOneAsync(status);
 
+
         var result = await _db.GetStatusById(context, status.Id, accountId);
+        await channel.Writer.WriteAsync(result, context.CancellationToken);
 
         return result;
     }

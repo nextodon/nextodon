@@ -1,17 +1,27 @@
 syntax = "proto3";
 import "google/api/annotations.proto";
 import "google/protobuf/empty.proto";
+
+import "status.proto";
 option csharp_namespace = "Nextodon.Grpc";
 
 
 service Streaming
-{    
-  rpc User (google.protobuf.Empty) returns (stream google.protobuf.Empty)
-  {
-	option (google.api.http) = {
-      get: "/api/v1/streaming/user"
-    };
-  } 
+{
+    // Returns events that are relevant to the authorized user, i.e. home timeline and notifications.
+    rpc User (google.protobuf.Empty) returns (stream google.protobuf.Empty)
+    {
+        option (google.api.http) = {
+            get: "/api/v1/streaming/user"
+        };
+    }
+
+    rpc GetStatusStream (google.protobuf.Empty) returns (stream Status)
+    {
+        option (google.api.http) = {
+            get: "/api/v1/streaming/user/status"
+        };
+    }
   
   rpc Notification (google.protobuf.Empty) returns (stream google.protobuf.Empty)
   {
