@@ -125,7 +125,6 @@ public sealed class StatusApiService : Nextodon.Grpc.StatusApi.StatusApiBase
 
         await _db.Status.InsertOneAsync(status);
 
-
         var result = await _db.GetStatusById(context, status.Id, accountId);
         await channel.Writer.WriteAsync(result, context.CancellationToken);
 
