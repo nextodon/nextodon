@@ -22,11 +22,11 @@ service Streaming
             get: "/api/v1/streaming/user/status"
         };
     }
-  
-  rpc Notification (google.protobuf.Empty) returns (stream google.protobuf.Empty)
-  {
-	option (google.api.http) = {
-      get: "/api/v1/streaming/user/notification"
-    };
-  }
+    
+    rpc Notification (google.protobuf.Empty) returns (stream google.protobuf.Empty)
+    {
+	    option (google.api.http) = {
+            get: "/api/v1/streaming/user/notification"
+        };
+    }
 }
