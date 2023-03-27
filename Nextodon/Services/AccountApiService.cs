@@ -237,7 +237,7 @@ public sealed class AccountApiService : Nextodon.Grpc.AccountApi.AccountApiBase
 
             var relationship = await _db.Relationship.FindOneAndUpdateAsync(filter, update, new FindOneAndUpdateOptions<Data.Relationship, Data.Relationship> { IsUpsert = true });
 
-            v.Data.Add(new Grpc.Relationship { Id = id, Note = "test" });
+            v.Data.Add(new Grpc.Relationship { Id = id, Note = relationship?.Note ?? string.Empty });
         }
 
         return v;
