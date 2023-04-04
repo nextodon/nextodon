@@ -1,6 +1,8 @@
 ﻿global using Google.Protobuf.WellKnownTypes;
 global using Grpc.Core;
 global using Nextodon.Data;
+//global using Nextodon.Data.PostgreSQL;
+//global using Nextodon.Data.PostgreSQL.Models;
 global using Nextodon.Grpc;
 global using Microsoft.AspNetCore.Authorization;
 global using MongoDB.Driver;
