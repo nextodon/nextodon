@@ -14,6 +14,8 @@ public sealed class InstanceService : Nextodon.Grpc.InstanceApi.InstanceApiBase
 
     public override async Task<Grpc.Instance> GetInstance(Empty request, ServerCallContext context)
     {
+        var host = context.GetHost();
+
         var instance = await _db.Instance.FirstOrDefaultAsync();
 
         if (instance == null)
@@ -66,7 +68,7 @@ public sealed class InstanceService : Nextodon.Grpc.InstanceApi.InstanceApiBase
                 Rules = new List<Data.Rule> { },
                 Thumbnail = new Data.Instance.Types.Thumbnail
                 {
-                    Url = "https://fordem.org",
+                    Url = $"https://{host}",
                 },
             };
 
@@ -75,13 +77,14 @@ public sealed class InstanceService : Nextodon.Grpc.InstanceApi.InstanceApiBase
         }
 
 
-        var i = instance.ToGrpc();
+        var i = instance.ToGrpc(host);
 
         return i;
     }
 
     public override async Task<InstanceV1> GetInstanceV1(Empty request, ServerCallContext context)
     {
+        var host = context.GetHost();
         var instance = await _db.Instance.FirstOrDefaultAsync();
 
         if (instance == null)
@@ -134,7 +137,7 @@ public sealed class InstanceService : Nextodon.Grpc.InstanceApi.InstanceApiBase
                 Rules = new List<Data.Rule> { },
                 Thumbnail = new Data.Instance.Types.Thumbnail
                 {
-                    Url = "https://fordem.org",
+                    Url = $"https://{host}",
                 },
             };
 
@@ -143,7 +146,7 @@ public sealed class InstanceService : Nextodon.Grpc.InstanceApi.InstanceApiBase
         }
 
 
-        var i = instance.ToV1();
+        var i = instance.ToV1(host);
 
         return i;
     }

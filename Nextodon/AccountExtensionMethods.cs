@@ -21,7 +21,7 @@ public static class AccountExtensionMethods
         var v = new Grpc.Account
         {
             Id = i.Id,
-            Url = $"app.fordem.org/account/{i.Id}",
+            Url = $"https://{domain}/account/{i.Id}",
             Acct = $"{i.Id}",
             Avatar = $"https://{domain}/asset/avatar/man-03.png",
             AvatarStatic = $"https://{domain}/asset/avatar/man-03.png",
