@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using System.Net;
 
 var builder = WebApplication.CreateBuilder(args);
 var config = builder.Configuration;
@@ -31,8 +32,7 @@ builder.Services.Configure<ForwardedHeadersOptions>(options =>
     options.ForwardedHeaders = ForwardedHeaders.All;
     options.ForwardLimit = 2;
 
-    options.KnownNetworks.Clear();
-    options.KnownProxies.Clear();
+    options.KnownProxies.Add(IPAddress.Parse("127.0.10.1"));
 });
 
 var jwtOptions = config.GetSection("JwtSettings").Get<JwtOptions>()!;
