@@ -22,6 +22,8 @@ builder.Services.AddGrpc().AddJsonTranscoding(options =>
 
 builder.Services.AddGrpcReflection();
 builder.Services.AddSingleton<DataContext>();
+builder.Services.AddDbContext<Nextodon.Data.PostgreSQL.MastodonContext>();
+
 builder.Services.AddSingleton<EventSource<Nextodon.Grpc.Status>>();
 
 builder.Services.Configure<ForwardedHeadersOptions>(options =>
