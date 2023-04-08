@@ -14,11 +14,11 @@ public static class InstanceExtensionMethods
     //    return rules;
     //}
 
-    public static Grpc.Instance ToGrpc(this Nextodon.Data.Instance i)
+    public static Grpc.Instance ToGrpc(this Nextodon.Data.Instance i, string domain)
     {
         var v = new Grpc.Instance
         {
-            Domain = "fordem.org",
+            Domain = domain,
             Title = i.Title,
             Version = i.Version,
             SourceUrl = "",
@@ -36,11 +36,11 @@ public static class InstanceExtensionMethods
         return v;
     }
 
-    public static Grpc.InstanceV1 ToV1(this Nextodon.Data.Instance i)
+    public static Grpc.InstanceV1 ToV1(this Nextodon.Data.Instance i, string domain)
     {
         var v = new InstanceV1
         {
-            Uri = "fordem.org",
+            Uri = domain,
             Title = i.Title,
             Email = i.Contact.Email,
             Description = i.Description,
