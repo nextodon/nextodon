@@ -24,7 +24,12 @@ builder.Services.AddGrpcReflection();
 builder.Services.AddSingleton<DataContext>();
 builder.Services.AddSingleton<EventSource<Nextodon.Grpc.Status>>();
 
-builder.Services.Configure<ForwardedHeadersOptions>(options => { options.ForwardedHeaders = ForwardedHeaders.All; });
+builder.Services.Configure<ForwardedHeadersOptions>(options =>
+{
+    options.ForwardedHeaders = ForwardedHeaders.All;
+    options.KnownNetworks.Clear();
+    options.KnownProxies.Clear();
+});
 
 var jwtOptions = config.GetSection("JwtSettings").Get<JwtOptions>()!;
 
