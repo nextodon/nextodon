@@ -24,7 +24,7 @@ builder.Services.AddGrpcReflection();
 builder.Services.AddSingleton<DataContext>();
 builder.Services.AddSingleton<EventSource<Nextodon.Grpc.Status>>();
 
-builder.Services.Configure<ForwardedHeadersOptions>(options => { options.ForwardedHeaders = ForwardedHeaders.All; });
+//builder.Services.Configure<ForwardedHeadersOptions>(options => { options.ForwardedHeaders = ForwardedHeaders.All; });
 
 
 var jwtOptions = config.GetSection("JwtSettings").Get<JwtOptions>()!;
@@ -79,7 +79,7 @@ app.UseCors();
 app.UseDefaultFiles();
 app.UseStaticFiles();
 
-app.UseForwardedHeaders();
+//app.UseForwardedHeaders();
 //app.UseHttpsRedirection();
 
 app.UseRouting();
