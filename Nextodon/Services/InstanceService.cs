@@ -61,7 +61,7 @@ public sealed class InstanceService : Nextodon.Grpc.InstanceApi.InstanceApiBase
                 Contact = new Data.Instance.Types.Contact
                 {
                     AccountId = "0xa98641d8031bc594ddb95f770f3101fa38c6efda",
-                    Email = "admin@localhost",
+                    Email = $"admin@{host}",
                 },
 
                 Languages = new List<string> { "en" },
@@ -130,7 +130,7 @@ public sealed class InstanceService : Nextodon.Grpc.InstanceApi.InstanceApiBase
                 Contact = new Data.Instance.Types.Contact
                 {
                     AccountId = "0xa98641d8031bc594ddb95f770f3101fa38c6efda",
-                    Email = "admin@localhost",
+                    Email = $"admin@{host}",
                 },
 
                 Languages = new List<string> { "en" },

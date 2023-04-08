@@ -31,6 +31,13 @@ public static class PathExtensionMethods
     {
         var urlBuilder = new UriBuilder(context.Request.GetEncodedUrl());
 
-        return urlBuilder.Uri.Host;
+        var uri = urlBuilder.Uri;
+
+        if (uri.IsDefaultPort)
+        {
+            return urlBuilder.Uri.Host;
+        }
+
+        return $"{urlBuilder.Uri.Host}:{urlBuilder.Uri.Port}";
     }
 }
