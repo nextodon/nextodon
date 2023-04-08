@@ -27,6 +27,8 @@ builder.Services.AddSingleton<EventSource<Nextodon.Grpc.Status>>();
 builder.Services.Configure<ForwardedHeadersOptions>(options =>
 {
     options.ForwardedHeaders = ForwardedHeaders.All;
+    options.ForwardLimit = 2;
+
     options.KnownNetworks.Clear();
     options.KnownProxies.Clear();
 });
@@ -113,6 +115,23 @@ app.MapGrpcService<TrendsService>().EnableGrpcWeb();
 app.MapGrpcReflectionService().EnableGrpcWeb();
 
 app.MapControllers();
+
+app.MapGet("/reqinfo", async context =>
+{
+    //Output the relevant properties as the framework sees it
+    await context.Response.WriteAsync($"---As the application sees it{Environment.NewLine}");
+    await context.Response.WriteAsync($"HttpContext.Connection.RemoteIpAddress : {context.Connection.RemoteIpAddress}{Environment.NewLine}");
+    await context.Response.WriteAsync($"HttpContext.Connection.RemoteIpPort : {context.Connection.RemotePort}{Environment.NewLine}");
+    await context.Response.WriteAsync($"HttpContext.Request.Scheme : {context.Request.Scheme}{Environment.NewLine}");
+    await context.Response.WriteAsync($"HttpContext.Request.Host : {context.Request.Host}{Environment.NewLine}");
+
+    //Output relevant request headers (starting with an X)
+    await context.Response.WriteAsync($"{Environment.NewLine}---Request Headers starting with X{Environment.NewLine}");
+    foreach (var header in context.Request.Headers.Where(h => h.Key.StartsWith("X", StringComparison.OrdinalIgnoreCase)))
+    {
+        await context.Response.WriteAsync($"Request-Header {header.Key}: {header.Value}{Environment.NewLine}");
+    }
+});
 
 app.MapFallback(async context =>
 {
