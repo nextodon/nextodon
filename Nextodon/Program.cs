@@ -30,9 +30,6 @@ builder.Services.AddSingleton<EventSource<Nextodon.Grpc.Status>>();
 builder.Services.Configure<ForwardedHeadersOptions>(options =>
 {
     options.ForwardedHeaders = ForwardedHeaders.All;
-    options.ForwardLimit = 2;
-
-    options.KnownProxies.Add(IPAddress.Parse("127.0.10.1"));
 });
 
 var jwtOptions = config.GetSection("JwtSettings").Get<JwtOptions>()!;
