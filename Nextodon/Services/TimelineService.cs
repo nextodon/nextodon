@@ -1,3 +1,5 @@
+using Microsoft.EntityFrameworkCore;
+
 namespace Nextodon.Services;
 
 [Authorize]
@@ -6,16 +8,19 @@ public sealed class TimelineService : Nextodon.Grpc.Timeline.TimelineBase
 {
 
     private readonly DataContext _db;
+    private readonly Data.PostgreSQL.MastodonContext _pg;
     private readonly ILogger<TimelineService> _logger;
 
-    public TimelineService(ILogger<TimelineService> logger, DataContext db)
+    public TimelineService(ILogger<TimelineService> logger, DataContext db, Data.PostgreSQL.MastodonContext pg)
     {
         _logger = logger;
         _db = db;
+        _pg = pg;
     }
 
     public override async Task<Grpc.Statuses> GetPublic(GetPublicTimelineRequest request, ServerCallContext context)
     {
+        var pg = await _pg.Statuses.Take(20).ToListAsync();
         var accountId = context.GetAccountId(false);
 
         var local = request.Local;
