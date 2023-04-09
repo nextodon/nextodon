@@ -18,7 +18,7 @@ public partial class LoginActivity
 
     public string? FailureReason { get; set; }
 
-    public IPAddress? Ip { get; set; }
+    public string? Ip { get; set; }
 
     public string? UserAgent { get; set; }
 

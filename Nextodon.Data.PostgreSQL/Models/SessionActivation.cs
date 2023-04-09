@@ -16,7 +16,7 @@ public partial class SessionActivation
 
     public string UserAgent { get; set; } = null!;
 
-    public IPAddress? Ip { get; set; }
+    public string? Ip { get; set; }
 
     public long? AccessTokenId { get; set; }
 
