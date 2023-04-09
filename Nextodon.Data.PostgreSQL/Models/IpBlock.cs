@@ -8,7 +8,7 @@ public partial class IpBlock
 {
     public long Id { get; set; }
 
-    public IPAddress Ip { get; set; } = null!;
+    public string Ip { get; set; } = null!;
 
     public int Severity { get; set; }
 

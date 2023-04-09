@@ -72,7 +72,7 @@ public partial class User
 
     public string? WebauthnId { get; set; }
 
-    public IPAddress? SignUpIp { get; set; }
+    public string? SignUpIp { get; set; }
 
     public bool? SkipSignInToken { get; set; }
 
