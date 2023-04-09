@@ -5,13 +5,15 @@ public sealed class StatusApiService : Nextodon.Grpc.StatusApi.StatusApiBase
 {
     private readonly ILogger<StatusApiService> _logger;
     private readonly Data.DataContext _db;
+    private readonly Data.PostgreSQL.MastodonContext _pg;
     private readonly EventSource<Grpc.Status> _es;
 
-    public StatusApiService(ILogger<StatusApiService> logger, DataContext db, EventSource<Grpc.Status> es)
+    public StatusApiService(ILogger<StatusApiService> logger, DataContext db, EventSource<Grpc.Status> es, Data.PostgreSQL.MastodonContext pg)
     {
         _logger = logger;
         _db = db;
         _es = es;
+        _pg = pg;
     }
 
     [AllowAnonymous]

@@ -59,26 +59,6 @@ builder.Services.AddCors();
 
 var app = builder.Build();
 
-app.Use((context, next) =>
-{
-    var contentType = context.Request.Headers.ContentType;
-    var contentLength = context.Request.Headers.ContentLength ?? 0;
-
-    if (contentType.Count == 0 || string.IsNullOrWhiteSpace(contentType.ToString()))
-    {
-        if (context.Request.Path.StartsWithSegments("/api/v1", StringComparison.OrdinalIgnoreCase))
-        {
-            if (contentLength == 0)
-            {
-                context.Request.Body = new MemoryStream("{}"u8.ToArray());
-                context.Request.Headers.ContentType = new Microsoft.Extensions.Primitives.StringValues("application/json");
-            }
-        }
-    }
-
-    return next();
-});
-
 app.UseForwardedHeaders();
 app.UseCors();
 
