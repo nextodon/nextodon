@@ -33,10 +33,3 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-  update-app-service:
-    needs: [push_to_registry]
-    name: Update App Service
-    runs-on: ubuntu-latest
-    steps:
-      - run: sleep 30
-      - run: curl -X POST ${{ secrets.AZURE_CD_WEBHOOK }}
