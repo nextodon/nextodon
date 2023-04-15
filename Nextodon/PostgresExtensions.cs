@@ -2,7 +2,7 @@
 
 public static class PostgresExtensions
 {
-    public static async Task< Grpc.Status> ToGrpc(this Data.PostgreSQL.Models.Status i, Data.PostgreSQL.MastodonContext db, ServerCallContext context)
+    public static async Task<Grpc.Status> ToGrpc(this Data.PostgreSQL.Models.Status i, Data.PostgreSQL.MastodonContext db, ServerCallContext context)
     {
         var v = new Grpc.Status
         {
@@ -37,8 +37,33 @@ public static class PostgresExtensions
             v.Url = i.Url;
         }
 
+        var account = await db.Accounts.FindAsync(i.AccountId);
+        if(account != null)
+        {
+            v.Account = await account.ToGrpc(db, context);
+        }
+
         await Task.Yield();
 
         return v;
+    }
+
+    public static Task<Grpc.Account> ToGrpc(this Data.PostgreSQL.Models.Account i, Data.PostgreSQL.MastodonContext db, ServerCallContext context)
+    {
+        var v = new Grpc.Account
+        {
+            CreatedAt = i.CreatedAt.ToGrpc(),
+            DisplayName = i.DisplayName,
+            Id = i.Id.ToString(),
+            Note = i.Note,
+            Username = i.Username,
+        };
+
+        if (i.Url != null)
+        {
+            v.Url = i.Url;
+        }
+
+        return Task.FromResult(v);
     }
 }
