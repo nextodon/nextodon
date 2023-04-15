@@ -1,4 +1,7 @@
-﻿namespace Nextodon;
+﻿using Microsoft.EntityFrameworkCore;
+using System.Runtime.Intrinsics.Arm;
+
+namespace Nextodon;
 
 public static class PostgresExtensions
 {
@@ -38,9 +41,19 @@ public static class PostgresExtensions
         }
 
         var account = await db.Accounts.FindAsync(i.AccountId);
-        if(account != null)
+        if (account != null)
         {
             v.Account = await account.ToGrpc(db, context);
+        }
+
+        var pollQuery = from x in db.Polls
+                        where x.StatusId == i.Id
+                        select x;
+
+        var poll = await pollQuery.FirstOrDefaultAsync();
+        if (poll != null)
+        {
+            v.Poll = await poll.ToGrpc(db, context);
         }
 
         await Task.Yield();
@@ -62,6 +75,23 @@ public static class PostgresExtensions
         if (i.Url != null)
         {
             v.Url = i.Url;
+        }
+
+        return Task.FromResult(v);
+    }
+
+    public static Task<Grpc.Poll> ToGrpc(this Data.PostgreSQL.Models.Poll i, Data.PostgreSQL.MastodonContext db, ServerCallContext context)
+    {
+        var v = new Grpc.Poll
+        {
+            Id = i.Id.ToString(),
+            ExpiresAt = i.ExpiresAt?.ToGrpc(),
+            Multiple = i.Multiple,
+        };
+
+        foreach(var op in i.Options)
+        {
+            v.Options.Add(new Grpc.Poll.Types.Option { Title = op, VotesCount = 10 });
         }
 
         return Task.FromResult(v);
