@@ -20,7 +20,6 @@ public sealed class TimelineService : Nextodon.Grpc.Timeline.TimelineBase
 
     public override async Task<Grpc.Statuses> GetPublic(GetPublicTimelineRequest request, ServerCallContext context)
     {
-        var pg = await _pg.Statuses.Take(20).ToListAsync();
         var accountId = context.GetAccountId(false);
 
         var local = request.Local;
@@ -31,32 +30,33 @@ public sealed class TimelineService : Nextodon.Grpc.Timeline.TimelineBase
         var minId = request.HasMinId ? request.MinId : null;
 
         var limit = request.HasLimit ? request.Limit : 40;
-        var filter = Builders<Data.Status>.Filter.Ne(x => x.Deleted, true);
 
-        var sort = Builders<Data.Status>.Sort.Descending(x => x.CreatedAt);
+        IQueryable<Data.PostgreSQL.Models.Status> query = _pg.Statuses.OrderByDescending(x => x.CreatedAt);
+
 
         if (!string.IsNullOrWhiteSpace(maxId))
         {
-            filter &= Builders<Data.Status>.Filter.Gt(x => x.Id, maxId);
+            //q = q.Where(x => x.Id < maxId);
         }
 
         if (!string.IsNullOrWhiteSpace(minId))
         {
-            filter &= Builders<Data.Status>.Filter.Lt(x => x.Id, minId);
+            //q = q.Where(x => x.Id > minId);
         }
 
-        var cursor = await _db.Status.FindAsync(filter, new FindOptions<Data.Status, Data.Status> { Limit = (int)limit, Sort = sort });
-        var statuses = await cursor.ToListAsync();
+        query = query.Take((int)limit);
+
+        var statuss = await query.ToListAsync();
 
         var v = new Grpc.Statuses();
-        foreach (var status in statuses)
+
+        foreach (var status in statuss)
         {
-            var s = await _db.GetStatusById(context, status.Id, accountId);
+            var s = await status.ToGrpc(_pg, context);
             v.Data.Add(s);
         }
 
         return v;
-
     }
 
     public override Task<Statuses> GetByTag(StringValue request, ServerCallContext context)
@@ -66,34 +66,35 @@ public sealed class TimelineService : Nextodon.Grpc.Timeline.TimelineBase
 
     public override async Task<Statuses> GetHome(DefaultPaginationParameters request, ServerCallContext context)
     {
-        var accountId = context.GetAccountId(false);
-
+        //var accountId = context.GetAccountId(false);
         var sinceId = request.HasSinceId ? request.SinceId : null;
         var maxId = request.HasMaxId ? request.MaxId : null;
         var minId = request.HasMinId ? request.MinId : null;
 
         var limit = request.HasLimit ? request.Limit : 40;
-        var filter = Builders<Data.Status>.Filter.Ne(x => x.Deleted, true);
 
-        var sort = Builders<Data.Status>.Sort.Descending(x => x.CreatedAt);
+        IQueryable<Data.PostgreSQL.Models.Status> query = _pg.Statuses.OrderByDescending(x => x.CreatedAt);
 
         if (!string.IsNullOrWhiteSpace(maxId))
         {
-            filter &= Builders<Data.Status>.Filter.Gt(x => x.Id, maxId);
+            //q = q.Where(x => x.Id < maxId);
         }
 
         if (!string.IsNullOrWhiteSpace(minId))
         {
-            filter &= Builders<Data.Status>.Filter.Lt(x => x.Id, minId);
+            //q = q.Where(x => x.Id > minId);
         }
 
-        var cursor = await _db.Status.FindAsync(filter, new FindOptions<Data.Status, Data.Status> { Limit = (int)limit, Sort = sort });
-        var statuses = await cursor.ToListAsync();
+        query = query.Take((int)limit);
+
+
+        var statuss = await query.ToListAsync();
 
         var v = new Grpc.Statuses();
-        foreach (var status in statuses)
+
+        foreach (var status in statuss)
         {
-            var s = await _db.GetStatusById(context, status.Id, accountId);
+            var s = await status.ToGrpc(_pg, context);
             v.Data.Add(s);
         }
 
