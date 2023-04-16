@@ -61,8 +61,8 @@ public static class PostgresExtensions
         }
 
         var maQuery = from x in db.MediaAttachments
-                        where x.StatusId == i.Id
-                        select x;
+                      where x.StatusId == i.Id
+                      select x;
 
         var medias = await maQuery.ToListAsync();
         foreach (var media in medias)
@@ -95,7 +95,7 @@ public static class PostgresExtensions
         return Task.FromResult(v);
     }
 
-    public static Task<Grpc.Poll> ToGrpc(this Data.PostgreSQL.Models.Poll i, Data.PostgreSQL.MastodonContext db, ServerCallContext context)
+    public static async Task<Grpc.Poll> ToGrpc(this Data.PostgreSQL.Models.Poll i, Data.PostgreSQL.MastodonContext db, ServerCallContext context)
     {
         var v = new Grpc.Poll
         {
@@ -104,12 +104,21 @@ public static class PostgresExtensions
             Multiple = i.Multiple,
         };
 
-        foreach (var op in i.Options)
+        var votes = await (from x in db.PollVotes
+                           where x.PollId == i.Id
+                           select x).ToListAsync();
+
+
+
+        for (int x = 0; x < i.Options.Length; x++)
         {
-            v.Options.Add(new Grpc.Poll.Types.Option { Title = op, VotesCount = 10 });
+            var op = i.Options[x];
+            var count = votes.Where(z => z.Choice == x).Count();
+
+            v.Options.Add(new Grpc.Poll.Types.Option { Title = op, VotesCount = (uint)count });
         }
 
-        return Task.FromResult(v);
+        return v;
     }
 
     public static Task<Grpc.MediaAttachment> ToGrpc(this Data.PostgreSQL.Models.MediaAttachment i, Data.PostgreSQL.MastodonContext db, ServerCallContext context)
