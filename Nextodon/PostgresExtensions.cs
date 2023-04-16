@@ -16,9 +16,13 @@ public static class PostgresExtensions
             Sensitive = i.Sensitive,
             CreatedAt = i.CreatedAt.ToGrpc(),
             EditedAt = i.EditedAt?.ToGrpc(),
-            Language = i.Language,
             Visibility = Grpc.Visibility.Public,
         };
+
+        if (i.Language != null)
+        {
+            v.Language = i.Language;
+        }
 
         if (i.InReplyToId != null)
         {
