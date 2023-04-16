@@ -22,7 +22,7 @@ public sealed class MediaController : ControllerBase
     {
         var context = this.HttpContext;
 
-        var accountId = context.GetAccountId(true);
+        var accountId = context.GetAuthToken(true);
         var form = await context.Request.ReadFormAsync();
 
         foreach (var f in form.Files)
