@@ -5,18 +5,20 @@ public sealed class AccountApiService : Nextodon.Grpc.AccountApi.AccountApiBase
 
     private readonly ILogger<AccountApiService> _logger;
     private readonly Data.DataContext _db;
+    private readonly Data.PostgreSQL.MastodonContext _pg;
 
-    public AccountApiService(ILogger<AccountApiService> logger, DataContext db)
+    public AccountApiService(ILogger<AccountApiService> logger, DataContext db, Data.PostgreSQL.MastodonContext pg)
     {
         _logger = logger;
         _db = db;
+        _pg = pg;
     }
 
     [Authorize]
     public override async Task<Grpc.Account> UpdateCredentials(UpdateCredentialsRequest request, ServerCallContext context)
     {
         var host = context.GetHost();
-        var accountId = context.GetAccountId(true);
+        var accountId = context.GetAuthToken(true);
 
         var filter = Builders<Data.Account>.Filter.Eq(x => x.Id, accountId);
         var updates = new List<UpdateDefinition<Data.Account>>();
@@ -90,15 +92,15 @@ public sealed class AccountApiService : Nextodon.Grpc.AccountApi.AccountApiBase
     public override async Task<Grpc.Account> VerifyCredentials(Empty request, ServerCallContext context)
     {
         var host = context.GetHost();
-        var account = await context.GetAccount(_db, true);
-        return account == null ? throw new RpcException(new global::Grpc.Core.Status(StatusCode.NotFound, string.Empty)) : account.ToGrpc(host);
+        var account = await context.GetAccount(_pg, true);
+        return account == null ? throw new RpcException(new global::Grpc.Core.Status(StatusCode.NotFound, string.Empty)) : await account.ToGrpc(_pg, context);
     }
 
     [Authorize]
     [AllowAnonymous]
     public override async Task<Statuses> GetStatuses(GetStatusesRequest request, ServerCallContext context)
     {
-        var me = context.GetAccountId(true);
+        var me = context.GetAuthToken(true);
 
         var limit = request.HasLimit ? request.Limit : 40;
         limit = Math.Min(limit, 80);
@@ -152,7 +154,7 @@ public sealed class AccountApiService : Nextodon.Grpc.AccountApi.AccountApiBase
     public override async Task<Statuses> GetFavourites(DefaultPaginationParameters request, ServerCallContext context)
     {
 
-        var accountId = context.GetAccountId(true);
+        var accountId = context.GetAuthToken(true);
 
         IMongoQueryable<string> q = from x in _db.StatusAccount.AsQueryable()
                                     where x.AccountId == accountId
@@ -222,7 +224,7 @@ public sealed class AccountApiService : Nextodon.Grpc.AccountApi.AccountApiBase
     [Authorize]
     public override async Task<Relationships> GetRelationships(GetRelationshipsRequest request, ServerCallContext context)
     {
-        var accountId = context.GetAccountId(true);
+        var accountId = context.GetAuthToken(true);
         var ids = request.Ids.ToArray();
 
         var v = new Relationships();

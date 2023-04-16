@@ -20,7 +20,7 @@ public sealed class TimelineService : Nextodon.Grpc.Timeline.TimelineBase
 
     public override async Task<Grpc.Statuses> GetPublic(GetPublicTimelineRequest request, ServerCallContext context)
     {
-        var accountId = context.GetAccountId(false);
+        var accountId = context.GetAuthToken(false);
 
         var local = request.Local;
         var remote = request.Remote;

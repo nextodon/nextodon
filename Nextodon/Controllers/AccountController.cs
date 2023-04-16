@@ -21,7 +21,7 @@ public sealed class AccountController : ControllerBase
     public async Task<IActionResult> UpdateCredentials([FromForm] UpdateCredentialsRequest request)
     {
         var host = this.HttpContext.GetHost();
-        var accountId = this.Request.HttpContext.GetAccountId(true);
+        var accountId = this.Request.HttpContext.GetAuthToken(true);
 
         var filter = Builders<Data.Account>.Filter.Eq(x => x.Id, accountId);
         var updates = new List<UpdateDefinition<Data.Account>>();

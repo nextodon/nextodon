@@ -19,7 +19,7 @@ public sealed class StatusApiService : Nextodon.Grpc.StatusApi.StatusApiBase
     [AllowAnonymous]
     public override async Task<Grpc.Status> GetStatus(StringValue request, ServerCallContext context)
     {
-        var accountId = context.GetAccountId(false);
+        var accountId = context.GetAuthToken(false);
         var statusId = request.Value;
 
         var filter = Builders<Data.Status>.Filter.Eq(x => x.Id, statusId);
@@ -50,7 +50,7 @@ public sealed class StatusApiService : Nextodon.Grpc.StatusApi.StatusApiBase
     public override async Task<Accounts> GetFavouritedBy(GetFavouritedByRequest request, ServerCallContext context)
     {
         var host = context.GetHost();
-        var accountId = context.GetAccountId(false);
+        var accountId = context.GetAuthToken(false);
         var statusId = request.StatusId;
 
         IMongoQueryable<string> q = from x in _db.StatusAccount.AsQueryable()
@@ -67,7 +67,7 @@ public sealed class StatusApiService : Nextodon.Grpc.StatusApi.StatusApiBase
     [AllowAnonymous]
     public override async Task<Grpc.Context> GetContext(StringValue request, ServerCallContext context)
     {
-        var accountId = context.GetAccountId(false);
+        var accountId = context.GetAuthToken(false);
 
         var ctx = new Grpc.Context();
 
@@ -104,30 +104,29 @@ public sealed class StatusApiService : Nextodon.Grpc.StatusApi.StatusApiBase
         return ctx;
     }
 
+    [AllowAnonymous]
     public override async Task<Grpc.Status> CreateStatus(CreateStatusRequest request, ServerCallContext context)
     {
-        var accountId = context.GetAccountId(true);
-        var channel = _es[accountId!];
+        var account = await context.GetAccount(_pg, true);
+        var channel = _es[account!.Id.ToString()];
 
-        var status = new Data.Status
+        var status = new Data.PostgreSQL.Models.Status
         {
-            AccountId = accountId!,
+            AccountId = account.Id!,
             Text = request.Status,
             CreatedAt = DateTime.UtcNow,
-            Visibility = Data.Visibility.Public,
-            MediaIds = request.MediaIds?.ToList(),
+            Visibility = (int)Data.Visibility.Public,
+            //OrderedMediaAttachmentIds = request.MediaIds?.ToList(),
             Sensitive = request.Sensitive,
-            Poll = request.Poll?.ToData(),
             Language = request.HasLanguage ? request.Language : null,
-            SpoilerText = request.HasSpoilerText ? request.SpoilerText : null,
-            InReplyToId = request.HasInReplyToId ? request.InReplyToId : null,
-            ReblogedFromId = null,
-            Deleted = false,
+            SpoilerText = request.SpoilerText,
+            //InReplyToId = request.HasInReplyToId ? request.InReplyToId : null,
         };
 
-        await _db.Status.InsertOneAsync(status);
+        await _pg.Statuses.AddAsync(status);
+        await _pg.SaveChangesAsync();
 
-        var result = await _db.GetStatusById(context, status.Id, accountId);
+        var result = await status.ToGrpc(_pg, context);
         await channel.Writer.WriteAsync(result, context.CancellationToken);
 
         return result;
@@ -135,7 +134,7 @@ public sealed class StatusApiService : Nextodon.Grpc.StatusApi.StatusApiBase
 
     public override async Task<Grpc.Status> DeleteStatus(StringValue request, ServerCallContext context)
     {
-        var accountId = context.GetAccountId(true);
+        var accountId = context.GetAuthToken(true);
         var statusId = request.Value;
 
         {
@@ -158,7 +157,7 @@ public sealed class StatusApiService : Nextodon.Grpc.StatusApi.StatusApiBase
     public override async Task<Grpc.Status> Favourite(StringValue request, ServerCallContext context)
     {
         var cancellationToken = context.CancellationToken;
-        var accountId = context.GetAccountId(true);
+        var accountId = context.GetAuthToken(true);
         var statusId = request.Value;
 
         await _db.StatusAccount.UpdateAsync(statusId, accountId!, favorite: true, cancellationToken: cancellationToken);
@@ -170,7 +169,7 @@ public sealed class StatusApiService : Nextodon.Grpc.StatusApi.StatusApiBase
 
     public override async Task<Grpc.Status> Unfavourite(StringValue request, ServerCallContext context)
     {
-        var accountId = context.GetAccountId(true);
+        var accountId = context.GetAuthToken(true);
         var statusId = request.Value;
 
         await _db.StatusAccount.UpdateAsync(statusId, accountId!, favorite: false);
@@ -181,7 +180,7 @@ public sealed class StatusApiService : Nextodon.Grpc.StatusApi.StatusApiBase
 
     public override async Task<Grpc.Status> Bookmark(StringValue request, ServerCallContext context)
     {
-        var accountId = context.GetAccountId(true);
+        var accountId = context.GetAuthToken(true);
         var statusId = request.Value;
 
         await _db.StatusAccount.UpdateAsync(statusId, accountId!, bookmark: true);
@@ -192,7 +191,7 @@ public sealed class StatusApiService : Nextodon.Grpc.StatusApi.StatusApiBase
 
     public override async Task<Grpc.Status> Unbookmark(StringValue request, ServerCallContext context)
     {
-        var accountId = context.GetAccountId(true);
+        var accountId = context.GetAuthToken(true);
         var statusId = request.Value;
 
         await _db.StatusAccount.UpdateAsync(statusId, accountId!, bookmark: false);
@@ -203,7 +202,7 @@ public sealed class StatusApiService : Nextodon.Grpc.StatusApi.StatusApiBase
 
     public override async Task<Grpc.Status> Mute(StringValue request, ServerCallContext context)
     {
-        var accountId = context.GetAccountId(true);
+        var accountId = context.GetAuthToken(true);
         var statusId = request.Value;
 
         await _db.StatusAccount.UpdateAsync(statusId, accountId!, mute: true);
@@ -214,7 +213,7 @@ public sealed class StatusApiService : Nextodon.Grpc.StatusApi.StatusApiBase
 
     public override async Task<Grpc.Status> Unmute(StringValue request, ServerCallContext context)
     {
-        var accountId = context.GetAccountId(true);
+        var accountId = context.GetAuthToken(true);
         var statusId = request.Value;
 
         await _db.StatusAccount.UpdateAsync(statusId, accountId!, mute: false);
@@ -225,7 +224,7 @@ public sealed class StatusApiService : Nextodon.Grpc.StatusApi.StatusApiBase
 
     public override async Task<Grpc.Status> Pin(StringValue request, ServerCallContext context)
     {
-        var accountId = context.GetAccountId(true);
+        var accountId = context.GetAuthToken(true);
         var statusId = request.Value;
 
         await _db.StatusAccount.UpdateAsync(statusId, accountId!, pin: true);
@@ -236,7 +235,7 @@ public sealed class StatusApiService : Nextodon.Grpc.StatusApi.StatusApiBase
 
     public override async Task<Grpc.Status> Unpin(StringValue request, ServerCallContext context)
     {
-        var accountId = context.GetAccountId(true);
+        var accountId = context.GetAuthToken(true);
         var statusId = request.Value;
 
         await _db.StatusAccount.UpdateAsync(statusId, accountId!, pin: false);
@@ -249,7 +248,7 @@ public sealed class StatusApiService : Nextodon.Grpc.StatusApi.StatusApiBase
     public override async Task<Grpc.Status> Reblog(ReblogRequest request, ServerCallContext context)
     {
 
-        var accountId = context.GetAccountId(true);
+        var accountId = context.GetAuthToken(true);
         var statusId = request.StatusId;
 
         var oldStatus = await _db.Status.FindByIdAsync(statusId);
@@ -284,7 +283,7 @@ public sealed class StatusApiService : Nextodon.Grpc.StatusApi.StatusApiBase
 
     public override async Task<Grpc.Status> Unreblog(StringValue request, ServerCallContext context)
     {
-        var accountId = context.GetAccountId(true);
+        var accountId = context.GetAuthToken(true);
         var statusId = request.Value;
         IMongoQueryable<string> q = from x in _db.Status.AsQueryable()
                                     where x.AccountId == accountId

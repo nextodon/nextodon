@@ -15,7 +15,7 @@ public sealed class MarkerService : Nextodon.Grpc.MarkerApi.MarkerApiBase
 
     public override async Task<Grpc.Marker> Get(GetMarkerRequest request, ServerCallContext context)
     {
-        var accountId = context.GetAccountId(true);
+        var accountId = context.GetAuthToken(true);
 
         var filter = Builders<Data.Marker>.Filter.Eq(x => x.AccountId, accountId);
         var update = Builders<Data.Marker>.Update
@@ -30,7 +30,7 @@ public sealed class MarkerService : Nextodon.Grpc.MarkerApi.MarkerApiBase
 
     public override async Task<Grpc.Marker> Set(SetMarkerRequest request, ServerCallContext context)
     {
-        var accountId = context.GetAccountId(true);
+        var accountId = context.GetAuthToken(true);
 
         var filter = Builders<Data.Marker>.Filter.Eq(x => x.AccountId, accountId);
         var update = Builders<Data.Marker>.Update
