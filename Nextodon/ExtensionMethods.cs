@@ -14,7 +14,18 @@ public static class ExtensionMethods
 
     public static string? GetAuthToken(this HttpContext context, [NotNullWhen(true)] bool throwIfNotFound)
     {
-        var authorizationHeader = context.Request.Headers["Authorization"][0];
+        var authorizationHeader = context.Request.Headers["Authorization"];
+
+        if(authorizationHeader.Count == 0)
+        {
+            if (throwIfNotFound)
+            {
+                throw new RpcException(new global::Grpc.Core.Status(StatusCode.Unauthenticated, ""));
+            }
+
+            return null;
+        }
+
         if (string.IsNullOrWhiteSpace(authorizationHeader))
         {
             if (throwIfNotFound)
@@ -25,7 +36,7 @@ public static class ExtensionMethods
             return null;
         }
 
-        var authorizationHeaderParts = authorizationHeader.Split(" ", StringSplitOptions.RemoveEmptyEntries);
+        var authorizationHeaderParts = authorizationHeader.ToString().Split(" ", StringSplitOptions.RemoveEmptyEntries);
 
         if (authorizationHeaderParts.Length != 2 && throwIfNotFound)
         {

@@ -108,22 +108,41 @@ public sealed class StatusApiService : Nextodon.Grpc.StatusApi.StatusApiBase
     public override async Task<Grpc.Status> CreateStatus(CreateStatusRequest request, ServerCallContext context)
     {
         var account = await context.GetAccount(_pg, true);
+        var host = context.GetHost();
         var channel = _es[account!.Id.ToString()];
+
+        var now = DateTime.UtcNow;
+
+        var conversation = new Data.PostgreSQL.Models.Conversation
+        {
+            CreatedAt = now,
+            UpdatedAt = now,
+        };
+
+        await _pg.Conversations.AddAsync(conversation);
+        await _pg.SaveChangesAsync();
 
         var status = new Data.PostgreSQL.Models.Status
         {
             AccountId = account.Id!,
             Text = request.Status,
-            CreatedAt = DateTime.UtcNow,
+            CreatedAt = now,
+            UpdatedAt = now,
+            ConversationId = conversation.Id,
             Visibility = (int)Data.Visibility.Public,
             //OrderedMediaAttachmentIds = request.MediaIds?.ToList(),
             Sensitive = request.Sensitive,
-            Language = request.HasLanguage ? request.Language : null,
+            Language = request.HasLanguage ? request.Language : "en",
             SpoilerText = request.SpoilerText,
+            Local = true,
+
             //InReplyToId = request.HasInReplyToId ? request.InReplyToId : null,
         };
 
         await _pg.Statuses.AddAsync(status);
+        await _pg.SaveChangesAsync();
+
+        status.Uri = $"https://{host}/users/{account.Username}/statuses/{status.Id}";
         await _pg.SaveChangesAsync();
 
         var result = await status.ToGrpc(_pg, context);

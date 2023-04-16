@@ -12,12 +12,14 @@ public sealed class AuthenticationService : Authentication.AuthenticationBase
     private readonly IConfiguration _config;
     private readonly ILogger<AuthenticationService> _logger;
     private readonly Data.DataContext _db;
+    private readonly Data.PostgreSQL.MastodonContext _pg;
 
-    public AuthenticationService(ILogger<AuthenticationService> logger, IConfiguration config, DataContext db)
+    public AuthenticationService(ILogger<AuthenticationService> logger, IConfiguration config, DataContext db, Data.PostgreSQL.MastodonContext pg)
     {
         _logger = logger;
         _config = config;
         _db = db;
+        _pg = pg;
     }
 
     [AllowAnonymous]
@@ -39,9 +41,22 @@ public sealed class AuthenticationService : Authentication.AuthenticationBase
         }
 
         var pk = publicKey.Compress().ToString();
-        var address = publicKey.ToEthereumAddress();
+        var username = publicKey.ToEthereumAddress();
 
-        var account = await _db.Account.FindOrCreateAsync(address, pk);
+        var acc = (from x in _pg.Accounts
+                       where x.Username == username
+                       select x).FirstOrDefault();
+
+        if (acc == null)
+        {
+            acc = new Data.PostgreSQL.Models.Account
+            {
+                Username = username,
+                DisplayName = username,
+            };
+        }
+
+        var account = await _db.Account.FindOrCreateAsync(username, pk);
         var accountId = account.Id;
         var tokenHandler = new JwtSecurityTokenHandler();
 
