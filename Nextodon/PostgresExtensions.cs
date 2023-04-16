@@ -56,6 +56,17 @@ public static class PostgresExtensions
             v.Poll = await poll.ToGrpc(db, context);
         }
 
+        var maQuery = from x in db.MediaAttachments
+                        where x.StatusId == i.Id
+                        select x;
+
+        var medias = await maQuery.ToListAsync();
+        foreach (var media in medias)
+        {
+            var mediaAttachment = await media.ToGrpc(db, context);
+            v.MediaAttachments.Add(mediaAttachment);
+        }
+
         await Task.Yield();
 
         return v;
@@ -89,9 +100,31 @@ public static class PostgresExtensions
             Multiple = i.Multiple,
         };
 
-        foreach(var op in i.Options)
+        foreach (var op in i.Options)
         {
             v.Options.Add(new Grpc.Poll.Types.Option { Title = op, VotesCount = 10 });
+        }
+
+        return Task.FromResult(v);
+    }
+
+    public static Task<Grpc.MediaAttachment> ToGrpc(this Data.PostgreSQL.Models.MediaAttachment i, Data.PostgreSQL.MastodonContext db, ServerCallContext context)
+    {
+        var v = new Grpc.MediaAttachment
+        {
+            Id = i.Id.ToString(),
+            Type = i.Type.ToString(),
+            RemoteUrl = i.RemoteUrl,
+        };
+
+        if (i.Description != null)
+        {
+            v.Description = i.Description;
+        }
+
+        if (i.Blurhash != null)
+        {
+            v.Blurhash = i.Blurhash;
         }
 
         return Task.FromResult(v);
