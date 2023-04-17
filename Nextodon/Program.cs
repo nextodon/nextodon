@@ -111,6 +111,13 @@ app.MapGet("/reqinfo", async context =>
     {
         await context.Response.WriteAsync($"Request-Header {header.Key}: {header.Value}{Environment.NewLine}");
     }
+    
+    //Output relevant cookies
+    await context.Response.WriteAsync($"{Environment.NewLine}---Request Cookies{Environment.NewLine}");
+    foreach (var cookie in context.Request.Cookies)
+    {
+        await context.Response.WriteAsync($"Cookie {cookie.Key}: {cookie.Value}{Environment.NewLine}");
+    }
 });
 
 app.MapFallback(async context =>
