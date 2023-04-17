@@ -82,6 +82,8 @@ public sealed class AuthenticationService : Authentication.AuthenticationBase
             };
 
             account.Users.Add(user);
+
+            await db.Users.AddAsync(user);
             await db.Accounts.AddAsync(account);
             await db.SaveChangesAsync();
         }
@@ -97,6 +99,9 @@ public sealed class AuthenticationService : Authentication.AuthenticationBase
         {
             throw new RpcException(new global::Grpc.Core.Status(StatusCode.Internal, ""));
         }
+
+        owner.UpdatedAt = now;
+        await db.SaveChangesAsync();
 
         var accountId = account.Id;
         var tokenHandler = new JwtSecurityTokenHandler();
