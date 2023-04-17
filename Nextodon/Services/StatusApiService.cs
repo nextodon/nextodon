@@ -1,49 +1,37 @@
+using Microsoft.EntityFrameworkCore;
+
 namespace Nextodon.Services;
 
 [Authorize]
+[AllowAnonymous]
 public sealed class StatusApiService : Nextodon.Grpc.StatusApi.StatusApiBase
 {
     private readonly ILogger<StatusApiService> _logger;
-    private readonly Data.DataContext _db;
-    private readonly Data.PostgreSQL.MastodonContext _pg;
+    private readonly Data.PostgreSQL.MastodonContext db;
     private readonly EventSource<Grpc.Status> _es;
 
-    public StatusApiService(ILogger<StatusApiService> logger, DataContext db, EventSource<Grpc.Status> es, Data.PostgreSQL.MastodonContext pg)
+    public StatusApiService(ILogger<StatusApiService> logger, EventSource<Grpc.Status> es, Data.PostgreSQL.MastodonContext db)
     {
         _logger = logger;
-        _db = db;
         _es = es;
-        _pg = pg;
+        this.db = db;
     }
 
     [AllowAnonymous]
-    public override async Task<Grpc.Status> GetStatus(StringValue request, ServerCallContext context)
+    public override async Task<Grpc.Status> GetStatus(UInt64Value request, ServerCallContext context)
     {
-        var accountId = context.GetAuthToken(false);
-        var statusId = request.Value;
+        var account = await context.GetAccount(db, false);
+        var statusId = (long)request.Value;
 
-        var filter = Builders<Data.Status>.Filter.Eq(x => x.Id, statusId);
-        var ret = await _db.GetStatusById(context, statusId, accountId);
+        var ret = await db.Statuses.FindAsync(statusId);
 
-        return ret;
+        return await ret!.ToGrpc(db, context);
     }
 
     [AllowAnonymous]
-    public override async Task<Accounts> GetRebloggedBy(GetRebloggedByRequest request, ServerCallContext context)
+    public override Task<Accounts> GetRebloggedBy(GetRebloggedByRequest request, ServerCallContext context)
     {
-        var host = context.GetHost();
-        //var accountId = context.GetAccountId(false);
-        var statusId = request.StatusId;
-
-        IMongoQueryable<string> q = from x in _db.Status.AsQueryable()
-                                    where x.ReblogedFromId == statusId
-                                    select x.AccountId;
-
-        var accountIds = await q.ToListAsync();
-        var distinct = accountIds.Distinct();
-        var result = await _db.Account.FindByIdsAsync(distinct);
-
-        return result.ToGrpc(host);
+        throw new NotImplementedException();
     }
 
     [AllowAnonymous]
@@ -51,7 +39,7 @@ public sealed class StatusApiService : Nextodon.Grpc.StatusApi.StatusApiBase
     {
         var statusId = (long)request.StatusId;
 
-        var q = from x in _pg.Favourites
+        var q = from x in db.Favourites
                 where x.StatusId == statusId
                 select x.AccountId;
 
@@ -62,11 +50,11 @@ public sealed class StatusApiService : Nextodon.Grpc.StatusApi.StatusApiBase
 
         foreach (var id in distinctIds)
         {
-            var result = await _pg.Accounts.FindAsync(id);
+            var result = await db.Accounts.FindAsync(id);
 
             if (result != null)
             {
-                var temp = await result.ToGrpc(_pg, context);
+                var temp = await result.ToGrpc(db, context);
                 v.Data.Add(temp);
             }
         }
@@ -75,49 +63,15 @@ public sealed class StatusApiService : Nextodon.Grpc.StatusApi.StatusApiBase
     }
 
     [AllowAnonymous]
-    public override async Task<Grpc.Context> GetContext(StringValue request, ServerCallContext context)
+    public override Task<Grpc.Context> GetContext(StringValue request, ServerCallContext context)
     {
-        var accountId = context.GetAuthToken(false);
-
-        var ctx = new Grpc.Context();
-
-        var theStatus = await _db.Status.FindByIdAsync(request.Value);
-
-        if (!string.IsNullOrEmpty(theStatus!.InReplyToId))
-        {
-            IMongoQueryable<string> q = from x in _db.Status.AsQueryable()
-                                        where x.Id == theStatus.InReplyToId
-                                        select x.Id;
-
-            var ancestorsIds = await q.ToListAsync();
-
-            foreach (var statusId in ancestorsIds)
-            {
-                var status = await _db.GetStatusById(context, statusId, accountId);
-                ctx.Ancestors.Add(status);
-            }
-        }
-        {
-            IMongoQueryable<string> q = from x in _db.Status.AsQueryable()
-                                        where x.InReplyToId == request.Value
-                                        select x.Id;
-
-            var descendantIds = await q.ToListAsync();
-
-            foreach (var statusId in descendantIds)
-            {
-                var status = await _db.GetStatusById(context, statusId, accountId);
-                ctx.Descendants.Add(status);
-            }
-        }
-
-        return ctx;
+        throw new NotImplementedException();
     }
 
     [AllowAnonymous]
     public override async Task<Grpc.Status> CreateStatus(CreateStatusRequest request, ServerCallContext context)
     {
-        var account = await context.GetAccount(_pg, true);
+        var account = await context.GetAccount(db, true);
         var host = context.GetHost();
         var channel = _es[account!.Id.ToString()];
 
@@ -129,8 +83,8 @@ public sealed class StatusApiService : Nextodon.Grpc.StatusApi.StatusApiBase
             UpdatedAt = now,
         };
 
-        await _pg.Conversations.AddAsync(conversation);
-        await _pg.SaveChangesAsync();
+        await db.Conversations.AddAsync(conversation);
+        await db.SaveChangesAsync();
 
         var status = new Data.PostgreSQL.Models.Status
         {
@@ -148,192 +102,104 @@ public sealed class StatusApiService : Nextodon.Grpc.StatusApi.StatusApiBase
             //InReplyToId = request.HasInReplyToId ? request.InReplyToId : null,
         };
 
-        await _pg.Statuses.AddAsync(status);
-        await _pg.SaveChangesAsync();
+        await db.Statuses.AddAsync(status);
+        await db.SaveChangesAsync();
 
         status.Uri = $"https://{host}/users/{account.Username}/statuses/{status.Id}";
-        await _pg.SaveChangesAsync();
+        await db.SaveChangesAsync();
 
-        var result = await status.ToGrpc(_pg, context);
+        var result = await status.ToGrpc(db, context);
         await channel.Writer.WriteAsync(result, context.CancellationToken);
 
         return result;
     }
 
-    public override async Task<Grpc.Status> DeleteStatus(StringValue request, ServerCallContext context)
+    [AllowAnonymous]
+    public override async Task<Grpc.Status> DeleteStatus(UInt64Value request, ServerCallContext context)
     {
-        var accountId = context.GetAuthToken(true);
-        var statusId = request.Value;
+        var statusId = (long)request.Value;
+        await db.Statuses.Where(x => x.Id == statusId).ExecuteDeleteAsync();
 
-        {
-            var filter = Builders<Data.Status>.Filter.Eq(x => x.Id, statusId);
-            var update = Builders<Data.Status>.Update.Set(x => x.Deleted, true);
-
-            await _db.Status.UpdateOneAsync(filter, update);
-        }
-
-        {
-            var filter = Builders<Data.Status_Account>.Filter.Eq(x => x.StatusId, statusId);
-            var update = Builders<Data.Status_Account>.Update.Set(x => x.Deleted, true);
-
-            await _db.StatusAccount.UpdateManyAsync(filter, update);
-        }
-
-        return new Grpc.Status { Id = statusId };
+        return new Grpc.Status { Id = statusId.ToString() };
     }
 
-    public override async Task<Grpc.Status> Favourite(StringValue request, ServerCallContext context)
+    [AllowAnonymous]
+    public override async Task<Grpc.Status> Favourite(UInt64Value request, ServerCallContext context)
     {
         var cancellationToken = context.CancellationToken;
-        var accountId = context.GetAuthToken(true);
-        var statusId = request.Value;
+        var account = await context.GetAccount(db, true);
+        var statusId = (long)request.Value;
+        var now = DateTime.UtcNow;
 
-        await _db.StatusAccount.UpdateAsync(statusId, accountId!, favorite: true, cancellationToken: cancellationToken);
+        var fav = await (from x in db.Favourites
+                         where x.StatusId == statusId && x.AccountId == account!.Id
+                         select x).FirstOrDefaultAsync();
 
-        var result = await _db.GetStatusById(context, statusId, accountId);
-        return result;
-
-    }
-
-    public override async Task<Grpc.Status> Unfavourite(StringValue request, ServerCallContext context)
-    {
-        var accountId = context.GetAuthToken(true);
-        var statusId = request.Value;
-
-        await _db.StatusAccount.UpdateAsync(statusId, accountId!, favorite: false);
-
-        var result = await _db.GetStatusById(context, statusId, accountId);
-        return result;
-    }
-
-    public override async Task<Grpc.Status> Bookmark(StringValue request, ServerCallContext context)
-    {
-        var accountId = context.GetAuthToken(true);
-        var statusId = request.Value;
-
-        await _db.StatusAccount.UpdateAsync(statusId, accountId!, bookmark: true);
-
-        var result = await _db.GetStatusById(context, request.Value, accountId);
-        return result;
-    }
-
-    public override async Task<Grpc.Status> Unbookmark(StringValue request, ServerCallContext context)
-    {
-        var accountId = context.GetAuthToken(true);
-        var statusId = request.Value;
-
-        await _db.StatusAccount.UpdateAsync(statusId, accountId!, bookmark: false);
-
-        var result = await _db.GetStatusById(context, request.Value, accountId);
-        return result;
-    }
-
-    public override async Task<Grpc.Status> Mute(StringValue request, ServerCallContext context)
-    {
-        var accountId = context.GetAuthToken(true);
-        var statusId = request.Value;
-
-        await _db.StatusAccount.UpdateAsync(statusId, accountId!, mute: true);
-
-        var result = await _db.GetStatusById(context, request.Value, accountId);
-        return result;
-    }
-
-    public override async Task<Grpc.Status> Unmute(StringValue request, ServerCallContext context)
-    {
-        var accountId = context.GetAuthToken(true);
-        var statusId = request.Value;
-
-        await _db.StatusAccount.UpdateAsync(statusId, accountId!, mute: false);
-
-        var result = await _db.GetStatusById(context, request.Value, accountId);
-        return result;
-    }
-
-    public override async Task<Grpc.Status> Pin(StringValue request, ServerCallContext context)
-    {
-        var accountId = context.GetAuthToken(true);
-        var statusId = request.Value;
-
-        await _db.StatusAccount.UpdateAsync(statusId, accountId!, pin: true);
-
-        var result = await _db.GetStatusById(context, request.Value, accountId);
-        return result;
-    }
-
-    public override async Task<Grpc.Status> Unpin(StringValue request, ServerCallContext context)
-    {
-        var accountId = context.GetAuthToken(true);
-        var statusId = request.Value;
-
-        await _db.StatusAccount.UpdateAsync(statusId, accountId!, pin: false);
-
-        // Return.
-        var result = await _db.GetStatusById(context, request.Value, accountId);
-        return result;
-    }
-
-    public override async Task<Grpc.Status> Reblog(ReblogRequest request, ServerCallContext context)
-    {
-        var accountId = context.GetAuthToken(true);
-        var statusId = request.StatusId;
-
-        var oldStatus = await _db.Status.FindByIdAsync(statusId);
-
-        if (oldStatus == null)
+        if (fav == null)
         {
-            throw new RpcException(new global::Grpc.Core.Status(StatusCode.NotFound, string.Empty));
+            fav = new Data.PostgreSQL.Models.Favourite
+            {
+                AccountId = account!.Id,
+                StatusId = statusId,
+                CreatedAt = now,
+                UpdatedAt = now,
+            };
         }
 
-        var status = new Data.Status
-        {
-            Text = oldStatus.Text,
-            CreatedAt = DateTime.UtcNow,
-            Visibility = Nextodon.Data.Visibility.Public,
-            MediaIds = oldStatus.MediaIds,
-            Sensitive = oldStatus.Sensitive,
-            Poll = oldStatus.Poll,
-            AccountId = accountId!,
-            ReblogedFromId = oldStatus.ReblogedFromId ?? request.StatusId,
-            Language = oldStatus.Language,
-            SpoilerText = oldStatus.SpoilerText,
-            InReplyToId = oldStatus.InReplyToId,
-            Deleted = false,
-        };
+        fav.UpdatedAt = now;
 
-        await _db.Status.InsertOneAsync(status);
+        db.Favourites.Update(fav);
+        await db.SaveChangesAsync(cancellationToken);
 
-        // Return.
-        var result = await _db.GetStatusById(context, status.Id, accountId);
-        return result;
+        var result = await db.Statuses.FindAsync(statusId, cancellationToken);
+        var ret = await result!.ToGrpc(db, context);
+
+        return ret;
+
     }
 
-    public override async Task<Grpc.Status> Unreblog(StringValue request, ServerCallContext context)
+    public override Task<Grpc.Status> Unfavourite(UInt64Value request, ServerCallContext context)
     {
-        var accountId = context.GetAuthToken(true);
-        var statusId = request.Value;
-        IMongoQueryable<string> q = from x in _db.Status.AsQueryable()
-                                    where x.AccountId == accountId
-                                    where x.ReblogedFromId == statusId
-                                    select x.Id;
+        throw new NotImplementedException();
+    }
 
-        var reblogs = await q.ToListAsync();
+    public override Task<Grpc.Status> Bookmark(UInt64Value request, ServerCallContext context)
+    {
+        throw new NotImplementedException();
+    }
 
-        {
-            var filter = Builders<Data.Status>.Filter.In(x => x.Id, reblogs);
-            var update = Builders<Data.Status>.Update.Set(x => x.Deleted, true);
+    public override Task<Grpc.Status> Unbookmark(UInt64Value request, ServerCallContext context)
+    {
+        throw new NotImplementedException();
+    }
 
-            await _db.Status.UpdateManyAsync(filter, update);
-        }
+    public override Task<Grpc.Status> Mute(UInt64Value request, ServerCallContext context)
+    {
+        throw new NotImplementedException();
+    }
 
-        {
-            var filter = Builders<Data.Status_Account>.Filter.In(x => x.StatusId, reblogs);
-            var update = Builders<Data.Status_Account>.Update.Set(x => x.Deleted, true);
+    public override Task<Grpc.Status> Unmute(UInt64Value request, ServerCallContext context)
+    {
+        throw new NotImplementedException();
+    }
 
-            await _db.StatusAccount.UpdateManyAsync(filter, update);
-        }
+    public override Task<Grpc.Status> Pin(UInt64Value request, ServerCallContext context)
+    {
+        throw new NotImplementedException();
+    }
 
-        var result = await _db.GetStatusById(context, statusId, accountId);
-        return result;
+    public override Task<Grpc.Status> Unpin(UInt64Value request, ServerCallContext context)
+    {
+        throw new NotImplementedException();
+    }
+
+    public override Task<Grpc.Status> Reblog(ReblogRequest request, ServerCallContext context)
+    {
+       throw new NotImplementedException();
+    }
+
+    public override Task<Grpc.Status> Unreblog(UInt64Value request, ServerCallContext context)
+    {
+        throw new NotImplementedException();
     }
 }
