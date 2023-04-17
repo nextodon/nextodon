@@ -91,7 +91,12 @@ public sealed class AuthenticationService : Authentication.AuthenticationBase
         db.Accounts.Update(account);
         await db.SaveChangesAsync();
 
-        var owner = account.Users.First();
+        var owner = account.Users.FirstOrDefault();
+
+        if (owner == null)
+        {
+            throw new RpcException(new global::Grpc.Core.Status(StatusCode.Internal, ""));
+        }
 
         var accountId = account.Id;
         var tokenHandler = new JwtSecurityTokenHandler();
@@ -124,6 +129,7 @@ public sealed class AuthenticationService : Authentication.AuthenticationBase
             LastUsedAt = now,
             Token = jwt,
             ResourceOwner = owner,
+            Scopes = "read write follow push",
         };
 
         db.OauthAccessTokens.Add(token);
