@@ -26,7 +26,7 @@ public partial class OauthAccessToken
 
     public DateTime? LastUsedAt { get; set; }
 
-    public string? LastUsedIp { get; set; }
+    public IPAddress? LastUsedIp { get; set; }
 
     public virtual OauthApplication? Application { get; set; }
 

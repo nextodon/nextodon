@@ -3,6 +3,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using Microsoft.EntityFrameworkCore;
 
 namespace Nextodon.Services;
 
@@ -11,20 +12,20 @@ public sealed class AuthenticationService : Authentication.AuthenticationBase
 {
     private readonly IConfiguration _config;
     private readonly ILogger<AuthenticationService> _logger;
-    private readonly Data.DataContext _db;
-    private readonly Data.PostgreSQL.MastodonContext _pg;
+    private readonly Data.PostgreSQL.MastodonContext db;
 
-    public AuthenticationService(ILogger<AuthenticationService> logger, IConfiguration config, DataContext db, Data.PostgreSQL.MastodonContext pg)
+    public AuthenticationService(ILogger<AuthenticationService> logger, IConfiguration config, Data.PostgreSQL.MastodonContext db)
     {
+        this.db = db;
         _logger = logger;
         _config = config;
-        _db = db;
-        _pg = pg;
     }
 
     [AllowAnonymous]
     public override async Task<JsonWebToken> SignIn(SignInRequest request, ServerCallContext context)
     {
+        var remoteIpAddress = context.GetHttpContext().Connection.RemoteIpAddress;
+
         var jwtOptions = _config.GetSection("JwtSettings").Get<JwtOptions>()!;
 
         var publicKeyBytes = request.PublicKey.ToArray();
@@ -40,23 +41,58 @@ public sealed class AuthenticationService : Authentication.AuthenticationBase
             throw new RpcException(new global::Grpc.Core.Status(StatusCode.InvalidArgument, string.Empty));
         }
 
-        var pk = publicKey.Compress().ToString();
+        var pk = publicKey.Compress().ToString().ToLower();
         var username = publicKey.ToEthereumAddress();
+        if (!username.StartsWith("0x", StringComparison.OrdinalIgnoreCase))
+        {
+            username = $"0x{username}";
+        }
 
-        var acc = (from x in _pg.Accounts
+        username = username.ToLower();
+
+        var account = (from x in db.Accounts.Include(y => y.Users).ThenInclude(y => y.OauthAccessTokens)
                        where x.Username == username
                        select x).FirstOrDefault();
 
-        if (acc == null)
+        var now = DateTime.UtcNow;
+
+        if (account == null)
         {
-            acc = new Data.PostgreSQL.Models.Account
+            account = new Data.PostgreSQL.Models.Account
             {
                 Username = username,
                 DisplayName = username,
+                CreatedAt = now,
+                UpdatedAt = now,
             };
+
+            var user = new Data.PostgreSQL.Models.User
+            {
+                Approved = true,
+                Account = account,
+                ConfirmedAt = now,
+                UpdatedAt = now,
+                ConfirmationSentAt = now,
+                CreatedAt = now,
+                LastSignInAt = now,
+
+                Locale = "en",
+                Email = $"{username}@nextodon.dev",
+                SignUpIp = remoteIpAddress,
+            };
+
+            account.Users.Add(user);
+            await db.Accounts.AddAsync(account);
+            await db.SaveChangesAsync();
         }
 
-        var account = await _db.Account.FindOrCreateAsync(username, pk);
+        account.UpdatedAt = now;
+
+        db.Accounts.Update(account);
+        await db.SaveChangesAsync();
+
+        var user = account.Users.First();
+
         var accountId = account.Id;
         var tokenHandler = new JwtSecurityTokenHandler();
 
@@ -68,7 +104,7 @@ public sealed class AuthenticationService : Authentication.AuthenticationBase
 
         var tokenDescriptor = new SecurityTokenDescriptor
         {
-            Subject = new ClaimsIdentity(new Claim[] { new Claim(JwtRegisteredClaimNames.UniqueName, accountId) }),
+            Subject = new ClaimsIdentity(new Claim[] { new Claim(JwtRegisteredClaimNames.UniqueName, user.Id.ToString()) }),
             Claims = new Dictionary<string, object>
             {
                 [JwtRegisteredClaimNames.UniqueName] = accountId,
@@ -79,12 +115,26 @@ public sealed class AuthenticationService : Authentication.AuthenticationBase
         };
 
         var jwttoken = tokenHandler.CreateToken(tokenDescriptor);
+        var jwt = tokenHandler.WriteToken(jwttoken);
 
-        var jwt = new JsonWebToken
+
+        var token = new Data.PostgreSQL.Models.OauthAccessToken
         {
-            Value = tokenHandler.WriteToken(jwttoken)
+            CreatedAt = now,
+            LastUsedAt = now,
+            Token = jwt,
+            ResourceOwner = user,
         };
 
-        return jwt;
+        db.OauthAccessTokens.Add(token);
+        await db.SaveChangesAsync();
+
+
+        var v = new JsonWebToken
+        {
+            Value = jwt,
+        };
+
+        return v;
     }
 }
