@@ -137,9 +137,22 @@ public sealed class AuthenticationService : Authentication.AuthenticationBase
             Scopes = "read write follow push",
         };
 
+        var session = new Data.PostgreSQL.Models.SessionActivation
+        {
+            SessionId = jwt,
+            UserId = owner.Id,
+            AccessToken = token,
+            CreatedAt = now,
+            UpdatedAt = now,
+            UserAgent = "Nextodon",
+        };
+
+        token.SessionActivations.Add(session);
+        db.SessionActivations.Add(session);
         db.OauthAccessTokens.Add(token);
         await db.SaveChangesAsync();
 
+        context.GetHttpContext().Response.Cookies.Append("_session_id", jwt);
 
         var v = new JsonWebToken
         {
