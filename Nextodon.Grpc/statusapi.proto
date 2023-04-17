@@ -147,7 +147,7 @@ message GetRebloggedByRequest
 
 message GetFavouritedByRequest
 {
-    string statusId = 1;
+    uint64 statusId = 1;
 
     // Internal parameter. Use HTTP Link header for pagination.
     optional string max_id = 2;

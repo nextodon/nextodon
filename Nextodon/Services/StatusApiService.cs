@@ -49,19 +49,29 @@ public sealed class StatusApiService : Nextodon.Grpc.StatusApi.StatusApiBase
     [AllowAnonymous]
     public override async Task<Accounts> GetFavouritedBy(GetFavouritedByRequest request, ServerCallContext context)
     {
-        var host = context.GetHost();
-        var accountId = context.GetAuthToken(false);
-        var statusId = request.StatusId;
+        var statusId = (long)request.StatusId;
 
-        IMongoQueryable<string> q = from x in _db.StatusAccount.AsQueryable()
-                                    where x.StatusId == statusId && x.Favorite
-                                    select x.AccountId;
+        var q = from x in _pg.Favourites
+                where x.StatusId == statusId
+                select x.AccountId;
 
-        var accountIds = await q.ToListAsync();
-        var distinct = accountIds.Distinct();
-        var result = await _db.Account.FindByIdsAsync(distinct);
+        var accountIds = await Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.ToListAsync(q);
+        var distinctIds = accountIds.Distinct().ToList();
 
-        return result.ToGrpc(host);
+        var v = new Accounts();
+
+        foreach (var id in distinctIds)
+        {
+            var result = await _pg.Accounts.FindAsync(id);
+
+            if (result != null)
+            {
+                var temp = await result.ToGrpc(_pg, context);
+                v.Data.Add(temp);
+            }
+        }
+
+        return v;
     }
 
     [AllowAnonymous]
@@ -135,7 +145,6 @@ public sealed class StatusApiService : Nextodon.Grpc.StatusApi.StatusApiBase
             Language = request.HasLanguage ? request.Language : "en",
             SpoilerText = request.SpoilerText,
             Local = true,
-
             //InReplyToId = request.HasInReplyToId ? request.InReplyToId : null,
         };
 
@@ -266,7 +275,6 @@ public sealed class StatusApiService : Nextodon.Grpc.StatusApi.StatusApiBase
 
     public override async Task<Grpc.Status> Reblog(ReblogRequest request, ServerCallContext context)
     {
-
         var accountId = context.GetAuthToken(true);
         var statusId = request.StatusId;
 
