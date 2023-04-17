@@ -91,7 +91,7 @@ public sealed class AuthenticationService : Authentication.AuthenticationBase
         db.Accounts.Update(account);
         await db.SaveChangesAsync();
 
-        var user = account.Users.First();
+        var owner = account.Users.First();
 
         var accountId = account.Id;
         var tokenHandler = new JwtSecurityTokenHandler();
@@ -104,7 +104,7 @@ public sealed class AuthenticationService : Authentication.AuthenticationBase
 
         var tokenDescriptor = new SecurityTokenDescriptor
         {
-            Subject = new ClaimsIdentity(new Claim[] { new Claim(JwtRegisteredClaimNames.UniqueName, user.Id.ToString()) }),
+            Subject = new ClaimsIdentity(new Claim[] { new Claim(JwtRegisteredClaimNames.UniqueName, owner.Id.ToString()) }),
             Claims = new Dictionary<string, object>
             {
                 [JwtRegisteredClaimNames.UniqueName] = accountId,
@@ -123,7 +123,7 @@ public sealed class AuthenticationService : Authentication.AuthenticationBase
             CreatedAt = now,
             LastUsedAt = now,
             Token = jwt,
-            ResourceOwner = user,
+            ResourceOwner = owner,
         };
 
         db.OauthAccessTokens.Add(token);
