@@ -4,6 +4,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using Microsoft.EntityFrameworkCore;
+using System.Text.Json;
 
 namespace Nextodon.Services;
 
@@ -109,7 +110,7 @@ public sealed class AuthenticationService : Authentication.AuthenticationBase
         var key = jwtOptions.SecretKey;
         var jwtkey = Encoding.UTF8.GetBytes(key);
 
-        var expires = DateTime.UtcNow.AddYears(1);
+        var expires = now.AddYears(1);
         var jti = Guid.NewGuid().ToString();
 
         var tokenDescriptor = new SecurityTokenDescriptor
@@ -137,9 +138,11 @@ public sealed class AuthenticationService : Authentication.AuthenticationBase
             Scopes = "read write follow push",
         };
 
+        var sessionId = Guid.NewGuid();
+
         var session = new Data.PostgreSQL.Models.SessionActivation
         {
-            SessionId = jwt,
+            SessionId = sessionId.ToString(),
             UserId = owner.Id,
             AccessToken = token,
             CreatedAt = now,
@@ -152,7 +155,20 @@ public sealed class AuthenticationService : Authentication.AuthenticationBase
         db.OauthAccessTokens.Add(token);
         await db.SaveChangesAsync();
 
-        context.GetHttpContext().Response.Cookies.Append("_session_id", jwt);
+        var rubySession = new
+        {
+            _rails = new
+            {
+                message = Convert.ToBase64String(Encoding.ASCII.GetBytes(@$"""{sessionId}""")),
+                exp = expires,
+                pur = "cookie._session_id"
+            }
+        };
+
+        var sessId = Convert.ToBase64String(JsonSerializer.SerializeToUtf8Bytes(rubySession));
+        var signature = HashHelpers.ByteArrayToHexString(HashHelpers.RubyCookieSign(HashHelpers.SecretKeyBase, sessId)).ToLower();
+
+        context.GetHttpContext().Response.Cookies.Append("_session_id", $"{sessId}--{signature}");
 
         var v = new JsonWebToken
         {

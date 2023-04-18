@@ -1,11 +1,56 @@
-﻿using Org.BouncyCastle.Crypto;
+﻿using Org.BouncyCastle.Asn1.Pkcs;
+using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Crypto.Digests;
+using Org.BouncyCastle.Crypto.Generators;
+using Org.BouncyCastle.Crypto.Macs;
+using Org.BouncyCastle.Crypto.Parameters;
+using System.Net;
+using System.Security.Cryptography;
 using System.Text;
 
 namespace Nextodon.Cryptography;
 
 public static class HashHelpers
 {
+    const string salt = "signed cookie";
+    public const string SecretKeyBase = "c1218cebd8a271be801ef50b96057be497313a64ba3a68c449198bc4f18533223af9968900cd8548c78b703cb6f9f5c92b5e28882c6044882b8c3975b5c65616";
+
+    public static byte[] RubyCookieSign(string secretKeyBase, byte[] cookie)
+    {
+        var @base = Encoding.ASCII.GetBytes(secretKeyBase);
+        var saltBytes = Encoding.ASCII.GetBytes(salt);
+        var signKey = PBKDF2_SHA1(@base, saltBytes, 1000, 64);
+
+        var result = HmacSha1Digest(cookie, signKey);
+
+        return result;
+    }
+
+    public static byte[] RubyCookieSign(string secretKeyBase, string cookie)
+    {
+        var @base = Encoding.ASCII.GetBytes(secretKeyBase);
+        var saltBytes = Encoding.ASCII.GetBytes(salt);
+        var signKey = PBKDF2_SHA1(@base, saltBytes, 1000, 64);
+        var cookieBytes = Encoding.ASCII.GetBytes(cookie);
+
+        var result = HmacSha1Digest(cookieBytes, signKey);
+
+        return result;
+    }
+
+    public static byte[] Key(string salt = "signed cookie")
+    {
+        var secretBytes = StringToByteArray(SecretKeyBase);
+        var saltBytes = Encoding.ASCII.GetBytes(salt);
+
+        var derivator = new Rfc2898DeriveBytes(secretBytes, saltBytes, 1000, HashAlgorithmName.SHA1);
+        var key = derivator.GetBytes(64);
+
+        var result = HmacSha1Digest(saltBytes, key);
+
+        return result;
+    }
+
     public static byte[] Hash160(byte[] input)
     {
         var digest = new RipeMD160Digest();
@@ -109,6 +154,32 @@ public static class HashHelpers
     {
         using var hmac = new System.Security.Cryptography.HMACSHA512(hmacKey);
         return hmac.ComputeHash(input);
+    }
+
+    public static byte[] PBKDF2_SHA1(byte[] password, byte[] salt, int iterations, int hashByteSize)
+    {
+        var pdb = new Pkcs5S2ParametersGenerator(new Sha1Digest());
+        pdb.Init(password, salt, iterations);
+        var key = (KeyParameter)pdb.GenerateDerivedMacParameters(hashByteSize * 8);
+        return key.GetKey();
+    }
+
+    public static byte[] HmacSha1Digest(byte[] input, byte[] key)
+    {
+        using var hmac = new HMACSHA1(key);
+        return hmac.ComputeHash(input);
+    }
+
+    public static byte[] HmacSha1(byte[] input, byte[] key)
+    {
+        var hmac = new HMac(new Sha1Digest());
+        hmac.Init(new KeyParameter(key));
+        byte[] result = new byte[hmac.GetMacSize()];
+
+        hmac.BlockUpdate(input, 0, input.Length);
+        hmac.DoFinal(result, 0);
+
+        return result;
     }
 
     public static byte[] Blake2b244(byte[] input)
