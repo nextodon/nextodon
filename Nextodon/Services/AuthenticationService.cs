@@ -26,6 +26,11 @@ public sealed class AuthenticationService : Authentication.AuthenticationBase
     public override async Task<JsonWebToken> SignIn(SignInRequest request, ServerCallContext context)
     {
         var remoteIpAddress = context.GetHttpContext().Connection.RemoteIpAddress;
+        var userAgent = context.GetHttpContext().Request.Headers.UserAgent.ToString();
+        if (string.IsNullOrWhiteSpace(userAgent))
+        {
+            userAgent = "Nextodon";
+        }
 
         var jwtOptions = _config.GetSection("JwtSettings").Get<JwtOptions>()!;
 
@@ -147,7 +152,7 @@ public sealed class AuthenticationService : Authentication.AuthenticationBase
             AccessToken = token,
             CreatedAt = now,
             UpdatedAt = now,
-            UserAgent = "Nextodon",
+            UserAgent = userAgent,
         };
 
         token.SessionActivations.Add(session);
