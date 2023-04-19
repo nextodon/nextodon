@@ -168,7 +168,15 @@ public sealed class AuthenticationService : Authentication.AuthenticationBase
         var sessId = Convert.ToBase64String(JsonSerializer.SerializeToUtf8Bytes(rubySession));
         var signature = HashHelpers.ByteArrayToHexString(HashHelpers.RubyCookieSign(HashHelpers.SecretKeyBase, sessId)).ToLower();
 
-        context.GetHttpContext().Response.Cookies.Append("_session_id", $"{sessId}--{signature}");
+        var cookieOptions = new CookieOptions
+        {
+            Expires = expires,
+            HttpOnly = true,
+            SameSite = SameSiteMode.Lax,
+        };
+
+
+        context.GetHttpContext().Response.Cookies.Append("_session_id", $"{sessId}--{signature}", cookieOptions);
 
         var v = new JsonWebToken
         {
