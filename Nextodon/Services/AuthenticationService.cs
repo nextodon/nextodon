@@ -116,7 +116,7 @@ public sealed class AuthenticationService : Authentication.AuthenticationBase
         var jwtkey = Encoding.UTF8.GetBytes(key);
 
         var expires = now.AddYears(1);
-        var jti = Guid.NewGuid().ToString();
+        var sessionId = Guid.NewGuid().ToString();
 
         var tokenDescriptor = new SecurityTokenDescriptor
         {
@@ -124,7 +124,7 @@ public sealed class AuthenticationService : Authentication.AuthenticationBase
             Claims = new Dictionary<string, object>
             {
                 [JwtRegisteredClaimNames.UniqueName] = accountId,
-                [JwtRegisteredClaimNames.Jti] = jti,
+                [JwtRegisteredClaimNames.Jti] = sessionId,
             },
             Expires = expires,
             SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(jwtkey), SecurityAlgorithms.HmacSha256Signature)
@@ -143,11 +143,9 @@ public sealed class AuthenticationService : Authentication.AuthenticationBase
             Scopes = "read write follow push",
         };
 
-        var sessionId = Guid.NewGuid();
-
         var session = new Data.PostgreSQL.Models.SessionActivation
         {
-            SessionId = sessionId.ToString(),
+            SessionId = sessionId,
             UserId = owner.Id,
             AccessToken = token,
             CreatedAt = now,
