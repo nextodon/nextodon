@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
-using System.Net;
 
 var builder = WebApplication.CreateBuilder(args);
 var config = builder.Configuration;
@@ -13,6 +12,7 @@ var config = builder.Configuration;
 
 builder.Services.Configure<Nextodon.Data.MongoDbSettings>(builder.Configuration.GetSection("MongoDb"));
 
+builder.Services.AddRazorComponents();
 builder.Services.AddControllers();
 
 builder.Services.AddGrpc().AddJsonTranscoding(options =>
@@ -95,6 +95,8 @@ app.MapGrpcService<TrendsService>().EnableGrpcWeb();
 app.MapGrpcReflectionService().EnableGrpcWeb();
 
 app.MapControllers();
+
+app.MapRazorComponents<Nextodon.Components.Authentication>();
 
 app.MapGet("/reqinfo", async context =>
 {
