@@ -9,7 +9,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nextodon.Grpc", "Nextodon.G
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nextodon.Data", "Nextodon.Data\Nextodon.Data.csproj", "{CF42AD93-1574-49E9-B843-E009FBC142E0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nextodon.Data.PostgreSQL", "Nextodon.Data.PostgreSQL\Nextodon.Data.PostgreSQL.csproj", "{68E5DB21-8E3F-4A28-B5BE-D6D7CA71252F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nextodon.Data.PostgreSQL", "Nextodon.Data.PostgreSQL\Nextodon.Data.PostgreSQL.csproj", "{68E5DB21-8E3F-4A28-B5BE-D6D7CA71252F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
