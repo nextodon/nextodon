@@ -24,7 +24,6 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\Nextodon.Data.PostgreSQL\Nextodon.Data.PostgreSQL.csproj" />
-		<ProjectReference Include="..\Nextodon.Data\Nextodon.Data.csproj" />
 		<ProjectReference Include="..\Nextodon.Grpc\Nextodon.Grpc.csproj" />
 	</ItemGroup>
 

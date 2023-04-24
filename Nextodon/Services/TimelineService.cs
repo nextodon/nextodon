@@ -6,16 +6,13 @@ namespace Nextodon.Services;
 [AllowAnonymous]
 public sealed class TimelineService : Nextodon.Grpc.Timeline.TimelineBase
 {
-
-    private readonly DataContext _db;
-    private readonly Data.PostgreSQL.MastodonContext _pg;
+    private readonly MastodonContext db;
     private readonly ILogger<TimelineService> _logger;
 
-    public TimelineService(ILogger<TimelineService> logger, DataContext db, Data.PostgreSQL.MastodonContext pg)
+    public TimelineService(ILogger<TimelineService> logger, MastodonContext db)
     {
         _logger = logger;
-        _db = db;
-        _pg = pg;
+        this.db = db;
     }
 
     public override async Task<Grpc.Statuses> GetPublic(GetPublicTimelineRequest request, ServerCallContext context)
@@ -31,7 +28,7 @@ public sealed class TimelineService : Nextodon.Grpc.Timeline.TimelineBase
 
         var limit = request.HasLimit ? request.Limit : 40;
 
-        IQueryable<Data.PostgreSQL.Models.Status> query = _pg.Statuses.OrderByDescending(x => x.CreatedAt);
+        IQueryable<Data.PostgreSQL.Models.Status> query = db.Statuses.OrderByDescending(x => x.CreatedAt);
 
 
         if (!string.IsNullOrWhiteSpace(maxId))
@@ -52,7 +49,7 @@ public sealed class TimelineService : Nextodon.Grpc.Timeline.TimelineBase
 
         foreach (var status in statuss)
         {
-            var s = await status.ToGrpc(_pg, context);
+            var s = await status.ToGrpc(db, context);
             v.Data.Add(s);
         }
 
@@ -73,7 +70,7 @@ public sealed class TimelineService : Nextodon.Grpc.Timeline.TimelineBase
 
         var limit = request.HasLimit ? request.Limit : 40;
 
-        IQueryable<Data.PostgreSQL.Models.Status> query = _pg.Statuses.OrderByDescending(x => x.CreatedAt);
+        IQueryable<Data.PostgreSQL.Models.Status> query = db.Statuses.OrderByDescending(x => x.CreatedAt);
 
         if (!string.IsNullOrWhiteSpace(maxId))
         {
@@ -94,7 +91,7 @@ public sealed class TimelineService : Nextodon.Grpc.Timeline.TimelineBase
 
         foreach (var status in statuss)
         {
-            var s = await status.ToGrpc(_pg, context);
+            var s = await status.ToGrpc(db, context);
             v.Data.Add(s);
         }
 

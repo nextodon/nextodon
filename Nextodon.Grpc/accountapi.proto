@@ -11,7 +11,7 @@ import "list.proto";
 import "relationship.proto";
 import "status.proto";
 import "tag.proto";
-import "token.proto";
+//import "token.proto";
 
 option csharp_namespace = "Nextodon.Grpc";
 

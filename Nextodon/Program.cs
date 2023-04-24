@@ -9,9 +9,6 @@ using System.Text;
 var builder = WebApplication.CreateBuilder(args);
 var config = builder.Configuration;
 
-
-builder.Services.Configure<Nextodon.Data.MongoDbSettings>(builder.Configuration.GetSection("MongoDb"));
-
 builder.Services.AddRazorComponents();
 builder.Services.AddControllers();
 
@@ -22,8 +19,7 @@ builder.Services.AddGrpc().AddJsonTranscoding(options =>
 });
 
 builder.Services.AddGrpcReflection();
-builder.Services.AddSingleton<DataContext>();
-builder.Services.AddDbContext<Nextodon.Data.PostgreSQL.MastodonContext>();
+builder.Services.AddDbContext<MastodonContext>();
 
 builder.Services.AddSingleton<EventSource<Nextodon.Grpc.Status>>();
 

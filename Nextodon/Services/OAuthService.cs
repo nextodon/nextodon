@@ -4,9 +4,9 @@ public sealed class OAuthService : Nextodon.Grpc.OAuth.OAuthBase
 {
 
     private readonly ILogger<OAuthService> _logger;
-    private readonly Data.DataContext _db;
+    private readonly MastodonContext _db;
 
-    public OAuthService(ILogger<OAuthService> logger, Data.DataContext db)
+    public OAuthService(ILogger<OAuthService> logger, MastodonContext db)
     {
         _logger = logger;
         _db = db;

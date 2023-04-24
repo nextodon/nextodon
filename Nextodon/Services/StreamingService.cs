@@ -3,13 +3,13 @@ namespace Nextodon.Services;
 public sealed class StreamingService : Nextodon.Grpc.Streaming.StreamingBase
 {
     private readonly ILogger<StreamingService> _logger;
-    private readonly Data.DataContext _db;
+    private readonly MastodonContext db;
     private readonly EventSource<Grpc.Status> _es;
 
-    public StreamingService(ILogger<StreamingService> logger, DataContext db, EventSource<Grpc.Status> es)
+    public StreamingService(ILogger<StreamingService> logger, MastodonContext db, EventSource<Grpc.Status> es)
     {
         _logger = logger;
-        _db = db;
+        this.db = db;
         _es = es;
     }
 
