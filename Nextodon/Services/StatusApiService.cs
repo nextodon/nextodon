@@ -93,7 +93,7 @@ public sealed class StatusApiService : Nextodon.Grpc.StatusApi.StatusApiBase
             CreatedAt = now,
             UpdatedAt = now,
             ConversationId = conversation.Id,
-            Visibility = (int)Data.Visibility.Public,
+            Visibility = 0,
             //OrderedMediaAttachmentIds = request.MediaIds?.ToList(),
             Sensitive = request.Sensitive,
             Language = request.HasLanguage ? request.Language : "en",

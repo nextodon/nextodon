@@ -1,5 +1,5 @@
 syntax = "proto3";
-import "google/protobuf/timestamp.proto";
+//import "google/protobuf/timestamp.proto";
 option csharp_namespace = "Nextodon.Grpc";
 
 message WebPushSubscription

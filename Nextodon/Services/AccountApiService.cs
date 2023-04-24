@@ -2,76 +2,73 @@ namespace Nextodon.Services;
 
 public sealed class AccountApiService : Nextodon.Grpc.AccountApi.AccountApiBase
 {
-
     private readonly ILogger<AccountApiService> _logger;
-    private readonly Data.DataContext _db;
-    private readonly Data.PostgreSQL.MastodonContext _pg;
+    private readonly MastodonContext _pg;
 
-    public AccountApiService(ILogger<AccountApiService> logger, DataContext db, Data.PostgreSQL.MastodonContext pg)
+    public AccountApiService(ILogger<AccountApiService> logger, Data.PostgreSQL.MastodonContext db)
     {
         _logger = logger;
-        _db = db;
-        _pg = pg;
+        _pg = db;
     }
 
-    [Authorize]
-    public override async Task<Grpc.Account> UpdateCredentials(UpdateCredentialsRequest request, ServerCallContext context)
-    {
-        var host = context.GetHost();
-        var accountId = context.GetAuthToken(true);
+    //[Authorize]
+    //public override async Task<Grpc.Account> UpdateCredentials(UpdateCredentialsRequest request, ServerCallContext context)
+    //{
+    //    var host = context.GetHost();
+    //    var accountId = context.GetAuthToken(true);
 
-        var filter = Builders<Data.Account>.Filter.Eq(x => x.Id, accountId);
-        var updates = new List<UpdateDefinition<Data.Account>>();
+    //    var filter = Builders<Data.Account>.Filter.Eq(x => x.Id, accountId);
+    //    var updates = new List<UpdateDefinition<Data.Account>>();
 
-        if (request.HasBot)
-        {
-            var u = Builders<Data.Account>.Update.Set(x => x.Bot, request.Bot);
-            updates.Add(u);
-        }
+    //    if (request.HasBot)
+    //    {
+    //        var u = Builders<Data.Account>.Update.Set(x => x.Bot, request.Bot);
+    //        updates.Add(u);
+    //    }
 
-        if (request.HasLocked)
-        {
-            var u = Builders<Data.Account>.Update.Set(x => x.Locked, request.Locked);
-            updates.Add(u);
-        }
+    //    if (request.HasLocked)
+    //    {
+    //        var u = Builders<Data.Account>.Update.Set(x => x.Locked, request.Locked);
+    //        updates.Add(u);
+    //    }
 
-        if (request.HasNote)
-        {
-            var u = Builders<Data.Account>.Update.Set(x => x.Note, request.Note);
-            updates.Add(u);
-        }
+    //    if (request.HasNote)
+    //    {
+    //        var u = Builders<Data.Account>.Update.Set(x => x.Note, request.Note);
+    //        updates.Add(u);
+    //    }
 
-        if (request.HasDiscoverable)
-        {
-            var u = Builders<Data.Account>.Update.Set(x => x.Discoverable, request.Discoverable);
-            updates.Add(u);
-        }
+    //    if (request.HasDiscoverable)
+    //    {
+    //        var u = Builders<Data.Account>.Update.Set(x => x.Discoverable, request.Discoverable);
+    //        updates.Add(u);
+    //    }
 
-        if (request.HasDisplayName)
-        {
-            var u = Builders<Data.Account>.Update.Set(x => x.DisplayName, request.DisplayName);
-            updates.Add(u);
-        }
+    //    if (request.HasDisplayName)
+    //    {
+    //        var u = Builders<Data.Account>.Update.Set(x => x.DisplayName, request.DisplayName);
+    //        updates.Add(u);
+    //    }
 
-        //if (request.Ha) {
-        //    var u = Builders<Data.Account>.Update.Set(x => x.DisplayName, request.DisplayName);
-        //    updates.Add(u);
-        //}
+    //    //if (request.Ha) {
+    //    //    var u = Builders<Data.Account>.Update.Set(x => x.DisplayName, request.DisplayName);
+    //    //    updates.Add(u);
+    //    //}
 
-        var update = Builders<Data.Account>.Update.Combine(updates);
+    //    var update = Builders<Data.Account>.Update.Combine(updates);
 
-        var account = await _db.Account.FindOneAndUpdateAsync(filter, update);
+    //    var account = await _db.Account.FindOneAndUpdateAsync(filter, update);
 
-        return account.ToGrpc(host);
-    }
+    //    return account.ToGrpc(host);
+    //}
 
-    public override async Task<Grpc.Account> GetById(StringValue request, ServerCallContext context)
-    {
-        var host = context.GetHost();
-        var account = await _db.Account.FindByIdAsync(request.Value);
+    //public override async Task<Grpc.Account> GetById(StringValue request, ServerCallContext context)
+    //{
+    //    var host = context.GetHost();
+    //    var account = await _db.Account.FindByIdAsync(request.Value);
 
-        return account == null ? throw new RpcException(new global::Grpc.Core.Status(StatusCode.NotFound, string.Empty)) : account.ToGrpc(host);
-    }
+    //    return account == null ? throw new RpcException(new global::Grpc.Core.Status(StatusCode.NotFound, string.Empty)) : account.ToGrpc(host);
+    //}
 
     /// <summary>
     /// Lookup account ID from Webfinger address.
@@ -89,93 +86,22 @@ public sealed class AccountApiService : Nextodon.Grpc.AccountApi.AccountApiBase
     }
 
     [Authorize]
-    public override async Task<Grpc.Account> VerifyCredentials(Empty request, ServerCallContext context)
+    public override Task<Grpc.Account> VerifyCredentials(Empty request, ServerCallContext context)
     {
-        var host = context.GetHost();
-        var account = await context.GetAccount(_pg, true);
-        return account == null ? throw new RpcException(new global::Grpc.Core.Status(StatusCode.NotFound, string.Empty)) : await account.ToGrpc(_pg, context);
+        return base.VerifyCredentials(request, context);
     }
 
     [Authorize]
     [AllowAnonymous]
-    public override async Task<Statuses> GetStatuses(GetStatusesRequest request, ServerCallContext context)
+    public override Task<Statuses> GetStatuses(GetStatusesRequest request, ServerCallContext context)
     {
-        var me = context.GetAuthToken(true);
-
-        var limit = request.HasLimit ? request.Limit : 40;
-        limit = Math.Min(limit, 80);
-
-        var onlyMedia = request.OnlyMedia;
-        var sinceId = request.HasSinceId ? request.SinceId : null;
-        var maxId = request.HasMaxId ? request.MaxId : null;
-        var minId = request.HasMinId ? request.MinId : null;
-
-        var sort = Builders<Data.Status>.Sort.Descending(x => x.CreatedAt);
-
-        var filters = new List<FilterDefinition<Data.Status>>
-        {
-            Builders<Data.Status>.Filter.Eq(x => x.AccountId, request.AccountId),
-            Builders<Data.Status>.Filter.Ne(x => x.Deleted, true),
-        };
-
-
-        if (!string.IsNullOrWhiteSpace(maxId))
-        {
-            filters.Add(Builders<Data.Status>.Filter.Gt(x => x.Id, maxId));
-        }
-
-        if (!string.IsNullOrWhiteSpace(minId))
-        {
-            filters.Add(Builders<Data.Status>.Filter.Lt(x => x.Id, minId));
-        }
-
-        var options = new FindOptions<Data.Status, Data.Status> { Limit = (int)limit };
-
-        var filter = Builders<Data.Status>.Filter.And(filters);
-        var cursor = await _db.Status.FindAsync(filter, options);
-        var statuses = await cursor.ToListAsync();
-
-        var v = new Statuses();
-
-        foreach (var status in statuses)
-        {
-            try
-            {
-                var s = await _db.GetStatusById(context, status.Id, me, true);
-                v.Data.Add(s);
-            }
-            catch { }
-        }
-
-        return v;
+        return base.GetStatuses(request, context);
     }
 
     [Authorize]
-    public override async Task<Statuses> GetFavourites(DefaultPaginationParameters request, ServerCallContext context)
+    public override Task<Statuses> GetFavourites(DefaultPaginationParameters request, ServerCallContext context)
     {
-
-        var accountId = context.GetAuthToken(true);
-
-        IMongoQueryable<string> q = from x in _db.StatusAccount.AsQueryable()
-                                    where x.AccountId == accountId
-                                    where x.Deleted != true
-                                    where x.Favorite == true
-                                    select x.StatusId;
-
-        var ids = await q.ToListAsync();
-        var v = new Statuses();
-
-        foreach (var id in ids)
-        {
-            try
-            {
-                var status = await _db.GetStatusById(context, id, accountId, true);
-                v.Data.Add(status);
-            }
-            catch { }
-        }
-
-        return v;
+        return base.GetFavourites(request, context);
     }
 
     public override Task<Tags> GetFollowedTags(DefaultPaginationParameters request, ServerCallContext context)
@@ -222,27 +148,9 @@ public sealed class AccountApiService : Nextodon.Grpc.AccountApi.AccountApiBase
     }
 
     [Authorize]
-    public override async Task<Relationships> GetRelationships(GetRelationshipsRequest request, ServerCallContext context)
+    public override Task<Relationships> GetRelationships(GetRelationshipsRequest request, ServerCallContext context)
     {
-        var accountId = context.GetAuthToken(true);
-        var ids = request.Ids.ToArray();
-
-        var v = new Relationships();
-
-        foreach (var id in ids)
-        {
-            var filter1 = Builders<Data.Relationship>.Filter.Eq(x => x.From, accountId);
-            var filter2 = Builders<Data.Relationship>.Filter.Eq(x => x.To, id);
-
-            var filter = filter1 & filter2;
-            var update = Builders<Data.Relationship>.Update.SetOnInsert(x => x.From, accountId).SetOnInsert(x => x.To, id);
-
-            var relationship = await _db.Relationship.FindOneAndUpdateAsync(filter, update, new FindOneAndUpdateOptions<Data.Relationship, Data.Relationship> { IsUpsert = true });
-
-            v.Data.Add(new Grpc.Relationship { Id = id, Note = relationship?.Note ?? string.Empty });
-        }
-
-        return v;
+        return base.GetRelationships(request, context);
     }
 
     public override Task<Lists> GetLists(StringValue request, ServerCallContext context)

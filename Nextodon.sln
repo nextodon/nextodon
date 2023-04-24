@@ -7,8 +7,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nextodon", "Nextodon\Nextod
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nextodon.Grpc", "Nextodon.Grpc\Nextodon.Grpc.csproj", "{2923C842-1AB7-457B-8CEA-1D0FEF71640F}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nextodon.Data", "Nextodon.Data\Nextodon.Data.csproj", "{CF42AD93-1574-49E9-B843-E009FBC142E0}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nextodon.Data.PostgreSQL", "Nextodon.Data.PostgreSQL\Nextodon.Data.PostgreSQL.csproj", "{68E5DB21-8E3F-4A28-B5BE-D6D7CA71252F}"
 EndProject
 Global
@@ -25,10 +23,6 @@ Global
 		{2923C842-1AB7-457B-8CEA-1D0FEF71640F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2923C842-1AB7-457B-8CEA-1D0FEF71640F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2923C842-1AB7-457B-8CEA-1D0FEF71640F}.Release|Any CPU.Build.0 = Release|Any CPU
-		{CF42AD93-1574-49E9-B843-E009FBC142E0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{CF42AD93-1574-49E9-B843-E009FBC142E0}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{CF42AD93-1574-49E9-B843-E009FBC142E0}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{CF42AD93-1574-49E9-B843-E009FBC142E0}.Release|Any CPU.Build.0 = Release|Any CPU
 		{68E5DB21-8E3F-4A28-B5BE-D6D7CA71252F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{68E5DB21-8E3F-4A28-B5BE-D6D7CA71252F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{68E5DB21-8E3F-4A28-B5BE-D6D7CA71252F}.Release|Any CPU.ActiveCfg = Release|Any CPU

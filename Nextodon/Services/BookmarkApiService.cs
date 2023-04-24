@@ -4,9 +4,9 @@ public sealed class BookmarkApiService : Nextodon.Grpc.BookmarkApi.BookmarkApiBa
 {
 
     private readonly ILogger<BookmarkApiService> _logger;
-    private readonly Data.DataContext _db;
+    private readonly MastodonContext _db;
 
-    public BookmarkApiService(ILogger<BookmarkApiService> logger, Data.DataContext db)
+    public BookmarkApiService(ILogger<BookmarkApiService> logger, MastodonContext db)
     {
         _logger = logger;
         _db = db;

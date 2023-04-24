@@ -4,9 +4,9 @@ public sealed class AppsService : Nextodon.Grpc.Apps.AppsBase
 {
 
     private readonly ILogger<AppsService> _logger;
-    private readonly Data.DataContext _db;
+    private readonly MastodonContext _db;
 
-    public AppsService(ILogger<AppsService> logger, Data.DataContext db)
+    public AppsService(ILogger<AppsService> logger, MastodonContext db)
     {
         _logger = logger;
         _db = db;
@@ -14,7 +14,6 @@ public sealed class AppsService : Nextodon.Grpc.Apps.AppsBase
 
     public override Task<Application> CreateApplication(CreateApplicationRequest request, ServerCallContext context)
     {
-
         var i = new Application
         {
             Name = "ForDem",
