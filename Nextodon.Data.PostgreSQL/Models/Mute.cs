@@ -5,6 +5,8 @@ namespace Nextodon.Data.PostgreSQL.Models;
 
 public partial class Mute
 {
+    public long Id { get; set; }
+
     public DateTime CreatedAt { get; set; }
 
     public DateTime UpdatedAt { get; set; }
@@ -12,8 +14,6 @@ public partial class Mute
     public bool? HideNotifications { get; set; }
 
     public long AccountId { get; set; }
-
-    public long Id { get; set; }
 
     public long TargetAccountId { get; set; }
 

@@ -13,7 +13,7 @@ public partial class Conversation
 
     public DateTime UpdatedAt { get; set; }
 
-    public virtual ICollection<AccountConversation> AccountConversations { get; } = new List<AccountConversation>();
+    public virtual ICollection<AccountConversation> AccountConversations { get; set; } = new List<AccountConversation>();
 
-    public virtual ICollection<ConversationMute> ConversationMutes { get; } = new List<ConversationMute>();
+    public virtual ICollection<ConversationMute> ConversationMutes { get; set; } = new List<ConversationMute>();
 }

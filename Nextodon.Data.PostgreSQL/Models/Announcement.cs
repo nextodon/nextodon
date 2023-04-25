@@ -27,7 +27,7 @@ public partial class Announcement
 
     public long[]? StatusIds { get; set; }
 
-    public virtual ICollection<AnnouncementMute> AnnouncementMutes { get; } = new List<AnnouncementMute>();
+    public virtual ICollection<AnnouncementMute> AnnouncementMutes { get; set; } = new List<AnnouncementMute>();
 
-    public virtual ICollection<AnnouncementReaction> AnnouncementReactions { get; } = new List<AnnouncementReaction>();
+    public virtual ICollection<AnnouncementReaction> AnnouncementReactions { get; set; } = new List<AnnouncementReaction>();
 }

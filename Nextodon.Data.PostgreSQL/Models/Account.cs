@@ -5,6 +5,8 @@ namespace Nextodon.Data.PostgreSQL.Models;
 
 public partial class Account
 {
+    public long Id { get; set; }
+
     public string Username { get; set; } = null!;
 
     public string? Domain { get; set; }
@@ -29,7 +31,7 @@ public partial class Account
 
     public string? AvatarContentType { get; set; }
 
-    public long? AvatarFileSize { get; set; }
+    public int? AvatarFileSize { get; set; }
 
     public DateTime? AvatarUpdatedAt { get; set; }
 
@@ -37,7 +39,7 @@ public partial class Account
 
     public string? HeaderContentType { get; set; }
 
-    public long? HeaderFileSize { get; set; }
+    public int? HeaderFileSize { get; set; }
 
     public DateTime? HeaderUpdatedAt { get; set; }
 
@@ -58,8 +60,6 @@ public partial class Account
     public string FollowersUrl { get; set; } = null!;
 
     public int Protocol { get; set; }
-
-    public long Id { get; set; }
 
     public bool Memorial { get; set; }
 
@@ -87,9 +87,9 @@ public partial class Account
 
     public string? DevicesUrl { get; set; }
 
-    public DateTime? SensitizedAt { get; set; }
-
     public int? SuspensionOrigin { get; set; }
+
+    public DateTime? SensitizedAt { get; set; }
 
     public bool? Trendable { get; set; }
 
@@ -97,131 +97,131 @@ public partial class Account
 
     public DateTime? RequestedReviewAt { get; set; }
 
-    public virtual ICollection<AccountAlias> AccountAliases { get; } = new List<AccountAlias>();
+    public virtual ICollection<AccountAlias> AccountAliases { get; set; } = new List<AccountAlias>();
 
-    public virtual ICollection<AccountConversation> AccountConversations { get; } = new List<AccountConversation>();
+    public virtual ICollection<AccountConversation> AccountConversations { get; set; } = new List<AccountConversation>();
 
-    public virtual ICollection<AccountDeletionRequest> AccountDeletionRequests { get; } = new List<AccountDeletionRequest>();
+    public virtual ICollection<AccountDeletionRequest> AccountDeletionRequests { get; set; } = new List<AccountDeletionRequest>();
 
-    public virtual ICollection<AccountDomainBlock> AccountDomainBlocks { get; } = new List<AccountDomainBlock>();
+    public virtual ICollection<AccountDomainBlock> AccountDomainBlocks { get; set; } = new List<AccountDomainBlock>();
 
-    public virtual ICollection<AccountMigration> AccountMigrationAccounts { get; } = new List<AccountMigration>();
+    public virtual ICollection<AccountMigration> AccountMigrationAccounts { get; set; } = new List<AccountMigration>();
 
-    public virtual ICollection<AccountMigration> AccountMigrationTargetAccounts { get; } = new List<AccountMigration>();
+    public virtual ICollection<AccountMigration> AccountMigrationTargetAccounts { get; set; } = new List<AccountMigration>();
 
-    public virtual ICollection<AccountModerationNote> AccountModerationNoteAccounts { get; } = new List<AccountModerationNote>();
+    public virtual ICollection<AccountModerationNote> AccountModerationNoteAccounts { get; set; } = new List<AccountModerationNote>();
 
-    public virtual ICollection<AccountModerationNote> AccountModerationNoteTargetAccounts { get; } = new List<AccountModerationNote>();
+    public virtual ICollection<AccountModerationNote> AccountModerationNoteTargetAccounts { get; set; } = new List<AccountModerationNote>();
 
-    public virtual ICollection<AccountNote> AccountNoteAccounts { get; } = new List<AccountNote>();
+    public virtual ICollection<AccountNote> AccountNoteAccounts { get; set; } = new List<AccountNote>();
 
-    public virtual ICollection<AccountNote> AccountNoteTargetAccounts { get; } = new List<AccountNote>();
+    public virtual ICollection<AccountNote> AccountNoteTargetAccounts { get; set; } = new List<AccountNote>();
 
-    public virtual ICollection<AccountPin> AccountPinAccounts { get; } = new List<AccountPin>();
+    public virtual ICollection<AccountPin> AccountPinAccounts { get; set; } = new List<AccountPin>();
 
-    public virtual ICollection<AccountPin> AccountPinTargetAccounts { get; } = new List<AccountPin>();
+    public virtual ICollection<AccountPin> AccountPinTargetAccounts { get; set; } = new List<AccountPin>();
 
     public virtual AccountStat? AccountStat { get; set; }
 
-    public virtual ICollection<AccountStatusesCleanupPolicy> AccountStatusesCleanupPolicies { get; } = new List<AccountStatusesCleanupPolicy>();
+    public virtual ICollection<AccountStatusesCleanupPolicy> AccountStatusesCleanupPolicies { get; set; } = new List<AccountStatusesCleanupPolicy>();
 
-    public virtual ICollection<AccountWarning> AccountWarningAccounts { get; } = new List<AccountWarning>();
+    public virtual ICollection<AccountWarning> AccountWarningAccounts { get; set; } = new List<AccountWarning>();
 
-    public virtual ICollection<AccountWarning> AccountWarningTargetAccounts { get; } = new List<AccountWarning>();
+    public virtual ICollection<AccountWarning> AccountWarningTargetAccounts { get; set; } = new List<AccountWarning>();
 
-    public virtual ICollection<AdminActionLog> AdminActionLogs { get; } = new List<AdminActionLog>();
+    public virtual ICollection<AdminActionLog> AdminActionLogs { get; set; } = new List<AdminActionLog>();
 
-    public virtual ICollection<AnnouncementMute> AnnouncementMutes { get; } = new List<AnnouncementMute>();
+    public virtual ICollection<AnnouncementMute> AnnouncementMutes { get; set; } = new List<AnnouncementMute>();
 
-    public virtual ICollection<AnnouncementReaction> AnnouncementReactions { get; } = new List<AnnouncementReaction>();
+    public virtual ICollection<AnnouncementReaction> AnnouncementReactions { get; set; } = new List<AnnouncementReaction>();
 
-    public virtual ICollection<Appeal> AppealAccounts { get; } = new List<Appeal>();
+    public virtual ICollection<Appeal> AppealAccounts { get; set; } = new List<Appeal>();
 
-    public virtual ICollection<Appeal> AppealApprovedByAccounts { get; } = new List<Appeal>();
+    public virtual ICollection<Appeal> AppealApprovedByAccounts { get; set; } = new List<Appeal>();
 
-    public virtual ICollection<Appeal> AppealRejectedByAccounts { get; } = new List<Appeal>();
+    public virtual ICollection<Appeal> AppealRejectedByAccounts { get; set; } = new List<Appeal>();
 
-    public virtual ICollection<Block> BlockAccounts { get; } = new List<Block>();
+    public virtual ICollection<Block> BlockAccounts { get; set; } = new List<Block>();
 
-    public virtual ICollection<Block> BlockTargetAccounts { get; } = new List<Block>();
+    public virtual ICollection<Block> BlockTargetAccounts { get; set; } = new List<Block>();
 
-    public virtual ICollection<Bookmark> Bookmarks { get; } = new List<Bookmark>();
+    public virtual ICollection<Bookmark> Bookmarks { get; set; } = new List<Bookmark>();
 
-    public virtual ICollection<CanonicalEmailBlock> CanonicalEmailBlocks { get; } = new List<CanonicalEmailBlock>();
+    public virtual ICollection<CanonicalEmailBlock> CanonicalEmailBlocks { get; set; } = new List<CanonicalEmailBlock>();
 
-    public virtual ICollection<ConversationMute> ConversationMutes { get; } = new List<ConversationMute>();
+    public virtual ICollection<ConversationMute> ConversationMutes { get; set; } = new List<ConversationMute>();
 
-    public virtual ICollection<CustomFilter> CustomFilters { get; } = new List<CustomFilter>();
+    public virtual ICollection<CustomFilter> CustomFilters { get; set; } = new List<CustomFilter>();
 
-    public virtual ICollection<Device> Devices { get; } = new List<Device>();
+    public virtual ICollection<Device> Devices { get; set; } = new List<Device>();
 
-    public virtual ICollection<EncryptedMessage> EncryptedMessages { get; } = new List<EncryptedMessage>();
+    public virtual ICollection<EncryptedMessage> EncryptedMessages { get; set; } = new List<EncryptedMessage>();
 
-    public virtual ICollection<Favourite> Favourites { get; } = new List<Favourite>();
+    public virtual ICollection<Favourite> Favourites { get; set; } = new List<Favourite>();
 
-    public virtual ICollection<FeaturedTag> FeaturedTags { get; } = new List<FeaturedTag>();
+    public virtual ICollection<FeaturedTag> FeaturedTags { get; set; } = new List<FeaturedTag>();
 
-    public virtual ICollection<Follow> FollowAccounts { get; } = new List<Follow>();
+    public virtual ICollection<Follow> FollowAccounts { get; set; } = new List<Follow>();
 
     public virtual FollowRecommendationSuppression? FollowRecommendationSuppression { get; set; }
 
-    public virtual ICollection<FollowRequest> FollowRequestAccounts { get; } = new List<FollowRequest>();
+    public virtual ICollection<FollowRequest> FollowRequestAccounts { get; set; } = new List<FollowRequest>();
 
-    public virtual ICollection<FollowRequest> FollowRequestTargetAccounts { get; } = new List<FollowRequest>();
+    public virtual ICollection<FollowRequest> FollowRequestTargetAccounts { get; set; } = new List<FollowRequest>();
 
-    public virtual ICollection<Follow> FollowTargetAccounts { get; } = new List<Follow>();
+    public virtual ICollection<Follow> FollowTargetAccounts { get; set; } = new List<Follow>();
 
-    public virtual ICollection<Import> Imports { get; } = new List<Import>();
+    public virtual ICollection<Import> Imports { get; set; } = new List<Import>();
 
-    public virtual ICollection<Account> InverseMovedToAccount { get; } = new List<Account>();
+    public virtual ICollection<Account> InverseMovedToAccount { get; set; } = new List<Account>();
 
-    public virtual ICollection<ListAccount> ListAccounts { get; } = new List<ListAccount>();
+    public virtual ICollection<ListAccount> ListAccounts { get; set; } = new List<ListAccount>();
 
-    public virtual ICollection<List> Lists { get; } = new List<List>();
+    public virtual ICollection<List> Lists { get; set; } = new List<List>();
 
-    public virtual ICollection<MediaAttachment> MediaAttachments { get; } = new List<MediaAttachment>();
+    public virtual ICollection<MediaAttachment> MediaAttachments { get; set; } = new List<MediaAttachment>();
 
-    public virtual ICollection<Mention> Mentions { get; } = new List<Mention>();
+    public virtual ICollection<Mention> Mentions { get; set; } = new List<Mention>();
 
     public virtual Account? MovedToAccount { get; set; }
 
-    public virtual ICollection<Mute> MuteAccounts { get; } = new List<Mute>();
+    public virtual ICollection<Mute> MuteAccounts { get; set; } = new List<Mute>();
 
-    public virtual ICollection<Mute> MuteTargetAccounts { get; } = new List<Mute>();
+    public virtual ICollection<Mute> MuteTargetAccounts { get; set; } = new List<Mute>();
 
-    public virtual ICollection<Notification> NotificationAccounts { get; } = new List<Notification>();
+    public virtual ICollection<Notification> NotificationAccounts { get; set; } = new List<Notification>();
 
-    public virtual ICollection<Notification> NotificationFromAccounts { get; } = new List<Notification>();
+    public virtual ICollection<Notification> NotificationFromAccounts { get; set; } = new List<Notification>();
 
-    public virtual ICollection<PollVote> PollVotes { get; } = new List<PollVote>();
+    public virtual ICollection<PollVote> PollVotes { get; set; } = new List<PollVote>();
 
-    public virtual ICollection<Poll> Polls { get; } = new List<Poll>();
+    public virtual ICollection<Poll> Polls { get; set; } = new List<Poll>();
 
-    public virtual ICollection<Report> ReportAccounts { get; } = new List<Report>();
+    public virtual ICollection<Report> ReportAccounts { get; set; } = new List<Report>();
 
-    public virtual ICollection<Report> ReportActionTakenByAccounts { get; } = new List<Report>();
+    public virtual ICollection<Report> ReportActionTakenByAccounts { get; set; } = new List<Report>();
 
-    public virtual ICollection<Report> ReportAssignedAccounts { get; } = new List<Report>();
+    public virtual ICollection<Report> ReportAssignedAccounts { get; set; } = new List<Report>();
 
-    public virtual ICollection<ReportNote> ReportNotes { get; } = new List<ReportNote>();
+    public virtual ICollection<ReportNote> ReportNotes { get; set; } = new List<ReportNote>();
 
-    public virtual ICollection<Report> ReportTargetAccounts { get; } = new List<Report>();
+    public virtual ICollection<Report> ReportTargetAccounts { get; set; } = new List<Report>();
 
-    public virtual ICollection<ScheduledStatus> ScheduledStatuses { get; } = new List<ScheduledStatus>();
+    public virtual ICollection<ScheduledStatus> ScheduledStatuses { get; set; } = new List<ScheduledStatus>();
 
-    public virtual ICollection<Status> StatusAccounts { get; } = new List<Status>();
+    public virtual ICollection<Status> StatusAccounts { get; set; } = new List<Status>();
 
-    public virtual ICollection<StatusEdit> StatusEdits { get; } = new List<StatusEdit>();
+    public virtual ICollection<StatusEdit> StatusEdits { get; set; } = new List<StatusEdit>();
 
-    public virtual ICollection<Status> StatusInReplyToAccounts { get; } = new List<Status>();
+    public virtual ICollection<Status> StatusInReplyToAccounts { get; set; } = new List<Status>();
 
-    public virtual ICollection<StatusPin> StatusPins { get; } = new List<StatusPin>();
+    public virtual ICollection<StatusPin> StatusPins { get; set; } = new List<StatusPin>();
 
-    public virtual ICollection<StatusTrend> StatusTrends { get; } = new List<StatusTrend>();
+    public virtual ICollection<StatusTrend> StatusTrends { get; set; } = new List<StatusTrend>();
 
-    public virtual ICollection<TagFollow> TagFollows { get; } = new List<TagFollow>();
+    public virtual ICollection<TagFollow> TagFollows { get; set; } = new List<TagFollow>();
 
-    public virtual ICollection<Tombstone> Tombstones { get; } = new List<Tombstone>();
+    public virtual ICollection<Tombstone> Tombstones { get; set; } = new List<Tombstone>();
 
-    public virtual ICollection<User> Users { get; } = new List<User>();
+    public virtual ICollection<User> Users { get; set; } = new List<User>();
 }

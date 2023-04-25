@@ -8,7 +8,7 @@ public partial class UserIp
 {
     public long? UserId { get; set; }
 
-    public string? Ip { get; set; }
+    public IPAddress? Ip { get; set; }
 
     public DateTime? UsedAt { get; set; }
 }

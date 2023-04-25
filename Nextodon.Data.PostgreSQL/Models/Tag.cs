@@ -5,13 +5,13 @@ namespace Nextodon.Data.PostgreSQL.Models;
 
 public partial class Tag
 {
+    public long Id { get; set; }
+
     public string Name { get; set; } = null!;
 
     public DateTime CreatedAt { get; set; }
 
     public DateTime UpdatedAt { get; set; }
-
-    public long Id { get; set; }
 
     public bool? Usable { get; set; }
 
@@ -31,7 +31,7 @@ public partial class Tag
 
     public string? DisplayName { get; set; }
 
-    public virtual ICollection<FeaturedTag> FeaturedTags { get; } = new List<FeaturedTag>();
+    public virtual ICollection<FeaturedTag> FeaturedTags { get; set; } = new List<FeaturedTag>();
 
-    public virtual ICollection<TagFollow> TagFollows { get; } = new List<TagFollow>();
+    public virtual ICollection<TagFollow> TagFollows { get; set; } = new List<TagFollow>();
 }

@@ -5,6 +5,8 @@ namespace Nextodon.Data.PostgreSQL.Models;
 
 public partial class Import
 {
+    public long Id { get; set; }
+
     public int Type { get; set; }
 
     public bool Approved { get; set; }
@@ -17,13 +19,11 @@ public partial class Import
 
     public string? DataContentType { get; set; }
 
-    public long? DataFileSize { get; set; }
+    public int? DataFileSize { get; set; }
 
     public DateTime? DataUpdatedAt { get; set; }
 
     public long AccountId { get; set; }
-
-    public long Id { get; set; }
 
     public bool Overwrite { get; set; }
 

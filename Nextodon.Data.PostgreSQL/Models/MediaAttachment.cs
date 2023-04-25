@@ -5,13 +5,15 @@ namespace Nextodon.Data.PostgreSQL.Models;
 
 public partial class MediaAttachment
 {
+    public long Id { get; set; }
+
     public long? StatusId { get; set; }
 
     public string? FileFileName { get; set; }
 
     public string? FileContentType { get; set; }
 
-    public long? FileFileSize { get; set; }
+    public int? FileFileSize { get; set; }
 
     public DateTime? FileUpdatedAt { get; set; }
 
@@ -29,8 +31,6 @@ public partial class MediaAttachment
 
     public long? AccountId { get; set; }
 
-    public long Id { get; set; }
-
     public string? Description { get; set; }
 
     public long? ScheduledStatusId { get; set; }
@@ -45,7 +45,7 @@ public partial class MediaAttachment
 
     public string? ThumbnailContentType { get; set; }
 
-    public long? ThumbnailFileSize { get; set; }
+    public int? ThumbnailFileSize { get; set; }
 
     public DateTime? ThumbnailUpdatedAt { get; set; }
 

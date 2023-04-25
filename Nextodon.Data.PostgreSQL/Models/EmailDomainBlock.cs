@@ -15,7 +15,7 @@ public partial class EmailDomainBlock
 
     public long? ParentId { get; set; }
 
-    public virtual ICollection<EmailDomainBlock> InverseParent { get; } = new List<EmailDomainBlock>();
+    public virtual ICollection<EmailDomainBlock> InverseParent { get; set; } = new List<EmailDomainBlock>();
 
     public virtual EmailDomainBlock? Parent { get; set; }
 }

@@ -5,6 +5,8 @@ namespace Nextodon.Data.PostgreSQL.Models;
 
 public partial class OauthApplication
 {
+    public long Id { get; set; }
+
     public string Name { get; set; } = null!;
 
     public string Uid { get; set; } = null!;
@@ -25,17 +27,15 @@ public partial class OauthApplication
 
     public string? OwnerType { get; set; }
 
-    public long Id { get; set; }
-
     public long? OwnerId { get; set; }
 
     public bool? Confidential { get; set; }
 
-    public virtual ICollection<OauthAccessGrant> OauthAccessGrants { get; } = new List<OauthAccessGrant>();
+    public virtual ICollection<OauthAccessGrant> OauthAccessGrants { get; set; } = new List<OauthAccessGrant>();
 
-    public virtual ICollection<OauthAccessToken> OauthAccessTokens { get; } = new List<OauthAccessToken>();
+    public virtual ICollection<OauthAccessToken> OauthAccessTokens { get; set; } = new List<OauthAccessToken>();
 
     public virtual User? Owner { get; set; }
 
-    public virtual ICollection<User> Users { get; } = new List<User>();
+    public virtual ICollection<User> Users { get; set; } = new List<User>();
 }

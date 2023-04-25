@@ -15,5 +15,5 @@ public partial class ScheduledStatus
 
     public virtual Account? Account { get; set; }
 
-    public virtual ICollection<MediaAttachment> MediaAttachments { get; } = new List<MediaAttachment>();
+    public virtual ICollection<MediaAttachment> MediaAttachments { get; set; } = new List<MediaAttachment>();
 }

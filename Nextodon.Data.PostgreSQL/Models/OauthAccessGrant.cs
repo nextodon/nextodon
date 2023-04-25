@@ -5,6 +5,8 @@ namespace Nextodon.Data.PostgreSQL.Models;
 
 public partial class OauthAccessGrant
 {
+    public long Id { get; set; }
+
     public string Token { get; set; } = null!;
 
     public int ExpiresIn { get; set; }
@@ -18,8 +20,6 @@ public partial class OauthAccessGrant
     public string? Scopes { get; set; }
 
     public long ApplicationId { get; set; }
-
-    public long Id { get; set; }
 
     public long ResourceOwnerId { get; set; }
 
