@@ -14,7 +14,7 @@ public partial class IpBlock
 
     public DateTime? ExpiresAt { get; set; }
 
-    public IPAddress Ip { get; set; } = null!;
+    public string Ip { get; set; } = null!;
 
     public int Severity { get; set; }
 
