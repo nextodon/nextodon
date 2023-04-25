@@ -6,6 +6,8 @@ namespace Nextodon.Data.PostgreSQL.Models;
 
 public partial class User
 {
+    public long Id { get; set; }
+
     public string Email { get; set; } = null!;
 
     public DateTime CreatedAt { get; set; }
@@ -52,8 +54,6 @@ public partial class User
 
     public long AccountId { get; set; }
 
-    public long Id { get; set; }
-
     public bool Disabled { get; set; }
 
     public bool Moderator { get; set; }
@@ -80,35 +80,35 @@ public partial class User
 
     public virtual Account Account { get; set; } = null!;
 
-    public virtual ICollection<Backup> Backups { get; } = new List<Backup>();
+    public virtual ICollection<Backup> Backups { get; set; } = new List<Backup>();
 
     public virtual OauthApplication? CreatedByApplication { get; set; }
 
-    public virtual ICollection<Identity> Identities { get; } = new List<Identity>();
+    public virtual ICollection<Identity> Identities { get; set; } = new List<Identity>();
 
     public virtual Invite? Invite { get; set; }
 
-    public virtual ICollection<Invite> Invites { get; } = new List<Invite>();
+    public virtual ICollection<Invite> Invites { get; set; } = new List<Invite>();
 
-    public virtual ICollection<LoginActivity> LoginActivities { get; } = new List<LoginActivity>();
+    public virtual ICollection<LoginActivity> LoginActivities { get; set; } = new List<LoginActivity>();
 
-    public virtual ICollection<Marker> Markers { get; } = new List<Marker>();
+    public virtual ICollection<Marker> Markers { get; set; } = new List<Marker>();
 
-    public virtual ICollection<OauthAccessGrant> OauthAccessGrants { get; } = new List<OauthAccessGrant>();
+    public virtual ICollection<OauthAccessGrant> OauthAccessGrants { get; set; } = new List<OauthAccessGrant>();
 
-    public virtual ICollection<OauthAccessToken> OauthAccessTokens { get; } = new List<OauthAccessToken>();
+    public virtual ICollection<OauthAccessToken> OauthAccessTokens { get; set; } = new List<OauthAccessToken>();
 
-    public virtual ICollection<OauthApplication> OauthApplications { get; } = new List<OauthApplication>();
+    public virtual ICollection<OauthApplication> OauthApplications { get; set; } = new List<OauthApplication>();
 
     public virtual UserRole? Role { get; set; }
 
-    public virtual ICollection<SessionActivation> SessionActivations { get; } = new List<SessionActivation>();
+    public virtual ICollection<SessionActivation> SessionActivations { get; set; } = new List<SessionActivation>();
 
-    public virtual ICollection<UserInviteRequest> UserInviteRequests { get; } = new List<UserInviteRequest>();
+    public virtual ICollection<UserInviteRequest> UserInviteRequests { get; set; } = new List<UserInviteRequest>();
 
-    public virtual ICollection<WebPushSubscription> WebPushSubscriptions { get; } = new List<WebPushSubscription>();
+    public virtual ICollection<WebPushSubscription> WebPushSubscriptions { get; set; } = new List<WebPushSubscription>();
 
     public virtual WebSetting? WebSetting { get; set; }
 
-    public virtual ICollection<WebauthnCredential> WebauthnCredentials { get; } = new List<WebauthnCredential>();
+    public virtual ICollection<WebauthnCredential> WebauthnCredentials { get; set; } = new List<WebauthnCredential>();
 }

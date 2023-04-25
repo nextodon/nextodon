@@ -80,8 +80,6 @@ public partial class MastodonContext : DbContext
 
     public virtual DbSet<CustomFilterStatus> CustomFilterStatuses { get; set; }
 
-    public virtual DbSet<DeprecatedPreviewCard> DeprecatedPreviewCards { get; set; }
-
     public virtual DbSet<Device> Devices { get; set; }
 
     public virtual DbSet<DomainAllow> DomainAllows { get; set; }
@@ -209,14 +207,13 @@ public partial class MastodonContext : DbContext
     public virtual DbSet<Webhook> Webhooks { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseNpgsql("Host=151.247.225.135;Port=55432;Database=mastodon;Username=postgres;Password=postgres");
+        => optionsBuilder.UseNpgsql("Name=ConnectionStrings:DefaultConnection");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Account>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("index_accounts_on_id");
+            entity.HasKey(e => e.Id).HasName("accounts_pkey");
 
             entity.ToTable("accounts");
 
@@ -445,7 +442,7 @@ public partial class MastodonContext : DbContext
 
         modelBuilder.Entity<AccountDomainBlock>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("index_account_domain_blocks_on_id");
+            entity.HasKey(e => e.Id).HasName("account_domain_blocks_pkey");
 
             entity.ToTable("account_domain_blocks");
 
@@ -1030,7 +1027,7 @@ public partial class MastodonContext : DbContext
 
         modelBuilder.Entity<Block>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("index_blocks_on_id");
+            entity.HasKey(e => e.Id).HasName("blocks_pkey");
 
             entity.ToTable("blocks");
 
@@ -1143,7 +1140,7 @@ public partial class MastodonContext : DbContext
 
         modelBuilder.Entity<ConversationMute>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("index_conversation_mutes_on_id");
+            entity.HasKey(e => e.Id).HasName("conversation_mutes_pkey");
 
             entity.ToTable("conversation_mutes");
 
@@ -1321,71 +1318,6 @@ public partial class MastodonContext : DbContext
                 .HasConstraintName("fk_rails_2f6d20c0cf");
         });
 
-        modelBuilder.Entity<DeprecatedPreviewCard>(entity =>
-        {
-            entity.HasKey(e => e.Id).HasName("index_deprecated_preview_cards_on_id");
-
-            entity.ToTable("deprecated_preview_cards");
-
-            entity.HasIndex(e => e.StatusId, "index_deprecated_preview_cards_on_status_id").IsUnique();
-
-            entity.Property(e => e.Id).HasColumnName("id");
-            entity.Property(e => e.AuthorName)
-                .HasDefaultValueSql("''::character varying")
-                .HasColumnType("character varying")
-                .HasColumnName("author_name");
-            entity.Property(e => e.AuthorUrl)
-                .HasDefaultValueSql("''::character varying")
-                .HasColumnType("character varying")
-                .HasColumnName("author_url");
-            entity.Property(e => e.CreatedAt)
-                .HasColumnType("timestamp without time zone")
-                .HasColumnName("created_at");
-            entity.Property(e => e.Description)
-                .HasColumnType("character varying")
-                .HasColumnName("description");
-            entity.Property(e => e.Height).HasColumnName("height");
-            entity.Property(e => e.Html)
-                .HasDefaultValueSql("''::text")
-                .HasColumnName("html");
-            entity.Property(e => e.ImageContentType)
-                .HasColumnType("character varying")
-                .HasColumnName("image_content_type");
-            entity.Property(e => e.ImageFileName)
-                .HasColumnType("character varying")
-                .HasColumnName("image_file_name");
-            entity.Property(e => e.ImageFileSize).HasColumnName("image_file_size");
-            entity.Property(e => e.ImageUpdatedAt)
-                .HasColumnType("timestamp without time zone")
-                .HasColumnName("image_updated_at");
-            entity.Property(e => e.ProviderName)
-                .HasDefaultValueSql("''::character varying")
-                .HasColumnType("character varying")
-                .HasColumnName("provider_name");
-            entity.Property(e => e.ProviderUrl)
-                .HasDefaultValueSql("''::character varying")
-                .HasColumnType("character varying")
-                .HasColumnName("provider_url");
-            entity.Property(e => e.StatusId).HasColumnName("status_id");
-            entity.Property(e => e.Title)
-                .HasColumnType("character varying")
-                .HasColumnName("title");
-            entity.Property(e => e.Type).HasColumnName("type");
-            entity.Property(e => e.UpdatedAt)
-                .HasColumnType("timestamp without time zone")
-                .HasColumnName("updated_at");
-            entity.Property(e => e.Url)
-                .HasDefaultValueSql("''::character varying")
-                .HasColumnType("character varying")
-                .HasColumnName("url");
-            entity.Property(e => e.Width).HasColumnName("width");
-
-            entity.HasOne(d => d.Status).WithOne(p => p.DeprecatedPreviewCard)
-                .HasForeignKey<DeprecatedPreviewCard>(d => d.StatusId)
-                .OnDelete(DeleteBehavior.Cascade)
-                .HasConstraintName("fk_rails_e0cd3ac7fe");
-        });
-
         modelBuilder.Entity<Device>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("devices_pkey");
@@ -1454,7 +1386,7 @@ public partial class MastodonContext : DbContext
 
         modelBuilder.Entity<DomainBlock>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("index_domain_blocks_on_id");
+            entity.HasKey(e => e.Id).HasName("domain_blocks_pkey");
 
             entity.ToTable("domain_blocks");
 
@@ -1557,7 +1489,7 @@ public partial class MastodonContext : DbContext
 
         modelBuilder.Entity<Favourite>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("index_favourites_on_id");
+            entity.HasKey(e => e.Id).HasName("favourites_pkey");
 
             entity.ToTable("favourites");
 
@@ -1624,7 +1556,7 @@ public partial class MastodonContext : DbContext
 
         modelBuilder.Entity<Follow>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("index_follows_on_id");
+            entity.HasKey(e => e.Id).HasName("follows_pkey");
 
             entity.ToTable("follows");
 
@@ -1697,7 +1629,7 @@ public partial class MastodonContext : DbContext
 
         modelBuilder.Entity<FollowRequest>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("index_follow_requests_on_id");
+            entity.HasKey(e => e.Id).HasName("follow_requests_pkey");
 
             entity.ToTable("follow_requests");
 
@@ -1735,7 +1667,7 @@ public partial class MastodonContext : DbContext
 
         modelBuilder.Entity<Identity>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("index_identities_on_id");
+            entity.HasKey(e => e.Id).HasName("identities_pkey");
 
             entity.ToTable("identities");
 
@@ -1766,7 +1698,7 @@ public partial class MastodonContext : DbContext
 
         modelBuilder.Entity<Import>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("index_imports_on_id");
+            entity.HasKey(e => e.Id).HasName("imports_pkey");
 
             entity.ToTable("imports");
 
@@ -1993,7 +1925,7 @@ public partial class MastodonContext : DbContext
 
         modelBuilder.Entity<MediaAttachment>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("index_media_attachments_on_id");
+            entity.HasKey(e => e.Id).HasName("media_attachments_pkey");
 
             entity.ToTable("media_attachments");
 
@@ -2079,7 +2011,7 @@ public partial class MastodonContext : DbContext
 
         modelBuilder.Entity<Mention>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("index_mentions_on_id");
+            entity.HasKey(e => e.Id).HasName("mentions_pkey");
 
             entity.ToTable("mentions");
 
@@ -2111,7 +2043,7 @@ public partial class MastodonContext : DbContext
 
         modelBuilder.Entity<Mute>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("index_mutes_on_id");
+            entity.HasKey(e => e.Id).HasName("mutes_pkey");
 
             entity.ToTable("mutes");
 
@@ -2147,7 +2079,7 @@ public partial class MastodonContext : DbContext
 
         modelBuilder.Entity<Notification>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("index_notifications_on_id");
+            entity.HasKey(e => e.Id).HasName("notifications_pkey");
 
             entity.ToTable("notifications");
 
@@ -2185,7 +2117,7 @@ public partial class MastodonContext : DbContext
 
         modelBuilder.Entity<OauthAccessGrant>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("index_oauth_access_grants_on_id");
+            entity.HasKey(e => e.Id).HasName("oauth_access_grants_pkey");
 
             entity.ToTable("oauth_access_grants");
 
@@ -2222,7 +2154,7 @@ public partial class MastodonContext : DbContext
 
         modelBuilder.Entity<OauthAccessToken>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("index_oauth_access_tokens_on_id");
+            entity.HasKey(e => e.Id).HasName("oauth_access_tokens_pkey");
 
             entity.ToTable("oauth_access_tokens");
 
@@ -2272,7 +2204,7 @@ public partial class MastodonContext : DbContext
 
         modelBuilder.Entity<OauthApplication>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("index_oauth_applications_on_id");
+            entity.HasKey(e => e.Id).HasName("oauth_applications_pkey");
 
             entity.ToTable("oauth_applications");
 
@@ -2632,7 +2564,7 @@ public partial class MastodonContext : DbContext
 
         modelBuilder.Entity<Report>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("index_reports_on_id");
+            entity.HasKey(e => e.Id).HasName("reports_pkey");
 
             entity.ToTable("reports");
 
@@ -2661,7 +2593,7 @@ public partial class MastodonContext : DbContext
             entity.Property(e => e.Forwarded).HasColumnName("forwarded");
             entity.Property(e => e.RuleIds).HasColumnName("rule_ids");
             entity.Property(e => e.StatusIds)
-                .HasDefaultValueSql("'{}'::integer[]")
+                .HasDefaultValueSql("'{}'::bigint[]")
                 .HasColumnName("status_ids");
             entity.Property(e => e.TargetAccountId).HasColumnName("target_account_id");
             entity.Property(e => e.UpdatedAt)
@@ -2821,7 +2753,7 @@ public partial class MastodonContext : DbContext
 
         modelBuilder.Entity<Setting>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("index_settings_on_id");
+            entity.HasKey(e => e.Id).HasName("settings_pkey");
 
             entity.ToTable("settings");
 
@@ -3033,12 +2965,12 @@ public partial class MastodonContext : DbContext
             entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.AccountId).HasColumnName("account_id");
             entity.Property(e => e.CreatedAt)
-                .HasDefaultValueSql("CURRENT_TIMESTAMP")
+                .HasDefaultValueSql("now()")
                 .HasColumnType("timestamp without time zone")
                 .HasColumnName("created_at");
             entity.Property(e => e.StatusId).HasColumnName("status_id");
             entity.Property(e => e.UpdatedAt)
-                .HasDefaultValueSql("CURRENT_TIMESTAMP")
+                .HasDefaultValueSql("now()")
                 .HasColumnType("timestamp without time zone")
                 .HasColumnName("updated_at");
 
@@ -3145,7 +3077,7 @@ public partial class MastodonContext : DbContext
 
         modelBuilder.Entity<Tag>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("index_tags_on_id");
+            entity.HasKey(e => e.Id).HasName("tags_pkey");
 
             entity.ToTable("tags");
 
@@ -3262,7 +3194,7 @@ public partial class MastodonContext : DbContext
 
         modelBuilder.Entity<User>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("index_users_on_id");
+            entity.HasKey(e => e.Id).HasName("users_pkey");
 
             entity.ToTable("users");
 
@@ -3495,7 +3427,7 @@ public partial class MastodonContext : DbContext
 
         modelBuilder.Entity<WebSetting>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("index_web_settings_on_id");
+            entity.HasKey(e => e.Id).HasName("web_settings_pkey");
 
             entity.ToTable("web_settings");
 
@@ -3583,6 +3515,10 @@ public partial class MastodonContext : DbContext
                 .HasColumnType("character varying")
                 .HasColumnName("url");
         });
+        modelBuilder.HasSequence("accounts_id_seq");
+        modelBuilder.HasSequence("encrypted_messages_id_seq");
+        modelBuilder.HasSequence("media_attachments_id_seq");
+        modelBuilder.HasSequence("statuses_id_seq");
 
         OnModelCreatingPartial(modelBuilder);
     }

@@ -5,6 +5,8 @@ namespace Nextodon.Data.PostgreSQL.Models;
 
 public partial class AccountDomainBlock
 {
+    public long Id { get; set; }
+
     public string? Domain { get; set; }
 
     public DateTime CreatedAt { get; set; }
@@ -12,8 +14,6 @@ public partial class AccountDomainBlock
     public DateTime UpdatedAt { get; set; }
 
     public long? AccountId { get; set; }
-
-    public long Id { get; set; }
 
     public virtual Account? Account { get; set; }
 }

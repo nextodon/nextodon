@@ -5,6 +5,8 @@ namespace Nextodon.Data.PostgreSQL.Models;
 
 public partial class Identity
 {
+    public long Id { get; set; }
+
     public string Provider { get; set; } = null!;
 
     public string Uid { get; set; } = null!;
@@ -12,8 +14,6 @@ public partial class Identity
     public DateTime CreatedAt { get; set; }
 
     public DateTime UpdatedAt { get; set; }
-
-    public long Id { get; set; }
 
     public long? UserId { get; set; }
 

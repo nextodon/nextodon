@@ -13,7 +13,7 @@ public partial class SiteUpload
 
     public string? FileContentType { get; set; }
 
-    public long? FileFileSize { get; set; }
+    public int? FileFileSize { get; set; }
 
     public DateTime? FileUpdatedAt { get; set; }
 

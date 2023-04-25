@@ -5,6 +5,8 @@ namespace Nextodon.Data.PostgreSQL.Models;
 
 public partial class Notification
 {
+    public long Id { get; set; }
+
     public long ActivityId { get; set; }
 
     public string ActivityType { get; set; } = null!;
@@ -16,8 +18,6 @@ public partial class Notification
     public long AccountId { get; set; }
 
     public long FromAccountId { get; set; }
-
-    public long Id { get; set; }
 
     public string? Type { get; set; }
 

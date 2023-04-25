@@ -19,5 +19,5 @@ public partial class List
 
     public virtual Account Account { get; set; } = null!;
 
-    public virtual ICollection<ListAccount> ListAccounts { get; } = new List<ListAccount>();
+    public virtual ICollection<ListAccount> ListAccounts { get; set; } = new List<ListAccount>();
 }

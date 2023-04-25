@@ -53,33 +53,31 @@ public partial class Status
 
     public virtual Account Account { get; set; } = null!;
 
-    public virtual ICollection<Bookmark> Bookmarks { get; } = new List<Bookmark>();
+    public virtual ICollection<Bookmark> Bookmarks { get; set; } = new List<Bookmark>();
 
-    public virtual ICollection<CustomFilterStatus> CustomFilterStatuses { get; } = new List<CustomFilterStatus>();
+    public virtual ICollection<CustomFilterStatus> CustomFilterStatuses { get; set; } = new List<CustomFilterStatus>();
 
-    public virtual DeprecatedPreviewCard? DeprecatedPreviewCard { get; set; }
-
-    public virtual ICollection<Favourite> Favourites { get; } = new List<Favourite>();
+    public virtual ICollection<Favourite> Favourites { get; set; } = new List<Favourite>();
 
     public virtual Status? InReplyTo { get; set; }
 
     public virtual Account? InReplyToAccount { get; set; }
 
-    public virtual ICollection<Status> InverseInReplyTo { get; } = new List<Status>();
+    public virtual ICollection<Status> InverseInReplyTo { get; set; } = new List<Status>();
 
-    public virtual ICollection<Status> InverseReblogOf { get; } = new List<Status>();
+    public virtual ICollection<Status> InverseReblogOf { get; set; } = new List<Status>();
 
-    public virtual ICollection<MediaAttachment> MediaAttachments { get; } = new List<MediaAttachment>();
+    public virtual ICollection<MediaAttachment> MediaAttachments { get; set; } = new List<MediaAttachment>();
 
-    public virtual ICollection<Mention> Mentions { get; } = new List<Mention>();
+    public virtual ICollection<Mention> Mentions { get; set; } = new List<Mention>();
 
-    public virtual ICollection<Poll> Polls { get; } = new List<Poll>();
+    public virtual ICollection<Poll> Polls { get; set; } = new List<Poll>();
 
     public virtual Status? ReblogOf { get; set; }
 
-    public virtual ICollection<StatusEdit> StatusEdits { get; } = new List<StatusEdit>();
+    public virtual ICollection<StatusEdit> StatusEdits { get; set; } = new List<StatusEdit>();
 
-    public virtual ICollection<StatusPin> StatusPins { get; } = new List<StatusPin>();
+    public virtual ICollection<StatusPin> StatusPins { get; set; } = new List<StatusPin>();
 
     public virtual StatusStat? StatusStat { get; set; }
 

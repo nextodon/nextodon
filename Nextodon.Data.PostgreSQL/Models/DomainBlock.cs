@@ -5,6 +5,8 @@ namespace Nextodon.Data.PostgreSQL.Models;
 
 public partial class DomainBlock
 {
+    public long Id { get; set; }
+
     public string Domain { get; set; } = null!;
 
     public DateTime CreatedAt { get; set; }
@@ -14,8 +16,6 @@ public partial class DomainBlock
     public int? Severity { get; set; }
 
     public bool RejectMedia { get; set; }
-
-    public long Id { get; set; }
 
     public bool RejectReports { get; set; }
 

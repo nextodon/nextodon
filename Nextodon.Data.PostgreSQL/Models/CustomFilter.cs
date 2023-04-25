@@ -23,7 +23,7 @@ public partial class CustomFilter
 
     public virtual Account? Account { get; set; }
 
-    public virtual ICollection<CustomFilterKeyword> CustomFilterKeywords { get; } = new List<CustomFilterKeyword>();
+    public virtual ICollection<CustomFilterKeyword> CustomFilterKeywords { get; set; } = new List<CustomFilterKeyword>();
 
-    public virtual ICollection<CustomFilterStatus> CustomFilterStatuses { get; } = new List<CustomFilterStatus>();
+    public virtual ICollection<CustomFilterStatus> CustomFilterStatuses { get; set; } = new List<CustomFilterStatus>();
 }

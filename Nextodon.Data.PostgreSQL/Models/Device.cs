@@ -27,7 +27,7 @@ public partial class Device
 
     public virtual Account? Account { get; set; }
 
-    public virtual ICollection<EncryptedMessage> EncryptedMessages { get; } = new List<EncryptedMessage>();
+    public virtual ICollection<EncryptedMessage> EncryptedMessages { get; set; } = new List<EncryptedMessage>();
 
-    public virtual ICollection<OneTimeKey> OneTimeKeys { get; } = new List<OneTimeKey>();
+    public virtual ICollection<OneTimeKey> OneTimeKeys { get; set; } = new List<OneTimeKey>();
 }

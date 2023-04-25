@@ -5,6 +5,8 @@ namespace Nextodon.Data.PostgreSQL.Models;
 
 public partial class Report
 {
+    public long Id { get; set; }
+
     public long[] StatusIds { get; set; } = null!;
 
     public string Comment { get; set; } = null!;
@@ -16,8 +18,6 @@ public partial class Report
     public long AccountId { get; set; }
 
     public long? ActionTakenByAccountId { get; set; }
-
-    public long Id { get; set; }
 
     public long TargetAccountId { get; set; }
 
@@ -35,13 +35,13 @@ public partial class Report
 
     public virtual Account Account { get; set; } = null!;
 
-    public virtual ICollection<AccountWarning> AccountWarnings { get; } = new List<AccountWarning>();
+    public virtual ICollection<AccountWarning> AccountWarnings { get; set; } = new List<AccountWarning>();
 
     public virtual Account? ActionTakenByAccount { get; set; }
 
     public virtual Account? AssignedAccount { get; set; }
 
-    public virtual ICollection<ReportNote> ReportNotes { get; } = new List<ReportNote>();
+    public virtual ICollection<ReportNote> ReportNotes { get; set; } = new List<ReportNote>();
 
     public virtual Account TargetAccount { get; set; } = null!;
 }

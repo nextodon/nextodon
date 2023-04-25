@@ -15,7 +15,7 @@ public partial class CustomEmoji
 
     public string? ImageContentType { get; set; }
 
-    public long? ImageFileSize { get; set; }
+    public int? ImageFileSize { get; set; }
 
     public DateTime? ImageUpdatedAt { get; set; }
 
@@ -35,5 +35,5 @@ public partial class CustomEmoji
 
     public int? ImageStorageSchemaVersion { get; set; }
 
-    public virtual ICollection<AnnouncementReaction> AnnouncementReactions { get; } = new List<AnnouncementReaction>();
+    public virtual ICollection<AnnouncementReaction> AnnouncementReactions { get; set; } = new List<AnnouncementReaction>();
 }

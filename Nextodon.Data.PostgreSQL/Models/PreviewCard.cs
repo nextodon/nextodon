@@ -17,7 +17,7 @@ public partial class PreviewCard
 
     public string? ImageContentType { get; set; }
 
-    public long? ImageFileSize { get; set; }
+    public int? ImageFileSize { get; set; }
 
     public DateTime? ImageUpdatedAt { get; set; }
 

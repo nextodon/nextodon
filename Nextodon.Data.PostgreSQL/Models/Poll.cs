@@ -35,7 +35,7 @@ public partial class Poll
 
     public virtual Account? Account { get; set; }
 
-    public virtual ICollection<PollVote> PollVotes { get; } = new List<PollVote>();
+    public virtual ICollection<PollVote> PollVotes { get; set; } = new List<PollVote>();
 
     public virtual Status? Status { get; set; }
 }

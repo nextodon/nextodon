@@ -6,6 +6,8 @@ namespace Nextodon.Data.PostgreSQL.Models;
 
 public partial class OauthAccessToken
 {
+    public long Id { get; set; }
+
     public string Token { get; set; } = null!;
 
     public string? RefreshToken { get; set; }
@@ -20,8 +22,6 @@ public partial class OauthAccessToken
 
     public long? ApplicationId { get; set; }
 
-    public long Id { get; set; }
-
     public long? ResourceOwnerId { get; set; }
 
     public DateTime? LastUsedAt { get; set; }
@@ -30,11 +30,11 @@ public partial class OauthAccessToken
 
     public virtual OauthApplication? Application { get; set; }
 
-    public virtual ICollection<Device> Devices { get; } = new List<Device>();
+    public virtual ICollection<Device> Devices { get; set; } = new List<Device>();
 
     public virtual User? ResourceOwner { get; set; }
 
-    public virtual ICollection<SessionActivation> SessionActivations { get; } = new List<SessionActivation>();
+    public virtual ICollection<SessionActivation> SessionActivations { get; set; } = new List<SessionActivation>();
 
-    public virtual ICollection<WebPushSubscription> WebPushSubscriptions { get; } = new List<WebPushSubscription>();
+    public virtual ICollection<WebPushSubscription> WebPushSubscriptions { get; set; } = new List<WebPushSubscription>();
 }
