@@ -17,7 +17,7 @@ public sealed class TimelineService : Nextodon.Grpc.Timeline.TimelineBase
 
     public override async Task<Grpc.Statuses> GetPublic(GetPublicTimelineRequest request, ServerCallContext context)
     {
-        var accountId = context.GetAuthToken(false);
+        var account = await context.GetAccount(db, false);
 
         var local = request.Local;
         var remote = request.Remote;
@@ -49,7 +49,7 @@ public sealed class TimelineService : Nextodon.Grpc.Timeline.TimelineBase
 
         foreach (var status in statuss)
         {
-            var s = await status.ToGrpc(db, context);
+            var s = await status.ToGrpc(account, db, context);
             v.Data.Add(s);
         }
 
@@ -63,7 +63,8 @@ public sealed class TimelineService : Nextodon.Grpc.Timeline.TimelineBase
 
     public override async Task<Statuses> GetHome(DefaultPaginationParameters request, ServerCallContext context)
     {
-        //var accountId = context.GetAccountId(false);
+        var account = await context.GetAccount(db, true);
+
         var sinceId = request.HasSinceId ? request.SinceId : null;
         var maxId = request.HasMaxId ? request.MaxId : null;
         var minId = request.HasMinId ? request.MinId : null;
@@ -91,7 +92,7 @@ public sealed class TimelineService : Nextodon.Grpc.Timeline.TimelineBase
 
         foreach (var status in statuss)
         {
-            var s = await status.ToGrpc(db, context);
+            var s = await status.ToGrpc(account, db, context);
             v.Data.Add(s);
         }
 
