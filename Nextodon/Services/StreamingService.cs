@@ -16,8 +16,8 @@ public sealed class StreamingService : Nextodon.Grpc.Streaming.StreamingBase
     [Authorize]
     public override async Task GetStatusStream(Empty request, IServerStreamWriter<Grpc.Status> responseStream, ServerCallContext context)
     {
-        var accountId = context.GetAuthToken(true);
-        var channel = _es[accountId!];
+        var account = await context.GetAccount(db, true);
+        var channel = _es[account!.Id.ToString()];
 
         while (!context.CancellationToken.IsCancellationRequested)
         {

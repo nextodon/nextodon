@@ -3,7 +3,6 @@ using Microsoft.EntityFrameworkCore;
 namespace Nextodon.Services;
 
 [Authorize]
-[AllowAnonymous]
 public sealed class StatusApiService : Nextodon.Grpc.StatusApi.StatusApiBase
 {
     private readonly ILogger<StatusApiService> _logger;
@@ -25,7 +24,7 @@ public sealed class StatusApiService : Nextodon.Grpc.StatusApi.StatusApiBase
 
         var ret = await db.Statuses.FindAsync(statusId);
 
-        return await ret!.ToGrpc(db, context);
+        return await ret!.ToGrpc(account, db, context);
     }
 
     [AllowAnonymous]
@@ -68,7 +67,6 @@ public sealed class StatusApiService : Nextodon.Grpc.StatusApi.StatusApiBase
         throw new NotImplementedException();
     }
 
-    [AllowAnonymous]
     public override async Task<Grpc.Status> CreateStatus(CreateStatusRequest request, ServerCallContext context)
     {
         var account = await context.GetAccount(db, true);
@@ -108,13 +106,12 @@ public sealed class StatusApiService : Nextodon.Grpc.StatusApi.StatusApiBase
         status.Uri = $"https://{host}/users/{account.Username}/statuses/{status.Id}";
         await db.SaveChangesAsync();
 
-        var result = await status.ToGrpc(db, context);
+        var result = await status.ToGrpc(account, db, context);
         await channel.Writer.WriteAsync(result, context.CancellationToken);
 
         return result;
     }
 
-    [AllowAnonymous]
     public override async Task<Grpc.Status> DeleteStatus(UInt64Value request, ServerCallContext context)
     {
         var statusId = (long)request.Value;
@@ -123,11 +120,11 @@ public sealed class StatusApiService : Nextodon.Grpc.StatusApi.StatusApiBase
         return new Grpc.Status { Id = statusId.ToString() };
     }
 
-    [AllowAnonymous]
     public override async Task<Grpc.Status> Favourite(UInt64Value request, ServerCallContext context)
     {
-        var cancellationToken = context.CancellationToken;
         var account = await context.GetAccount(db, true);
+
+        var cancellationToken = context.CancellationToken;
         var statusId = (long)request.Value;
         var now = DateTime.UtcNow;
 
@@ -151,15 +148,21 @@ public sealed class StatusApiService : Nextodon.Grpc.StatusApi.StatusApiBase
         db.Favourites.Update(fav);
         await db.SaveChangesAsync(cancellationToken);
 
-        var result = await db.Statuses.FindAsync(statusId, cancellationToken);
-        var ret = await result!.ToGrpc(db, context);
+        var result = await db.Statuses.FindAsync(new object[] { statusId }, cancellationToken: cancellationToken);
+        var ret = await result!.ToGrpc(account, db, context);
 
         return ret;
-
     }
 
-    public override Task<Grpc.Status> Unfavourite(UInt64Value request, ServerCallContext context)
+    public override async Task<Grpc.Status> Unfavourite(UInt64Value request, ServerCallContext context)
     {
+        var account = await context.GetAccount(db, true);
+
+        var cancellationToken = context.CancellationToken;
+        var statusId = (long)request.Value;
+
+        await db.Favourites.Where(x => x.StatusId == statusId && x.AccountId == account!.Id).ExecuteDeleteAsync(cancellationToken);
+
         throw new NotImplementedException();
     }
 
@@ -195,7 +198,7 @@ public sealed class StatusApiService : Nextodon.Grpc.StatusApi.StatusApiBase
 
     public override Task<Grpc.Status> Reblog(ReblogRequest request, ServerCallContext context)
     {
-       throw new NotImplementedException();
+        throw new NotImplementedException();
     }
 
     public override Task<Grpc.Status> Unreblog(UInt64Value request, ServerCallContext context)

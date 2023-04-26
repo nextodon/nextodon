@@ -1,5 +1,6 @@
 ﻿
 
+using Grpc.Core;
 using Microsoft.EntityFrameworkCore;
 using System.Diagnostics.CodeAnalysis;
 
@@ -7,62 +8,77 @@ namespace Nextodon;
 
 public static class ExtensionMethods
 {
-    public static string? GetAuthToken(this ServerCallContext context, [NotNullWhen(true)][MaybeNullWhen(false)] bool throwIfNotFound)
+    public static long? GetUserId(this HttpContext context, [NotNullWhen(true)] bool throwIfNotFound)
     {
-        return context.GetHttpContext().GetAuthToken(throwIfNotFound);
+        var name = context.User.Identity?.Name;
+
+        if (!string.IsNullOrWhiteSpace(name))
+        {
+            if (long.TryParse(name, out var userId))
+            {
+                return userId;
+            }
+        }
+
+        if (throwIfNotFound)
+        {
+            throw new RpcException(new global::Grpc.Core.Status(StatusCode.Unauthenticated, string.Empty));
+        }
+
+        return null;
     }
 
-    public static string? GetAuthToken(this HttpContext context, [NotNullWhen(true)] bool throwIfNotFound)
+    public static async Task<User?> GetUser(this HttpContext context, MastodonContext db, [NotNullWhen(true)] bool throwIfNotFound)
     {
-        var authorizationHeader = context.Request.Headers["Authorization"];
+        var userId = GetUserId(context, throwIfNotFound);
 
-        if(authorizationHeader.Count == 0)
+        if (userId != null)
         {
-            if (throwIfNotFound)
+            var user = await db.Users.FindAsync(userId);
+
+            if (user != null)
             {
-                throw new RpcException(new global::Grpc.Core.Status(StatusCode.Unauthenticated, ""));
+                return user;
             }
-
-            return null;
         }
 
-        if (string.IsNullOrWhiteSpace(authorizationHeader))
+        if (throwIfNotFound)
         {
-            if (throwIfNotFound)
-            {
-                throw new RpcException(new global::Grpc.Core.Status(StatusCode.Unauthenticated, ""));
-            }
-
-            return null;
+            throw new RpcException(new global::Grpc.Core.Status(StatusCode.Unauthenticated, string.Empty));
         }
 
-        var authorizationHeaderParts = authorizationHeader.ToString().Split(" ", StringSplitOptions.RemoveEmptyEntries);
-
-        if (authorizationHeaderParts.Length != 2 && throwIfNotFound)
-        {
-            throw new RpcException(new global::Grpc.Core.Status(StatusCode.Unauthenticated, ""));
-        }
-
-        var token = authorizationHeaderParts[1];
-
-        return token;
+        return null;
     }
 
-    public static async Task<Data.PostgreSQL.Models.Account?> GetAccount(this ServerCallContext context, Data.PostgreSQL.MastodonContext db, [NotNullWhen(true)] bool throwIfNotFound)
+    public static Task<User?> GetUser(this ServerCallContext context, MastodonContext db, [NotNullWhen(true)] bool throwIfNotFound)
     {
-        var token = GetAuthToken(context, throwIfNotFound);
+        return GetUser(context.GetHttpContext(), db, throwIfNotFound);
+    }
 
-        var query = from x in db.OauthAccessTokens
-                    where x.Token == token
-                    select x.ResourceOwner!.Account;
+    public static async Task<Nextodon.Data.PostgreSQL.Models.Account?> GetAccount(this HttpContext context, MastodonContext db, [NotNullWhen(true)] bool throwIfNotFound)
+    {
+        var userId = GetUserId(context, throwIfNotFound);
 
-        var account = await query.FirstOrDefaultAsync();
-
-        if (throwIfNotFound && account == null)
+        if (userId != null)
         {
-            throw new RpcException(new global::Grpc.Core.Status(StatusCode.Unauthenticated, ""));
+            var account = await (from x in db.Users where x.Id == userId select x.Account).FirstOrDefaultAsync();
+
+            if (account != null)
+            {
+                return account;
+            }
         }
 
-        return account;
+        if (throwIfNotFound)
+        {
+            throw new RpcException(new global::Grpc.Core.Status(StatusCode.Unauthenticated, string.Empty));
+        }
+
+        return null;
+    }
+
+    public static Task<Data.PostgreSQL.Models.Account?> GetAccount(this ServerCallContext context, MastodonContext db, [NotNullWhen(true)] bool throwIfNotFound)
+    {
+        return GetAccount(context.GetHttpContext(), db, throwIfNotFound);
     }
 }
