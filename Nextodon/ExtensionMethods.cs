@@ -61,11 +61,11 @@ public static class ExtensionMethods
 
         if (userId != null)
         {
-            var account = await (from x in db.Users where x.Id == userId select x.Account).FirstOrDefaultAsync();
+            var user = await (from x in db.Users where x.Id == userId select x).Include(x => x.Account).FirstOrDefaultAsync();
 
-            if (account != null)
+            if (user?.Account != null)
             {
-                return account;
+                return user.Account;
             }
         }
 
