@@ -41,14 +41,15 @@ public static class PostgresExtensions
         return count;
     }
 
-
     public static async Task BookmarkStatusAsync(this Data.PostgreSQL.MastodonContext db, long statusId, long accountId, DateTime? now = null, CancellationToken cancellationToken = default)
     {
         now ??= DateTime.UtcNow;
 
-        var bookmark = await (from x in db.Bookmarks
-                         where x.StatusId == statusId && x.AccountId == accountId
-                         select x).FirstOrDefaultAsync(cancellationToken: cancellationToken);
+        var query = from x in db.Bookmarks
+                    where x.StatusId == statusId && x.AccountId == accountId
+                    select x;
+
+        var bookmark = await query.FirstOrDefaultAsync(cancellationToken: cancellationToken);
 
         if (bookmark == null)
         {
@@ -76,9 +77,11 @@ public static class PostgresExtensions
     {
         now ??= DateTime.UtcNow;
 
-        var favourite = await (from x in db.Favourites
-                         where x.StatusId == statusId && x.AccountId == accountId
-                         select x).FirstOrDefaultAsync(cancellationToken: cancellationToken);
+        var query = from x in db.Favourites
+                    where x.StatusId == statusId && x.AccountId == accountId
+                    select x;
+
+        var favourite = await query.FirstOrDefaultAsync(cancellationToken: cancellationToken);
 
         if (favourite == null)
         {
@@ -172,18 +175,16 @@ public static class PostgresExtensions
             v.Poll = await poll.ToGrpc(db, context);
         }
 
-        var maQuery = from x in db.MediaAttachments
+        var mediaAttachmentsQuery = from x in db.MediaAttachments
                       where x.StatusId == i.Id
                       select x;
 
-        var medias = await maQuery.ToListAsync();
+        var medias = await mediaAttachmentsQuery.ToListAsync();
         foreach (var media in medias)
         {
             var mediaAttachment = await media.ToGrpc(db, context);
             v.MediaAttachments.Add(mediaAttachment);
         }
-
-        await Task.Yield();
 
         return v;
     }
