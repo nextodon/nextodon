@@ -25,6 +25,13 @@ public sealed class AuthenticationService : Authentication.AuthenticationBase
     [AllowAnonymous]
     public override async Task<JsonWebToken> SignIn(SignInRequest request, ServerCallContext context)
     {
+        var secretKeyBase = _config.GetValue<string>("Mastodon:SecretKeyBase");
+
+        if(string.IsNullOrWhiteSpace(secretKeyBase))
+        {
+            throw new RpcException(new global::Grpc.Core.Status(StatusCode.Internal, "Secret Key Base not set."));
+        }
+
         var remoteIpAddress = context.GetHttpContext().Connection.RemoteIpAddress;
         var userAgent = context.GetHttpContext().Request.Headers.UserAgent.ToString();
         if (string.IsNullOrWhiteSpace(userAgent))
@@ -103,7 +110,7 @@ public sealed class AuthenticationService : Authentication.AuthenticationBase
 
         if (owner == null)
         {
-            throw new RpcException(new global::Grpc.Core.Status(StatusCode.Internal, ""));
+            throw new RpcException(new global::Grpc.Core.Status(StatusCode.Internal, "User not found."));
         }
 
         owner.UpdatedAt = now;
@@ -169,7 +176,7 @@ public sealed class AuthenticationService : Authentication.AuthenticationBase
         };
 
         var sessId = Convert.ToBase64String(JsonSerializer.SerializeToUtf8Bytes(rubySession));
-        var signature = HashHelpers.ByteArrayToHexString(HashHelpers.RubyCookieSign(HashHelpers.SecretKeyBase, sessId)).ToLower();
+        var signature = HashHelpers.ByteArrayToHexString(HashHelpers.RubyCookieSign(secretKeyBase, sessId)).ToLower();
 
         var cookieOptions = new CookieOptions
         {
