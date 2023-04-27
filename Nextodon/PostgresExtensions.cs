@@ -23,20 +23,41 @@ public static class PostgresExtensions
         return any;
     }
 
-    public static async Task<int> GetStatusFavouritesCountAsync(this Data.PostgreSQL.MastodonContext db, long statusId)
+    public static async Task<Data.PostgreSQL.Models.Notification> NotifyAsync(this Data.PostgreSQL.MastodonContext db, long accountId, long fromAccountId, long activityId, string activityType, string? type, DateTime? now = null, CancellationToken cancellationToken = default)
+    {
+        now ??= DateTime.UtcNow;
+
+        var notification = new Data.PostgreSQL.Models.Notification
+        {
+            FromAccountId = fromAccountId,
+            AccountId = accountId,
+            CreatedAt = now.Value,
+            UpdatedAt = now.Value,
+            ActivityId = activityId,
+            Type = type,
+            ActivityType = activityType,
+        };
+
+        db.Notifications.Add(notification);
+        await db.SaveChangesAsync(cancellationToken);
+
+        return notification;
+    }
+
+    public static async Task<int> GetStatusFavouritesCountAsync(this Data.PostgreSQL.MastodonContext db, long statusId, CancellationToken cancellationToken = default)
     {
         var count = await (from x in db.Favourites
                            where x.StatusId == statusId
-                           select x).CountAsync();
+                           select x).CountAsync(cancellationToken: cancellationToken);
 
         return count;
     }
 
-    public static async Task<int> GetStatusBookmarksCountAsync(this Data.PostgreSQL.MastodonContext db, long statusId)
+    public static async Task<int> GetStatusBookmarksCountAsync(this Data.PostgreSQL.MastodonContext db, long statusId, CancellationToken cancellationToken = default)
     {
         var count = await (from x in db.Bookmarks
                            where x.StatusId == statusId
-                           select x).CountAsync();
+                           select x).CountAsync(cancellationToken: cancellationToken);
 
         return count;
     }
@@ -162,7 +183,7 @@ public static class PostgresExtensions
         var account = await db.Accounts.FindAsync(i.AccountId);
         if (account != null)
         {
-            v.Account = await account.ToGrpc(db, context);
+            v.Account = await account.ToGrpc(me, db, context);
         }
 
         var pollQuery = from x in db.Polls
@@ -176,8 +197,8 @@ public static class PostgresExtensions
         }
 
         var mediaAttachmentsQuery = from x in db.MediaAttachments
-                      where x.StatusId == i.Id
-                      select x;
+                                    where x.StatusId == i.Id
+                                    select x;
 
         var medias = await mediaAttachmentsQuery.ToListAsync();
         foreach (var media in medias)
@@ -189,7 +210,7 @@ public static class PostgresExtensions
         return v;
     }
 
-    public static Task<Grpc.Account> ToGrpc(this Data.PostgreSQL.Models.Account i, Data.PostgreSQL.MastodonContext db, ServerCallContext context)
+    public static Task<Grpc.Account> ToGrpc(this Data.PostgreSQL.Models.Account i, Data.PostgreSQL.Models.Account? me, Data.PostgreSQL.MastodonContext db, ServerCallContext context)
     {
         var v = new Grpc.Account
         {

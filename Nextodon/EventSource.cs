@@ -3,11 +3,11 @@ using System.Threading.Channels;
 
 namespace Nextodon;
 
-public sealed class EventSource<T>
+public sealed class EventSource<T, K> where K : notnull
 {
-    private readonly ConcurrentDictionary<string, Channel<T>> _data = new();
+    private readonly ConcurrentDictionary<K, Channel<T>> _data = new();
 
-    public ICollection<string> Keys
+    public ICollection<K> Keys
     {
         get
         {
@@ -15,7 +15,7 @@ public sealed class EventSource<T>
         }
     }
 
-    public Channel<T> this[string id]
+    public Channel<T> this[K id]
     {
         get
         {

@@ -77,8 +77,8 @@ public static class ExtensionMethods
         return null;
     }
 
-    public static Task<Data.PostgreSQL.Models.Account?> GetAccount(this ServerCallContext context, MastodonContext db, [NotNullWhen(true)] bool throwIfNotFound, CancellationToken cancellationToken = default)
+    public static Task<Data.PostgreSQL.Models.Account?> GetAccount(this ServerCallContext context, MastodonContext db, [NotNullWhen(true)] bool throwIfNotFound)
     {
-        return GetAccount(context.GetHttpContext(), db, throwIfNotFound, cancellationToken);
+        return GetAccount(context.GetHttpContext(), db, throwIfNotFound, context.CancellationToken);
     }
 }
