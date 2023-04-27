@@ -23,18 +23,18 @@ public static class PostgresExtensions
         return count;
     }
 
-    public static async Task FavouriteStatusAsync(this Data.PostgreSQL.MastodonContext db, long statusId, long accountId, DateTime? now = null, CancellationToken cancellationToken = default)
+
+    public static async Task BookmarkStatusAsync(this Data.PostgreSQL.MastodonContext db, long statusId, long accountId, DateTime? now = null, CancellationToken cancellationToken = default)
     {
         now ??= DateTime.UtcNow;
 
-
-        var fav = await (from x in db.Favourites
+        var bookmark = await (from x in db.Bookmarks
                          where x.StatusId == statusId && x.AccountId == accountId
                          select x).FirstOrDefaultAsync(cancellationToken: cancellationToken);
 
-        if (fav == null)
+        if (bookmark == null)
         {
-            fav = new Data.PostgreSQL.Models.Favourite
+            bookmark = new Data.PostgreSQL.Models.Bookmark
             {
                 AccountId = accountId,
                 StatusId = statusId,
@@ -43,9 +43,39 @@ public static class PostgresExtensions
             };
         }
 
-        fav.UpdatedAt = now.Value;
+        bookmark.UpdatedAt = now.Value;
 
-        db.Favourites.Update(fav);
+        db.Bookmarks.Update(bookmark);
+        await db.SaveChangesAsync(cancellationToken);
+    }
+
+    public static async Task UnbookmarkStatusAsync(this Data.PostgreSQL.MastodonContext db, long statusId, long accountId, CancellationToken cancellationToken = default)
+    {
+        await db.Bookmarks.Where(x => x.StatusId == statusId && x.AccountId == accountId).ExecuteDeleteAsync(cancellationToken);
+    }
+
+    public static async Task FavouriteStatusAsync(this Data.PostgreSQL.MastodonContext db, long statusId, long accountId, DateTime? now = null, CancellationToken cancellationToken = default)
+    {
+        now ??= DateTime.UtcNow;
+
+        var favourite = await (from x in db.Favourites
+                         where x.StatusId == statusId && x.AccountId == accountId
+                         select x).FirstOrDefaultAsync(cancellationToken: cancellationToken);
+
+        if (favourite == null)
+        {
+            favourite = new Data.PostgreSQL.Models.Favourite
+            {
+                AccountId = accountId,
+                StatusId = statusId,
+                CreatedAt = now.Value,
+                UpdatedAt = now.Value,
+            };
+        }
+
+        favourite.UpdatedAt = now.Value;
+
+        db.Favourites.Update(favourite);
         await db.SaveChangesAsync(cancellationToken);
     }
 

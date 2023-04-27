@@ -156,14 +156,40 @@ public sealed class StatusApiService : Nextodon.Grpc.StatusApi.StatusApiBase
         return v;
     }
 
-    public override Task<Grpc.Status> Bookmark(UInt64Value request, ServerCallContext context)
+    public override async Task<Grpc.Status> Bookmark(UInt64Value request, ServerCallContext context)
     {
-        throw new NotImplementedException();
+        var cancellationToken = context.CancellationToken;
+        var account = await context.GetAccount(db, true, cancellationToken: cancellationToken);
+
+        var statusId = (long)request.Value;
+
+        await db.BookmarkStatusAsync(statusId, account!.Id, cancellationToken: cancellationToken);
+
+        var result = await db.Statuses.FindAsync(new object[] { statusId }, cancellationToken: cancellationToken);
+        var ret = await result!.ToGrpc(account, db, context);
+
+        return ret;
     }
 
-    public override Task<Grpc.Status> Unbookmark(UInt64Value request, ServerCallContext context)
+    public override async Task<Grpc.Status> Unbookmark(UInt64Value request, ServerCallContext context)
     {
-        throw new NotImplementedException();
+        var account = await context.GetAccount(db, true);
+
+        var cancellationToken = context.CancellationToken;
+        var statusId = (long)request.Value;
+
+        var status = await db.Statuses.FindAsync(new object[] { statusId }, cancellationToken);
+
+        if (status == null)
+        {
+            throw new RpcException(new global::Grpc.Core.Status(StatusCode.NotFound, statusId.ToString()));
+        }
+
+        await db.UnbookmarkStatusAsync(statusId, account!.Id, cancellationToken);
+
+        var v = await status.ToGrpc(account, db, context);
+
+        return v;
     }
 
     public override Task<Grpc.Status> Mute(UInt64Value request, ServerCallContext context)
