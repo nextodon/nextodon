@@ -17,10 +17,42 @@ public static class PostgresExtensions
     public static async Task<int> GetStatusFavouritesCountAsync(this Data.PostgreSQL.MastodonContext db, long statusId)
     {
         var count = await (from x in db.Favourites
-                         where x.StatusId == statusId
-                         select x).CountAsync();
+                           where x.StatusId == statusId
+                           select x).CountAsync();
 
         return count;
+    }
+
+    public static async Task FavouriteStatusAsync(this Data.PostgreSQL.MastodonContext db, long statusId, long accountId, DateTime? now = null, CancellationToken cancellationToken = default)
+    {
+        now ??= DateTime.UtcNow;
+
+
+        var fav = await (from x in db.Favourites
+                         where x.StatusId == statusId && x.AccountId == accountId
+                         select x).FirstOrDefaultAsync(cancellationToken: cancellationToken);
+
+        if (fav == null)
+        {
+            fav = new Data.PostgreSQL.Models.Favourite
+            {
+                AccountId = accountId,
+                StatusId = statusId,
+                CreatedAt = now.Value,
+                UpdatedAt = now.Value,
+            };
+        }
+
+        fav.UpdatedAt = now.Value;
+
+        db.Favourites.Update(fav);
+        await db.SaveChangesAsync(cancellationToken);
+    }
+
+
+    public static async Task UnfavouriteStatusAsync(this Data.PostgreSQL.MastodonContext db, long statusId, long accountId, CancellationToken cancellationToken = default)
+    {
+        await db.Favourites.Where(x => x.StatusId == statusId && x.AccountId == accountId).ExecuteDeleteAsync(cancellationToken);
     }
 
     public static async Task<Grpc.Status> ToGrpc(this Data.PostgreSQL.Models.Status i, Data.PostgreSQL.Models.Account? me, Data.PostgreSQL.MastodonContext db, ServerCallContext context)
