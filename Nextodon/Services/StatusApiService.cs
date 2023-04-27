@@ -114,8 +114,16 @@ public sealed class StatusApiService : Nextodon.Grpc.StatusApi.StatusApiBase
 
     public override async Task<Grpc.Status> DeleteStatus(UInt64Value request, ServerCallContext context)
     {
+        var cancellationToken = context.CancellationToken;
+        var account = await context.GetAccount(db, true, cancellationToken: cancellationToken);
+
         var statusId = (long)request.Value;
-        await db.Statuses.Where(x => x.Id == statusId).ExecuteDeleteAsync();
+
+        var query = from x in db.Statuses
+                    where x.Id == statusId && x.AccountId == account!.Id
+                    select x;
+
+        await query.ExecuteDeleteAsync(cancellationToken);
 
         return new Grpc.Status { Id = statusId.ToString() };
     }
