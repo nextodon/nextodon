@@ -14,9 +14,27 @@ public static class PostgresExtensions
         return any;
     }
 
+    public static async Task<bool> IsStatusBookmarkedByAsync(this Data.PostgreSQL.MastodonContext db, long statusId, long accountId)
+    {
+        var any = await (from x in db.Bookmarks
+                         where x.StatusId == statusId && x.AccountId == accountId
+                         select x).AnyAsync();
+
+        return any;
+    }
+
     public static async Task<int> GetStatusFavouritesCountAsync(this Data.PostgreSQL.MastodonContext db, long statusId)
     {
         var count = await (from x in db.Favourites
+                           where x.StatusId == statusId
+                           select x).CountAsync();
+
+        return count;
+    }
+
+    public static async Task<int> GetStatusBookmarksCountAsync(this Data.PostgreSQL.MastodonContext db, long statusId)
+    {
+        var count = await (from x in db.Bookmarks
                            where x.StatusId == statusId
                            select x).CountAsync();
 
@@ -125,12 +143,17 @@ public static class PostgresExtensions
         }
 
         bool isFavourited = false;
+        bool isBookmarked = false;
+
         if (me != null)
         {
             isFavourited = await db.IsStatusFavouritedByAsync(i.Id, me.Id);
+            isBookmarked = await db.IsStatusBookmarkedByAsync(i.Id, me.Id);
         }
 
         v.Favourited = isFavourited;
+        v.Bookmarked = isBookmarked;
+
         v.FavouritesCount = (uint)await db.GetStatusFavouritesCountAsync(i.Id);
 
         var account = await db.Accounts.FindAsync(i.AccountId);
