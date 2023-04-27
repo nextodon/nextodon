@@ -5,6 +5,24 @@ namespace Nextodon;
 
 public static class PostgresExtensions
 {
+    public static async Task<bool> IsStatusFavouritedByAsync(this Data.PostgreSQL.MastodonContext db, long statusId, long accountId)
+    {
+        var any = await (from x in db.Favourites
+                         where x.StatusId == statusId && x.AccountId == accountId
+                         select x).AnyAsync();
+
+        return any;
+    }
+
+    public static async Task<int> GetStatusFavouritesCountAsync(this Data.PostgreSQL.MastodonContext db, long statusId)
+    {
+        var count = await (from x in db.Favourites
+                         where x.StatusId == statusId
+                         select x).CountAsync();
+
+        return count;
+    }
+
     public static async Task<Grpc.Status> ToGrpc(this Data.PostgreSQL.Models.Status i, Data.PostgreSQL.Models.Account? me, Data.PostgreSQL.MastodonContext db, ServerCallContext context)
     {
         var v = new Grpc.Status
@@ -43,6 +61,15 @@ public static class PostgresExtensions
         {
             v.Url = i.Url;
         }
+
+        bool isFavourited = false;
+        if (me != null)
+        {
+            isFavourited = await db.IsStatusFavouritedByAsync(i.Id, me.Id);
+        }
+
+        v.Favourited = isFavourited;
+        v.FavouritesCount = (uint)await db.GetStatusFavouritesCountAsync(i.Id);
 
         var account = await db.Accounts.FindAsync(i.AccountId);
         if (account != null)
