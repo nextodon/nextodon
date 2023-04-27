@@ -130,7 +130,7 @@ public sealed class AuthenticationService : Authentication.AuthenticationBase
             Subject = new ClaimsIdentity(new Claim[] { new Claim(JwtRegisteredClaimNames.UniqueName, owner.Id.ToString()) }),
             Claims = new Dictionary<string, object>
             {
-                [JwtRegisteredClaimNames.UniqueName] = accountId,
+                [JwtRegisteredClaimNames.UniqueName] = owner.Id.ToString(),
                 [JwtRegisteredClaimNames.Jti] = sessionId,
             },
             Expires = expires,
