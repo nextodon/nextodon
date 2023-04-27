@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using System.Text.Json;
 
 var builder = WebApplication.CreateBuilder(args);
 var config = builder.Configuration;
@@ -21,7 +22,7 @@ builder.Services.AddGrpc().AddJsonTranscoding(options =>
 builder.Services.AddGrpcReflection();
 builder.Services.AddDbContext<MastodonContext>();
 
-builder.Services.AddSingleton<EventSource<Nextodon.Grpc.Status>>();
+builder.Services.AddSingleton<EventSource<Nextodon.Grpc.Status, long>>();
 
 builder.Services.Configure<ForwardedHeadersOptions>(options =>
 {
@@ -57,6 +58,32 @@ var app = builder.Build();
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
 app.UseForwardedHeaders();
+
+app.Use(async (context, next) =>
+{
+    if (context.Request.Path.StartsWithSegments("/oauth/token"))
+    {
+        var form = await context.Request.ReadFormAsync();
+
+        if (form.Count > 0)
+        {
+            var dic = new Dictionary<string, string>();
+
+            foreach (var item in form)
+            {
+                dic[item.Key] = item.Value.ToString();
+            }
+
+            var body = JsonSerializer.SerializeToUtf8Bytes(dic);
+
+            context.Request.ContentType = "application/json";
+            context.Request.Body = new MemoryStream(body);
+        }
+    }
+
+    await next();
+});
+
 app.UseCors();
 
 app.UseDefaultFiles();
@@ -109,7 +136,7 @@ app.MapGet("/reqinfo", async context =>
     {
         await context.Response.WriteAsync($"Request-Header {header.Key}: {header.Value}{Environment.NewLine}");
     }
-    
+
     //Output relevant cookies
     await context.Response.WriteAsync($"{Environment.NewLine}---Request Cookies{Environment.NewLine}");
     foreach (var cookie in context.Request.Cookies)
