@@ -4,9 +4,9 @@ public sealed class StreamingService : Nextodon.Grpc.Streaming.StreamingBase
 {
     private readonly ILogger<StreamingService> _logger;
     private readonly MastodonContext db;
-    private readonly EventSource<Grpc.Status> _es;
+    private readonly EventSource<Grpc.Status, long> _es;
 
-    public StreamingService(ILogger<StreamingService> logger, MastodonContext db, EventSource<Grpc.Status> es)
+    public StreamingService(ILogger<StreamingService> logger, MastodonContext db, EventSource<Grpc.Status, long> es)
     {
         _logger = logger;
         this.db = db;
@@ -17,7 +17,7 @@ public sealed class StreamingService : Nextodon.Grpc.Streaming.StreamingBase
     public override async Task GetStatusStream(Empty request, IServerStreamWriter<Grpc.Status> responseStream, ServerCallContext context)
     {
         var account = await context.GetAccount(db, true);
-        var channel = _es[account!.Id.ToString()];
+        var channel = _es[account!.Id];
 
         while (!context.CancellationToken.IsCancellationRequested)
         {
