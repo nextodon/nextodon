@@ -161,9 +161,18 @@ public sealed class StatusApiService : Nextodon.Grpc.StatusApi.StatusApiBase
         var cancellationToken = context.CancellationToken;
         var statusId = (long)request.Value;
 
+        var status = await db.Statuses.FindAsync(new object[] { statusId }, cancellationToken);
+
+        if (status == null)
+        {
+            throw new RpcException(new global::Grpc.Core.Status(StatusCode.NotFound, statusId.ToString()));
+        }
+
         await db.Favourites.Where(x => x.StatusId == statusId && x.AccountId == account!.Id).ExecuteDeleteAsync(cancellationToken);
 
-        throw new NotImplementedException();
+        var v = await status.ToGrpc(account, db, context);
+
+        return v;
     }
 
     public override Task<Grpc.Status> Bookmark(UInt64Value request, ServerCallContext context)
