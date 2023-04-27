@@ -122,31 +122,12 @@ public sealed class StatusApiService : Nextodon.Grpc.StatusApi.StatusApiBase
 
     public override async Task<Grpc.Status> Favourite(UInt64Value request, ServerCallContext context)
     {
-        var account = await context.GetAccount(db, true);
-
         var cancellationToken = context.CancellationToken;
+        var account = await context.GetAccount(db, true, cancellationToken: cancellationToken);
+
         var statusId = (long)request.Value;
-        var now = DateTime.UtcNow;
 
-        var fav = await (from x in db.Favourites
-                         where x.StatusId == statusId && x.AccountId == account!.Id
-                         select x).FirstOrDefaultAsync();
-
-        if (fav == null)
-        {
-            fav = new Data.PostgreSQL.Models.Favourite
-            {
-                AccountId = account!.Id,
-                StatusId = statusId,
-                CreatedAt = now,
-                UpdatedAt = now,
-            };
-        }
-
-        fav.UpdatedAt = now;
-
-        db.Favourites.Update(fav);
-        await db.SaveChangesAsync(cancellationToken);
+        await db.FavouriteStatusAsync(statusId, account!.Id, cancellationToken: cancellationToken);
 
         var result = await db.Statuses.FindAsync(new object[] { statusId }, cancellationToken: cancellationToken);
         var ret = await result!.ToGrpc(account, db, context);
@@ -168,7 +149,7 @@ public sealed class StatusApiService : Nextodon.Grpc.StatusApi.StatusApiBase
             throw new RpcException(new global::Grpc.Core.Status(StatusCode.NotFound, statusId.ToString()));
         }
 
-        await db.Favourites.Where(x => x.StatusId == statusId && x.AccountId == account!.Id).ExecuteDeleteAsync(cancellationToken);
+        await db.UnfavouriteStatusAsync(statusId, account!.Id, cancellationToken);
 
         var v = await status.ToGrpc(account, db, context);
 
