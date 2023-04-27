@@ -1,8 +1,15 @@
 ﻿@page "/at"
 @implements IRazorComponentApplication<Authentication>
 
-<h3>Authentication</h3>
-
+<html>
+<head>
+    <title>Blazor Component</title>
+</head>
+<body>
+    <h3>Authentication</h3>
+    <p>@DateTime.UtcNow</p>
+</body>
+</html>
 
 @code {
 
