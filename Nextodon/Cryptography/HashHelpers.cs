@@ -13,7 +13,6 @@ namespace Nextodon.Cryptography;
 public static class HashHelpers
 {
     const string salt = "signed cookie";
-    public const string SecretKeyBase = "c1218cebd8a271be801ef50b96057be497313a64ba3a68c449198bc4f18533223af9968900cd8548c78b703cb6f9f5c92b5e28882c6044882b8c3975b5c65616";
 
     public static byte[] RubyCookieSign(string secretKeyBase, byte[] cookie)
     {
@@ -34,19 +33,6 @@ public static class HashHelpers
         var cookieBytes = Encoding.ASCII.GetBytes(cookie);
 
         var result = HmacSha1Digest(cookieBytes, signKey);
-
-        return result;
-    }
-
-    public static byte[] Key(string salt = "signed cookie")
-    {
-        var secretBytes = StringToByteArray(SecretKeyBase);
-        var saltBytes = Encoding.ASCII.GetBytes(salt);
-
-        var derivator = new Rfc2898DeriveBytes(secretBytes, saltBytes, 1000, HashAlgorithmName.SHA1);
-        var key = derivator.GetBytes(64);
-
-        var result = HmacSha1Digest(saltBytes, key);
 
         return result;
     }
