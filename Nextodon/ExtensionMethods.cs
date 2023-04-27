@@ -28,13 +28,13 @@ public static class ExtensionMethods
         return null;
     }
 
-    public static async Task<User?> GetUser(this HttpContext context, MastodonContext db, [NotNullWhen(true)] bool throwIfNotFound)
+    public static async Task<User?> GetUser(this HttpContext context, MastodonContext db, [NotNullWhen(true)] bool throwIfNotFound, CancellationToken cancellationToken = default)
     {
         var userId = GetUserId(context, throwIfNotFound);
 
         if (userId != null)
         {
-            var user = await db.Users.FindAsync(userId);
+            var user = await db.Users.FindAsync(new object?[] { userId }, cancellationToken: cancellationToken);
 
             if (user != null)
             {
@@ -50,18 +50,18 @@ public static class ExtensionMethods
         return null;
     }
 
-    public static Task<User?> GetUser(this ServerCallContext context, MastodonContext db, [NotNullWhen(true)] bool throwIfNotFound)
+    public static Task<User?> GetUser(this ServerCallContext context, MastodonContext db, [NotNullWhen(true)] bool throwIfNotFound, CancellationToken cancellationToken = default)
     {
-        return GetUser(context.GetHttpContext(), db, throwIfNotFound);
+        return GetUser(context.GetHttpContext(), db, throwIfNotFound, cancellationToken);
     }
 
-    public static async Task<Nextodon.Data.PostgreSQL.Models.Account?> GetAccount(this HttpContext context, MastodonContext db, [NotNullWhen(true)] bool throwIfNotFound)
+    public static async Task<Nextodon.Data.PostgreSQL.Models.Account?> GetAccount(this HttpContext context, MastodonContext db, [NotNullWhen(true)] bool throwIfNotFound, CancellationToken cancellationToken = default)
     {
         var userId = GetUserId(context, throwIfNotFound);
 
         if (userId != null)
         {
-            var user = await (from x in db.Users where x.Id == userId select x).Include(x => x.Account).FirstOrDefaultAsync();
+            var user = await (from x in db.Users where x.Id == userId select x).Include(x => x.Account).FirstOrDefaultAsync(cancellationToken: cancellationToken);
 
             if (user?.Account != null)
             {
@@ -77,8 +77,8 @@ public static class ExtensionMethods
         return null;
     }
 
-    public static Task<Data.PostgreSQL.Models.Account?> GetAccount(this ServerCallContext context, MastodonContext db, [NotNullWhen(true)] bool throwIfNotFound)
+    public static Task<Data.PostgreSQL.Models.Account?> GetAccount(this ServerCallContext context, MastodonContext db, [NotNullWhen(true)] bool throwIfNotFound, CancellationToken cancellationToken = default)
     {
-        return GetAccount(context.GetHttpContext(), db, throwIfNotFound);
+        return GetAccount(context.GetHttpContext(), db, throwIfNotFound, cancellationToken);
     }
 }
