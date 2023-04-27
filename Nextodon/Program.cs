@@ -63,10 +63,11 @@ app.Use(async (context, next) =>
 {
     if (context.Request.Path.StartsWithSegments("/oauth/token"))
     {
-        var form = await context.Request.ReadFormAsync();
+        var contentType = context.Request.ContentType;
 
-        if (form.Count > 0)
+        if (string.Equals(contentType, "application/x-www-form-urlencoded", StringComparison.OrdinalIgnoreCase))
         {
+            var form = await context.Request.ReadFormAsync();
             var dic = new Dictionary<string, string>();
 
             foreach (var item in form)
