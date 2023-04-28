@@ -78,10 +78,10 @@ message GetNotificationsRequest
     optional uint32 limit = 4;
 
     // Types to include in the result.
-    repeated string types = 5;
+    repeated string types = 5 [json_name="types[]"];
 
     // Types to exclude from the results.
-    repeated string exclude_types = 6;
+    repeated string exclude_types = 6 [json_name="exclude_types[]"];
 
     // Return only notifications received from the specified account.
     uint64 account_id = 7;
