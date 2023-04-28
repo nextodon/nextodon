@@ -42,6 +42,14 @@ public static class NotificationExtensionMethods
 
             case "reblog":
             case "status":
+            case "update":
+                var theStatus = await db.Statuses.FindAsync(new object[] { activityId }, cancellationToken: context.CancellationToken);
+
+                if (theStatus != null)
+                {
+                    v.Status = await theStatus.ToGrpc(me, db, context);
+                }
+
                 break;
             case "mention":
                 var mention = await db.Mentions.FindAsync(new object[] { activityId }, cancellationToken: context.CancellationToken);
@@ -70,8 +78,13 @@ public static class NotificationExtensionMethods
 
                 break;
 
-            case "update":
+            case "admin.report":
+                var report = await db.Reports.FindAsync(new object[] { activityId }, cancellationToken: context.CancellationToken);
 
+                if (report != null)
+                {
+                    v.Report = await report.ToGrpc(me, db, context);
+                }
                 break;
         }
 
