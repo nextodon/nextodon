@@ -24,7 +24,7 @@ public sealed class NotificationApiService : Nextodon.Grpc.NotificationApi.Notif
 
     public override async Task<Grpc.Notification> GetNotification(UInt64Value request, ServerCallContext context)
     {
-        var me = await context.GetAccount(db, false);
+        var me = await context.GetAccount(db, true);
         var cancellationToken = context.CancellationToken;
 
         var id = (long)request.Value;
@@ -61,10 +61,40 @@ public sealed class NotificationApiService : Nextodon.Grpc.NotificationApi.Notif
 
         foreach (var n in notifications)
         {
-            var notification = await n.ToGrpc(me, db, context);     
+            var notification = await n.ToGrpc(me, db, context);
             v.Data.Add(notification);
         }
 
         return v;
+    }
+
+    public override async Task<Empty> ClearNotifications(Empty request, ServerCallContext context)
+    {
+        var me = await context.GetAccount(db, true);
+        var cancellationToken = context.CancellationToken;
+
+        var query = from x in db.Notifications
+                    where x.AccountId == me!.Id
+                    select x;
+
+        await query.ExecuteDeleteAsync(cancellationToken: cancellationToken);
+
+        return new Empty();
+    }
+
+    public override async Task<Empty> DismissNotification(UInt64Value request, ServerCallContext context)
+    {
+        var me = await context.GetAccount(db, true);
+        var cancellationToken = context.CancellationToken;
+
+        var id = (long)request.Value;
+
+        var query = from x in db.Notifications
+                    where x.Id == id && x.AccountId == me!.Id
+                    select x;
+
+        await query.ExecuteDeleteAsync(cancellationToken: cancellationToken);
+
+        return new Empty();
     }
 }
