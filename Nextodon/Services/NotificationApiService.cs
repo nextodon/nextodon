@@ -61,9 +61,7 @@ public sealed class NotificationApiService : Nextodon.Grpc.NotificationApi.Notif
 
         foreach (var n in notifications)
         {
-            var notification = await n.ToGrpc(me, db, context);
-          
-            
+            var notification = await n.ToGrpc(me, db, context);     
             v.Data.Add(notification);
         }
 
