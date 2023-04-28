@@ -4,15 +4,15 @@ option csharp_namespace = "Nextodon.Grpc";
 
 message DefaultPaginationParameters
 {
-    // Internal parameter. Use HTTP Link header for pagination.
-    optional string max_id = 4;
+    // Return results older than this ID.
+    optional string max_id = 1;
 
-    // Internal parameter. Use HTTP Link header for pagination.
-    optional string since_id = 5;
+    // Return results newer than this ID.
+    optional string since_id = 2;
     
-    // Internal parameter. Use HTTP Link header for pagination.
-    optional string min_id = 6;
+    // Return results immediately newer than this ID
+    optional string min_id = 3;
     
-    // Maximum number of results to return. Defaults to 40 accounts. Max 80 accounts.
-    optional uint32 limit = 7;
+    // Maximum number of results to return. Defaults to 15 notifications. Max 30 notifications.
+    optional uint32 limit = 4;
 }

@@ -1,5 +1,9 @@
 syntax = "proto3";
-//import "google/protobuf/timestamp.proto";
+import "google/protobuf/timestamp.proto";
+import "account.proto";
+import "report.proto";
+import "status.proto";
+
 option csharp_namespace = "Nextodon.Grpc";
 
 message WebPushSubscription
@@ -17,4 +21,30 @@ message WebPushSubscription
         bool mention = 4;
         bool poll = 5;
     }
+}
+
+message Notification
+{
+    // The id of the notification in the database.
+    string id = 1;
+
+    // The type of event that resulted in the notification.
+    string type = 2;
+
+    // The timestamp of the notification.
+    google.protobuf.Timestamp created_at = 3;
+
+    // The account that performed the action that generated the notification.
+    Account account = 4;
+    
+    // Status that was the object of the notification. Attached when type of the notification is favourite, reblog, status, mention, poll, or update.
+    optional Status status = 5;
+
+    // Report that was the object of the notification. Attached when type of the notification is admin.report.
+    optional Report report = 6;
+}
+
+message Notifications
+{
+    repeated Notification data = 1;
 }

@@ -1,13 +1,26 @@
 syntax = "proto3";
 
 import "google/api/annotations.proto";
-//import "google/protobuf/empty.proto";
+import "google/protobuf/wrappers.proto";
 
 import "notification.proto";
 
 option csharp_namespace = "Nextodon.Grpc";
 
-service NotificationApi {    
+service NotificationApi {
+  rpc GetNotification (google.protobuf.UInt64Value) returns (Notification)
+  {
+	option (google.api.http) = {
+      get: "/api/v1/notifications/{value}"
+    };
+  }
+  
+  rpc GetNotifications (GetNotificationsRequest) returns (Notifications)
+  {
+	option (google.api.http) = {
+      get: "/api/v1/notifications"
+    };
+  }
 
   rpc Subscription (SubscriptionRequest) returns (WebPushSubscription)
   {
@@ -33,4 +46,28 @@ message SubscriptionRequest
             string auth = 2;
         }
     }
+}
+
+message GetNotificationsRequest
+{
+    // Return results older than this ID.
+    optional string max_id = 1;
+
+    // Return results newer than this ID.
+    optional string since_id = 2;
+    
+    // Return results immediately newer than this ID
+    optional string min_id = 3;
+    
+    // Maximum number of results to return. Defaults to 15 notifications. Max 30 notifications.
+    optional uint32 limit = 4;
+
+    // Types to include in the result.
+    repeated string types = 5;
+
+    // Types to exclude from the results.
+    repeated string exclude_types = 6;
+
+    // Return only notifications received from the specified account.
+    uint64 account_id = 7;
 }
