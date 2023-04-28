@@ -1,6 +1,7 @@
 syntax = "proto3";
 
 import "google/api/annotations.proto";
+import "google/protobuf/empty.proto";
 import "google/protobuf/wrappers.proto";
 
 import "notification.proto";
@@ -19,6 +20,20 @@ service NotificationApi {
   {
 	option (google.api.http) = {
       get: "/api/v1/notifications"
+    };
+  }
+
+  rpc ClearNotifications (google.protobuf.Empty) returns (google.protobuf.Empty)
+  {
+	option (google.api.http) = {
+      get: "/api/v1/notifications/clear"
+    };
+  }
+
+  rpc DismissNotification (google.protobuf.UInt64Value) returns (google.protobuf.Empty)
+  {
+	option (google.api.http) = {
+      get: "/api/v1/notifications/{value}/dismiss"
     };
   }
 
