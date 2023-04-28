@@ -40,6 +40,7 @@
 		<Protobuf Include="poll.proto" />
 		<Protobuf Include="pollapi.proto" />
 		<Protobuf Include="relationship.proto" />
+		<Protobuf Include="report.proto" />
 		<Protobuf Include="role.proto" />
 		<Protobuf Include="rule.proto" />
 		<Protobuf Include="search.proto" />

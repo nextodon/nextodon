@@ -1,0 +1,38 @@
+syntax = "proto3";
+import "google/protobuf/timestamp.proto";
+import "account.proto";
+
+option csharp_namespace = "Nextodon.Grpc";
+
+message Report
+{
+    // The ID of the report in the database.
+    string id = 1;
+
+    // Whether an action was taken yet.
+    bool action_taken = 2;
+
+    // When an action was taken against the report.
+    optional google.protobuf.Timestamp action_taken_at = 3;
+
+    // The generic reason for the report.
+    string category = 4;
+    
+    // The reason for the report.
+    string comment = 5;
+
+    // Whether the report was forwarded to a remote domain.
+    bool forwarded = 6;
+
+    // When the report was created.
+    google.protobuf.Timestamp created_at = 7;
+
+    // IDs of statuses that have been attached to this report for additional context.
+    repeated string status_ids = 8;
+    
+    // IDs of the rules that have been cited as a violation by this report.
+    repeated string rule_ids = 9;
+    
+    // The account that was reported.
+    Account target_account = 10;
+}
