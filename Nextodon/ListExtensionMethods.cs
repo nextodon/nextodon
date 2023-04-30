@@ -2,7 +2,7 @@
 
 public static class ListExtensionMethods
 {
-    //public static Grpc.List ToGrpc(this Mastodon.Data.List i) {
+    //public static Grpc.List ToGrpc(this Nextodon.Data.PostgreSQL.Models.List i) {
     //    var v = new List {
     //        Id = i.Id,
     //        Title = i.Title,

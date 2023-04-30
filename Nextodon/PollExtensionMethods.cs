@@ -2,7 +2,7 @@
 
 //public static class PollExtensionMethods
 //{
-//    //public static Grpc.Poll ToGrpc(this Mastodon.Data.Poll i) {
+//    //public static Grpc.Poll ToGrpc(this Nextodon.Data.PostgreSQL.Models.Poll i) {
 //    //    var v = new Grpc.Poll {
 //    //        Id = i.Id,
 //    //        Expired = i.Expired,
@@ -32,7 +32,7 @@
 //    //    return v;
 //    //}
 
-//    //public static Grpc.Poll.Types.Option ToGrpc(this Mastodon.Data.Poll.Option i) {
+//    //public static Grpc.Poll.Types.Option ToGrpc(this Nextodon.Data.PostgreSQL.Models.Poll.Option i) {
 //    //    var v = new Grpc.Poll.Types.Option {
 //    //        Title = i.Title,
 //    //    };

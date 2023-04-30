@@ -2,7 +2,7 @@
 
 public static class ApplicationExtensionMethods
 {
-    //public static Grpc.Application ToGrpc(this Mastodon.Data.Application i) {
+    //public static Grpc.Application ToGrpc(this Nextodon.Data.PostgreSQL.Models.Application i) {
     //    var v = new Grpc.Application();
 
     //    if (i.Id != null) {

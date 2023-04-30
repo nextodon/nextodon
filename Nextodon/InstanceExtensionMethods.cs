@@ -57,7 +57,7 @@
 //        return v;
 //    }
 
-//    //public static Grpc.InstanceV1 ToGrpc(this Mastodon.Data.InstanceV1 i) {
+//    //public static Grpc.InstanceV1 ToGrpc(this Nextodon.Data.PostgreSQL.Models.InstanceV1 i) {
 //    //    var v = new Grpc.InstanceV1 {
 //    //        Uri = i.Uri,
 //    //        Title = i.Title,
@@ -92,7 +92,7 @@
 //    //    return v;
 //    //}
 
-//    //public static Grpc.Activity ToGrpc(this Mastodon.Data.Activity i) {
+//    //public static Grpc.Activity ToGrpc(this Nextodon.Data.PostgreSQL.Models.Activity i) {
 //    //    return new Activity {
 //    //        Logins = i.Logins,
 //    //        Registrations = i.Registrations,
@@ -194,7 +194,7 @@
 //        };
 //    }
 
-//    //public static Grpc.Instance.Types.Usage ToGrpc(this Mastodon.Data.Instance.Usage i) {
+//    //public static Grpc.Instance.Types.Usage ToGrpc(this Nextodon.Data.PostgreSQL.Models.Instance.Usage i) {
 //    //    return new Grpc.Instance.Types.Usage {
 //    //        Users = new Instance.Types.Usage.Types.Users {
 //    //            ActiveMonth = i.Users.ActiveMonth,
