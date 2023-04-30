@@ -12,7 +12,7 @@ public static class SearchExtensionMethods
     //    return v;
     //}
 
-    //public static Grpc.SearchResult ToGrpc(this Mastodon.Data.Search i) {
+    //public static Grpc.SearchResult ToGrpc(this Nextodon.Data.PostgreSQL.Models.Search i) {
     //    var v = new Grpc.SearchResult();
 
     //    v.Accounts.AddRange(i.Accounts.Select(x => x.ToGrpc()));

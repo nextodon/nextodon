@@ -1,7 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using System.Runtime.Intrinsics.Arm;
-
-namespace Nextodon;
+﻿namespace Nextodon;
 
 public static class PostgresExtensions
 {
