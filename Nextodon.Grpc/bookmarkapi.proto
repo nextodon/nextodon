@@ -18,15 +18,15 @@ service BookmarkApi {
 
 message GetBookmarksRequest
 {
-    // Internal parameter. Use HTTP Link header for pagination.
+    // Return results older than this ID.
     optional string max_id = 1;
-
-    // Internal parameter. Use HTTP Link header for pagination.
+    
+    // Return results newer than this ID.
     optional string since_id = 2;
-    
-    // Internal parameter. Use HTTP Link header for pagination.
+
+    // Return results immediately newer than this ID.
     optional string min_id = 3;
-    
-    // Maximum number of results to return. Defaults to 40 accounts. Max 80 accounts.
+
+    // Maximum number of results to return. Defaults to 20 statuses. Max 40 statuses.
     optional uint32 limit = 4;
 }
