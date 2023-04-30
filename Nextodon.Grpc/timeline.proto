@@ -61,13 +61,13 @@ message GetPublicTimelineRequest
     // Show only statuses with media attached? Defaults to false.
     bool only_media = 3;
 
-    // Internal parameter. Use HTTP Link header for pagination.
+    // Return results older than this ID.
     optional string max_id = 4;
-
-    // Internal parameter. Use HTTP Link header for pagination.
-    optional string since_id = 5;
     
-    // Internal parameter. Use HTTP Link header for pagination.
+    // Return results newer than this ID.
+    optional string since_id = 5;
+
+    // Return results immediately newer than this ID.
     optional string min_id = 6;
     
     // Maximum number of results to return. Defaults to 40 accounts. Max 80 accounts.
