@@ -12,6 +12,7 @@ var config = builder.Configuration;
 
 builder.Services.AddRazorComponents();
 builder.Services.AddControllers();
+builder.Services.AddRazorComponents();
 
 builder.Services.AddGrpc().AddJsonTranscoding(options =>
 {
@@ -87,7 +88,7 @@ app.Use(async (context, next) =>
 
 app.UseCors();
 
-app.UseDefaultFiles();
+//app.UseDefaultFiles();
 app.UseStaticFiles();
 
 //app.UseHttpsRedirection();
@@ -96,6 +97,8 @@ app.UseRouting();
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.MapRazorComponents<App>();
 
 app.UseGrpcWeb();
 
@@ -119,8 +122,6 @@ app.MapGrpcService<TrendsService>().EnableGrpcWeb();
 app.MapGrpcReflectionService().EnableGrpcWeb();
 
 app.MapControllers();
-
-app.MapRazorComponents<Nextodon.Components.Authentication>();
 
 app.MapGet("/reqinfo", async context =>
 {
