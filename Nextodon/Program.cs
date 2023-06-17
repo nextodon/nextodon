@@ -88,7 +88,7 @@ app.Use(async (context, next) =>
 
 app.UseCors();
 
-//app.UseDefaultFiles();
+app.UseDefaultFiles();
 app.UseStaticFiles();
 
 //app.UseHttpsRedirection();
