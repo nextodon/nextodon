@@ -3,17 +3,17 @@
 	<head>
 		<meta charset="UTF-8">
 		<meta name="viewport" content="width=device-width">
-		<link rel="icon" type="image/svg+xml" href="/favicon.ico">
+		<link rel="icon" href="/nextodon/favicon.ico">
 		<title>Authorize</title>
 	<link rel="stylesheet" href="/_astro/sign_in.d8df62aa.css" /><script type="module" src="/_astro/hoisted.7aa9c604.js"></script></head>
 	<body class="bg-gray-50 dark:bg-gray-900">
 		
 	<section class="bg-gray-50 dark:bg-gray-900">
     <div class="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
-        <a href="#" class="flex items-center mb-6 text-2xl font-semibold text-gray-900 dark:text-white">
-            <img class="w-8 h-8 mr-2" src="/favicon.ico" alt="Nextodon">
+        <span class="flex items-center mb-6 text-2xl font-semibold text-gray-900 dark:text-white">
+            <img class="w-8 h-8 mr-2" src="/nextodon/logo-48.png" alt="Nextodon">
             Nextodon
-        </a>
+        </span>
         <div class="w-full bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700">
             <div class="p-6 space-y-4 md:space-y-6 sm:p-8">
                 <h1 class="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
@@ -40,23 +40,23 @@
 </section>
 
 	<script>
-	const theme = (() => {
-		if (
-			typeof localStorage !== "undefined" &&
-			localStorage.getItem("theme")
-		) {
-			return localStorage.getItem("theme");
-		}
-		if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
-			return "dark";
-		}
-		return "light";
-	})();
-
-	if (theme === "light") {
-		document.documentElement.classList.remove("dark");
-	} else {
-		document.documentElement.classList.add("dark");
+const theme = (() => {
+	if (
+		typeof localStorage !== "undefined" &&
+		localStorage.getItem("theme")
+	) {
+		return localStorage.getItem("theme");
 	}
-	window.localStorage.setItem("theme", theme);
+	if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
+		return "dark";
+	}
+	return "light";
+})();
+
+if (theme === "light") {
+	document.documentElement.classList.remove("dark");
+} else {
+	document.documentElement.classList.add("dark");
+}
+window.localStorage.setItem("theme", theme);
 </script></body></html>
