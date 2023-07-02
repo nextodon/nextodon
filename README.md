@@ -4,13 +4,13 @@ Welcome to Nextodon. Nextodon is the next generation social media platform writt
 
 The aim of the project is to provide a robust, low cost and easy to install way of running a self-hosted social media instance.
 
-Nextodon is a gRPC-first project with compatible with existing REST APIs throught the gRPC JSON-Transcoding.
+Nextodon is a gRPC-first project and compatible with existing REST APIs through the gRPC-JSON-Transcoding.
 
 Nextodon is compatible with Fediverse and Mastodon.
 
 ## Installation
 
-Nextodon is a work-in-progress. This means, in order to run a pre-release version of Nextodon, we will need to have Nextodon and Mastodon side-by-side. A reverse-proxy (e.g. Nginx) will route some endpoints to Nextodon and some to Mastodon.
+Nextodon is a work-in-progress. This means, in order to run a pre-release version of Nextodon, we will need to have Nextodon and Mastodon side-by-side. A reverse-proxy (e.g. Nginx) will route some endpoints to Nextodon and some to the Mastodon.
 
 Eventaully all the requests will be handled by Nextodon when the first production release is ready.
 
