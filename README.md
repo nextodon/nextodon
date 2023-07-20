@@ -115,3 +115,13 @@ server {
 In above nginx configuration replace `example.com` with your domain or subdomain, e.g. `sub.example.com`.
 
 Do not forget to enable the site by creating a symbolic link to `/etc/nginx/sites-enabled/example.com.config`
+
+## Git History
+
+For some privacy reason we hide the original author name and email address from git history. In case you need to clear the git history, run the following commands:
+
+```
+git filter-branch -f --env-filter "GIT_AUTHOR_NAME='Zan'; GIT_AUTHOR_EMAIL='zan@zendegi.azadi'; GIT_COMMITTER_NAME='Zan'; GIT_COMMITTER_EMAIL='zan@zendegi.azadi';" HEAD
+
+git push -f
+```
