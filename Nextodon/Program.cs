@@ -10,9 +10,11 @@ using System.Text.Json;
 var builder = WebApplication.CreateBuilder(args);
 var config = builder.Configuration;
 
-builder.Services.AddRazorComponents();
+builder.Services.AddRazorComponents()
+    .AddWebAssemblyComponents()
+    .AddServerComponents();
 builder.Services.AddControllers();
-builder.Services.AddRazorComponents();
+
 
 builder.Services.AddGrpc().AddJsonTranscoding(options =>
 {
@@ -92,13 +94,13 @@ app.UseDefaultFiles();
 app.UseStaticFiles();
 
 //app.UseHttpsRedirection();
-
-app.UseRouting();
-
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapRazorComponents<App>();
+app.MapRazorComponents<App>()
+    .AddServerRenderMode()
+    .AddWebAssemblyRenderMode();
+
 
 app.UseGrpcWeb();
 
