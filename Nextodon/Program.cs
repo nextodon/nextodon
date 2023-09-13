@@ -1,5 +1,6 @@
 using Nextodon;
 using Nextodon.Services;
+using Nextodon.Components;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.HttpOverrides;
@@ -59,6 +60,11 @@ builder.Services.AddCors();
 
 var app = builder.Build();
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+
+if (app.Environment.IsDevelopment())
+{
+    app.UseWebAssemblyDebugging();
+}
 
 app.UseForwardedHeaders();
 
