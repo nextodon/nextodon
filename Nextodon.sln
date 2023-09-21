@@ -11,7 +11,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nextodon.Data.PostgreSQL", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nextodon.WebAssembly", "Nextodon.WebAssembly\Nextodon.WebAssembly.csproj", "{8E82B57D-7D47-42E2-AFA1-E8AD2F1D49C1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nextodon.Cryptography", "Nextodon.Cryptography\Nextodon.Cryptography.csproj", "{C7654569-6D56-4403-AFB8-A21A63945DC0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nextodon.Cryptography", "Nextodon.Cryptography\Nextodon.Cryptography.csproj", "{C7654569-6D56-4403-AFB8-A21A63945DC0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
